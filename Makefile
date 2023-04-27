@@ -49,3 +49,8 @@ gen-pb: ## generate protobuf messages and services
 	## Starting inject tags
 	@protoc-go-inject-tag -input="./pkg/entity/domain/*/model/*.pb.go"
 	@echo Successfully injected tags
+
+.PHONY: gen-mock
+gen-mock: ## generate mock
+	@go generate ./...
+	## Successfully generated mock
