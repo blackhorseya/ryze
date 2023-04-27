@@ -1,0 +1,28 @@
+syntax = "proto3";
+package block;
+option go_package = "github.com/blackhorseya/ryze/pkg/entity/domain/block/model";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+message Block {
+  int64 number = 1;
+  string hash = 2;
+  string parent_hash = 3;
+  string nonce = 4;
+  string sha3_uncles = 5;
+  string logs_bloom = 6;
+  string transactions_root = 7;
+  string state_root = 8;
+  string receipts_root = 9;
+  string miner = 10;
+  int64 difficulty = 11;
+  int64 total_difficulty = 12;
+  string extra_data = 13;
+  int64 size = 14;
+  int64 gas_limit = 15;
+  int64 gas_used = 16;
+  google.protobuf.Timestamp timestamp = 17;
+  repeated google.protobuf.Any transactions = 18;
+  repeated string uncles = 19;
+}

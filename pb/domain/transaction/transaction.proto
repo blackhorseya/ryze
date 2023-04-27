@@ -1,0 +1,20 @@
+syntax = "proto3";
+package transaction;
+option go_package = "github.com/blackhorseya/ryze/pkg/entity/domain/transaction/model";
+
+message Transaction {
+  string block_hash = 1;
+  int64 block_number = 2;
+  string from = 3;
+  int64 gas = 4;
+  int64 gas_price = 5;
+  string hash = 6;
+  int64 input = 7;
+  int64 nonce = 8;
+  string to = 9;
+  int64 transaction_index = 10;
+  int64 value = 11;
+  int64 v = 12;
+  int64 r = 13;
+  int64 s = 14;
+}

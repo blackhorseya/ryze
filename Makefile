@@ -24,3 +24,20 @@ gazelle-repos: ## update gazelle repos
 .PHONY: gazelle
 gazelle: gazelle-repos ## run gazelle with bazel
 	@bazel run //:gazelle
+
+## generate
+.PHONY: gen-pb
+gen-pb: ## generate protobuf messages and services
+	@go get -u google.golang.org/protobuf/proto
+	@go get -u google.golang.org/protobuf/cmd/protoc-gen-go
+
+	## Starting generate pb
+	@protoc --proto_path=. \
+			--go_out=. --go_opt=module=github.com/blackhorseya/ryze \
+			--go-grpc_out=. --go-grpc_opt=module=github.com/blackhorseya/ekko,require_unimplemented_servers=false \
+			./pb/domain/*/**.proto
+	@echo Successfully generated proto
+
+	## Starting inject tags
+	@protoc-go-inject-tag -input="./pkg/entity/domain/*/model/*.pb.go"
+	@echo Successfully injected tags
