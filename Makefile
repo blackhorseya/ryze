@@ -25,6 +25,14 @@ gazelle-repos: ## update gazelle repos
 gazelle: gazelle-repos ## run gazelle with bazel
 	@bazel run //:gazelle
 
+.PHONY: test-go
+test-go: ## bazel test
+	@bazel test //...
+
+.PHONY: build-go
+build-go: ## bazel build
+	@bazel build //...
+
 ## generate
 .PHONY: gen-pb
 gen-pb: ## generate protobuf messages and services
