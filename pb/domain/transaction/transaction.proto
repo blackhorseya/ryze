@@ -1,0 +1,3 @@
+syntax = "proto3";
+package transaction;
+option go_package = "github.com/blackhorseya/ryze/pkg/entity/domain/transaction/model";
