@@ -15,3 +15,12 @@ help: ## show help
 clean:  ## remove artifacts
 	@rm -rf coverage.txt profile.out ./bin ./deployments/charts/*.tgz
 	@echo Successfuly removed artifacts
+
+## go
+.PHONY: gazelle-repos
+gazelle-repos: ## update gazelle repos
+	@bazel run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%go_dependencies -prune
+
+.PHONY: gazelle
+gazelle: gazelle-repos ## run gazelle with bazel
+	@bazel run //:gazelle
