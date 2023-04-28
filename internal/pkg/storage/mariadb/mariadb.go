@@ -3,7 +3,9 @@ package mariadb
 import (
 	"time"
 
-	_ "github.com/go-sql-driver/mysql" // import db driver
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/mysql" // import MySQL driver
+	_ "github.com/golang-migrate/migrate/v4/source/github"  // import GitHub source
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -16,9 +18,10 @@ const (
 
 // Options is configuration of database
 type Options struct {
-	URL   string `json:"url" yaml:"url"`
-	Debug bool   `json:"debug" yaml:"debug"`
-	Conns int    `json:"conns" yaml:"conns"`
+	URL    string `json:"url" yaml:"url"`
+	Debug  bool   `json:"debug" yaml:"debug"`
+	Conns  int    `json:"conns" yaml:"conns"`
+	Source string `json:"source" yaml:"source"`
 }
 
 // NewOptions serve caller to create an Options
@@ -51,5 +54,15 @@ func NewMariadb(o *Options) (*sqlx.DB, error) {
 	return db, nil
 }
 
+// NewMigration init migration
+func NewMigration(o *Options) (*migrate.Migrate, error) {
+	m, err := migrate.New(o.Source, o.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	return m, nil
+}
+
 // ProviderSet is a provider set for mariadb client
-var ProviderSet = wire.NewSet(NewOptions, NewMariadb)
+var ProviderSet = wire.NewSet(NewOptions, NewMariadb, NewMigration)
