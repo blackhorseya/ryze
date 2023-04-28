@@ -1,8 +1,14 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "response",
     srcs = ["response.go"],
     importpath = "github.com/blackhorseya/ryze/pkg/response",
     visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "response_test",
+    srcs = ["response_test.go"],
+    embed = [":response"],
 )
