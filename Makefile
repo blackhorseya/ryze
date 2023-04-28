@@ -25,6 +25,19 @@ gazelle-repos: ## update gazelle repos
 gazelle: gazelle-repos ## run gazelle with bazel
 	@bazel run //:gazelle
 
+.PHONY: update-paackage
+update-package: ## update package
+	@echo Starting update package
+	@go get -u ./...
+	@go mod tidy
+
+	@echo Starting update bazel dependencies
+	$(MAKE) gazelle-repos
+
+	@git add go.mod go.sum deps.bzl
+	@git commit -m "build: update package"
+	@echo Successfully updated package
+
 .PHONY: test-go
 test-go: ## bazel test
 	@bazel test //...
