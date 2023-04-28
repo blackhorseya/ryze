@@ -195,6 +195,12 @@ def go_dependencies():
         sum = "h1:E4gtWgxWxp8YSxExrQFv5BpCahla0PVF2oTTEYaWQGI=",
         version = "v10.12.0",
     )
+    go_repository(
+        name = "com_github_go_sql_driver_mysql",
+        importpath = "github.com/go-sql-driver/mysql",
+        sum = "h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=",
+        version = "v1.7.1",
+    )
 
     go_repository(
         name = "com_github_goccy_go_json",
@@ -372,6 +378,12 @@ def go_dependencies():
         sum = "h1:mV02weKRL81bEnm8A0HT1/CAelMQDBuQIfLw8n+d6xI=",
         version = "v0.0.0-20200824232613-28f6c0f3b639",
     )
+    go_repository(
+        name = "com_github_jmoiron_sqlx",
+        importpath = "github.com/jmoiron/sqlx",
+        sum = "h1:vFFPA71p1o5gAeqtEAwLU4dnX2napprKtHr7PYIcN3g=",
+        version = "v1.3.5",
+    )
 
     go_repository(
         name = "com_github_json_iterator_go",
@@ -431,6 +443,12 @@ def go_dependencies():
         sum = "h1:6BE2vPT0lqoz3fmOesHZiaiFh7889ssCo2GMvLCfiuA=",
         version = "v1.2.3",
     )
+    go_repository(
+        name = "com_github_lib_pq",
+        importpath = "github.com/lib/pq",
+        sum = "h1:LXpIM/LZ5xGFhOpXAQUIMM1HdyqzVYM13zNdjCEEcA0=",
+        version = "v1.2.0",
+    )
 
     go_repository(
         name = "com_github_magiconair_properties",
@@ -449,6 +467,12 @@ def go_dependencies():
         importpath = "github.com/mattn/go-isatty",
         sum = "h1:DOKFKCQ7FNG2L1rbrmstDN4QVRdS89Nkh85u68Uwp98=",
         version = "v0.0.18",
+    )
+    go_repository(
+        name = "com_github_mattn_go_sqlite3",
+        importpath = "github.com/mattn/go-sqlite3",
+        sum = "h1:dNPt6NO46WmLVt2DLNpwczCmdV5boIZ6g/tlDrlRUbg=",
+        version = "v1.14.6",
     )
 
     go_repository(
