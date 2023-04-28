@@ -3,7 +3,9 @@ package mariadb
 import (
 	"time"
 
+	_ "github.com/go-sql-driver/mysql" // import MySQL driver
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql" // import MySQL driver
 	_ "github.com/golang-migrate/migrate/v4/source/github"  // import GitHub source
 	"github.com/google/wire"
@@ -55,8 +57,18 @@ func NewMariadb(o *Options) (*sqlx.DB, error) {
 }
 
 // NewMigration init migration
-func NewMigration(o *Options) (*migrate.Migrate, error) {
-	m, err := migrate.New(o.Source, o.URL)
+func NewMigration(o *Options, rw *sqlx.DB) (*migrate.Migrate, error) {
+	instance, err := mysql.WithInstance(rw.DB, &mysql.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(o.Source, "mysql", instance)
+	if err != nil {
+		return nil, err
+	}
+
+	err = m.Up()
 	if err != nil {
 		return nil, err
 	}
