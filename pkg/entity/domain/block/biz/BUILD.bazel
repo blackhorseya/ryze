@@ -8,4 +8,9 @@ go_library(
     ],
     importpath = "github.com/blackhorseya/ryze/pkg/entity/domain/block/biz",
     visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/contextx",
+        "//pkg/entity/domain/block/model",
+        "@com_github_golang_mock//gomock",
+    ],
 )

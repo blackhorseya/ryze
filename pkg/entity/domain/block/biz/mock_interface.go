@@ -3,3 +3,79 @@
 
 // Package biz is a generated GoMock package.
 package biz
+
+import (
+	reflect "reflect"
+
+	contextx "github.com/blackhorseya/ryze/pkg/contextx"
+	model "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
+	gomock "github.com/golang/mock/gomock"
+)
+
+// MockIBiz is a mock of IBiz interface.
+type MockIBiz struct {
+	ctrl     *gomock.Controller
+	recorder *MockIBizMockRecorder
+}
+
+// MockIBizMockRecorder is the mock recorder for MockIBiz.
+type MockIBizMockRecorder struct {
+	mock *MockIBiz
+}
+
+// NewMockIBiz creates a new mock instance.
+func NewMockIBiz(ctrl *gomock.Controller) *MockIBiz {
+	mock := &MockIBiz{ctrl: ctrl}
+	mock.recorder = &MockIBizMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIBiz) EXPECT() *MockIBizMockRecorder {
+	return m.recorder
+}
+
+// GetBlockByHash mocks base method.
+func (m *MockIBiz) GetBlockByHash(ctx contextx.Contextx, hash []byte) (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBlockByHash", ctx, hash)
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBlockByHash indicates an expected call of GetBlockByHash.
+func (mr *MockIBizMockRecorder) GetBlockByHash(ctx, hash interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlockByHash", reflect.TypeOf((*MockIBiz)(nil).GetBlockByHash), ctx, hash)
+}
+
+// ListBlocks mocks base method.
+func (m *MockIBiz) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) ([]*model.Block, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListBlocks", ctx, condition)
+	ret0, _ := ret[0].([]*model.Block)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListBlocks indicates an expected call of ListBlocks.
+func (mr *MockIBizMockRecorder) ListBlocks(ctx, condition interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBlocks", reflect.TypeOf((*MockIBiz)(nil).ListBlocks), ctx, condition)
+}
+
+// ListenNewBlock mocks base method.
+func (m *MockIBiz) ListenNewBlock(ctx contextx.Contextx) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListenNewBlock", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListenNewBlock indicates an expected call of ListenNewBlock.
+func (mr *MockIBizMockRecorder) ListenNewBlock(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListenNewBlock", reflect.TypeOf((*MockIBiz)(nil).ListenNewBlock), ctx)
+}
