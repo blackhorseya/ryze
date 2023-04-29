@@ -9,14 +9,15 @@ package main
 import (
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
+	"github.com/blackhorseya/ryze/pkg/app"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-// CreateService serve caller to create service instance
-func CreateService(path string) (*Service, error) {
-	viper, err := config.NewConfig(path)
+// CreateApplication serve caller to create application instance
+func CreateApplication(path2 string) (app.Servicer, error) {
+	viper, err := config.NewConfig(path2)
 	if err != nil {
 		return nil, err
 	}
@@ -28,11 +29,11 @@ func CreateService(path string) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	service, err := NewService(logger)
+	servicer, err := NewService(logger)
 	if err != nil {
 		return nil, err
 	}
-	return service, nil
+	return servicer, nil
 }
 
 // wire.go:

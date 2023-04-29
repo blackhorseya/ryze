@@ -12,9 +12,9 @@ func init() {
 }
 
 func main() {
-	service, err := CreateService(*path)
+	app, err := CreateApplication(*path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = service
+	_ = app
 }
