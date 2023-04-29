@@ -60,6 +60,8 @@ func NewLogger(o *Options) (*zap.Logger, error) {
 
 	zap.ReplaceGlobals(logger)
 
+	logger.Info("logger init success", zap.Any("options", o))
+
 	return logger, nil
 }
 

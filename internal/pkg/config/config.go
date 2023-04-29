@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/google/wire"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -19,6 +21,8 @@ func NewConfig(path string) (*viper.Viper, error) {
 	if err = v.ReadInConfig(); err != nil {
 		return nil, errors.Wrap(err, "read config file error")
 	}
+
+	fmt.Printf("read config file success, path: %s\n", v.ConfigFileUsed())
 
 	return v, nil
 }
