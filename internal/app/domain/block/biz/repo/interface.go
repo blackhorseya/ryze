@@ -5,6 +5,7 @@ package repo
 import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
+	"github.com/google/wire"
 )
 
 // IRepo declare the interface of repo
@@ -18,3 +19,6 @@ type IRepo interface {
 	// ListenNewBlock serve caller to listen new block
 	ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
 }
+
+// ProviderSet is the provider set of repo
+var ProviderSet = wire.NewSet(NewEthOptions, NewImpl)
