@@ -5,6 +5,15 @@ type Restful interface {
 	InitRouting() error
 }
 
+// Listener is a listener adapter
+type Listener interface {
+	// Start to run
+	Start() error
+
+	// Stop to end
+	Stop() error
+}
+
 // Cronjob is a cronjob adapter
 type Cronjob interface {
 	// Start to run
