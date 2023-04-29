@@ -968,6 +968,10 @@ def go_dependencies():
     go_repository(
         name = "com_github_ethereum_go_ethereum",
         importpath = "github.com/ethereum/go-ethereum",
+        patch_args = ["-p1"],
+        patches = [
+            "//third_party:com_github_ethereum_go_ethereum_secp256k1.patch",
+        ],
         sum = "h1:2VF8Mf7XiSUfmoNOy3D+ocfl9Qu8baQBrCNbo2CXQ8E=",
         version = "v1.11.6",
     )

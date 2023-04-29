@@ -16,7 +16,7 @@ var providerSet = wire.NewSet(
 	config.ProviderSet,
 	log.ProviderSet,
 
-	// implementation
+	// adapter
 	block.ListenerSet,
 
 	// main
