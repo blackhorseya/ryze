@@ -15,6 +15,7 @@ go_library(
         "//pkg/adapter",
         "//pkg/app",
         "@com_github_google_wire//:wire",
+        "@com_github_pkg_errors//:errors",
         "@org_uber_go_zap//:zap",
     ],
 )

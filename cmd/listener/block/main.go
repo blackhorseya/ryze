@@ -16,5 +16,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	_ = app
+
+	err = app.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = app.AwaitSignal()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
