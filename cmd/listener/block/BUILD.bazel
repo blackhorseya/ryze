@@ -10,6 +10,7 @@ go_library(
     importpath = "github.com/blackhorseya/ryze/cmd/listener/block",
     visibility = ["//visibility:private"],
     deps = [
+        "//internal/adapter/listener/block",
         "//internal/pkg/config",
         "//internal/pkg/log",
         "//pkg/adapter",

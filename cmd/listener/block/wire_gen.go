@@ -7,6 +7,7 @@
 package main
 
 import (
+	"github.com/blackhorseya/ryze/internal/adapter/listener/block"
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
 	"github.com/blackhorseya/ryze/pkg/app"
@@ -29,7 +30,8 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	servicer, err := NewService(logger)
+	listener := block.NewImpl()
+	servicer, err := NewService(logger, listener)
 	if err != nil {
 		return nil, err
 	}
@@ -38,4 +40,4 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, NewService)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, block.ListenerSet, NewService)

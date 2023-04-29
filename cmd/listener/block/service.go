@@ -17,9 +17,10 @@ type service struct {
 }
 
 // NewService serve caller to create service instance
-func NewService(logger *zap.Logger) (app.Servicer, error) {
+func NewService(logger *zap.Logger, listener adapter.Listener) (app.Servicer, error) {
 	svc := &service{
-		logger: logger.With(zap.String("type", "service")),
+		logger:   logger.With(zap.String("type", "service")),
+		listener: listener,
 	}
 
 	return svc, nil
