@@ -54,6 +54,7 @@ func WithCancel(parent Contextx) (Contextx, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(parent)
 	return Contextx{
 		Context: ctx,
+		logger:  parent.logger,
 	}, cancel
 }
 

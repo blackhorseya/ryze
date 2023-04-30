@@ -1,25 +1,47 @@
 package block
 
 import (
+	"context"
+
 	"github.com/blackhorseya/ryze/pkg/adapter"
+	"github.com/blackhorseya/ryze/pkg/contextx"
+	bb "github.com/blackhorseya/ryze/pkg/entity/domain/block/biz"
 	"github.com/google/wire"
+	"go.uber.org/zap"
 )
 
 type impl struct {
+	ctx    contextx.Contextx
+	cancel context.CancelFunc
+	logger *zap.Logger
+	biz    bb.IBiz
 }
 
 // NewImpl returns a new block listener implementation.
-func NewImpl() adapter.Listener {
-	return &impl{}
+func NewImpl(logger *zap.Logger, biz bb.IBiz) adapter.Listener {
+	ctx, cancel := contextx.WithCancel(contextx.BackgroundWithLogger(logger))
+
+	return &impl{
+		ctx:    ctx,
+		cancel: cancel,
+		logger: logger,
+		biz:    biz,
+	}
 }
 
 func (i *impl) Start() error {
-	// todo: 2023/4/29|sean|impl me
+	i.logger.Info("start block listener")
+
+	go i.biz.ListenNewBlock(i.ctx)
+
 	return nil
 }
 
 func (i *impl) Stop() error {
-	// todo: 2023/4/29|sean|impl me
+	i.logger.Info("stop block listener")
+
+	i.cancel()
+
 	return nil
 }
 

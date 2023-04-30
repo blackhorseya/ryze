@@ -5,6 +5,8 @@ package main
 
 import (
 	"github.com/blackhorseya/ryze/internal/adapter/listener/block"
+	"github.com/blackhorseya/ryze/internal/app/domain/block/biz"
+	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
 	"github.com/blackhorseya/ryze/pkg/app"
@@ -18,6 +20,10 @@ var providerSet = wire.NewSet(
 
 	// adapter
 	block.ListenerSet,
+
+	// implementation
+	biz.BlockSet,
+	repo.BlockSet,
 
 	// main
 	NewService,

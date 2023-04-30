@@ -11,6 +11,8 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//internal/adapter/listener/block",
+        "//internal/app/domain/block/biz",
+        "//internal/app/domain/block/biz/repo",
         "//internal/pkg/config",
         "//internal/pkg/log",
         "//pkg/adapter",

@@ -40,17 +40,14 @@ func (i *impl) ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Bl
 		return nil, err
 	}
 
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				ctx.Info("context done")
-				return
-			case block := <-blocks:
-				ctx.Info("get new block", zap.Any("block", block))
-			}
-		}
-	}()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case block := <-blocks:
+			ctx.Info("get new block", zap.Any("block", block))
 
-	return blocks, nil
+			// todo: 2023/4/30|sean|breakpoint: save block to db
+		}
+	}
 }
