@@ -16,8 +16,11 @@ type IRepo interface {
 	// GetBlockByHeight serve caller to given block height to get block info
 	GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *bm.Block, err error)
 
-	// ListenNewBlock serve caller to listen new block
-	ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
+	// CreateNewBlock serve caller to give a new block to create
+	CreateNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error
+
+	// SubscribeNewBlock serve caller to listen new block
+	SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
 }
 
 // BlockSet is the provider set of repo

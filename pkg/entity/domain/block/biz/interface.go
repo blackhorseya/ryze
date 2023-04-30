@@ -20,5 +20,5 @@ type IBiz interface {
 	ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total int, err error)
 
 	// ListenNewBlock serve caller to listen new block
-	ListenNewBlock(ctx contextx.Contextx) error
+	ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
 }

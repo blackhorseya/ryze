@@ -67,11 +67,12 @@ func (mr *MockIBizMockRecorder) ListBlocks(ctx, condition interface{}) *gomock.C
 }
 
 // ListenNewBlock mocks base method.
-func (m *MockIBiz) ListenNewBlock(ctx contextx.Contextx) error {
+func (m *MockIBiz) ListenNewBlock(ctx contextx.Contextx) (<-chan *model.Block, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListenNewBlock", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(<-chan *model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ListenNewBlock indicates an expected call of ListenNewBlock.

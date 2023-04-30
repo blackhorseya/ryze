@@ -57,7 +57,12 @@ func (i *impl) GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *b
 	panic("implement me")
 }
 
-func (i *impl) ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
+func (i *impl) CreateNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error {
+	// todo: 2023/4/30|sean|impl me
+	panic("implement me")
+}
+
+func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
 	headers := make(chan *types.Header)
 	sub, err := i.socket.SubscribeNewHead(ctx, headers)
 	if err != nil {

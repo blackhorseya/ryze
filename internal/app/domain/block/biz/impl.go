@@ -6,6 +6,7 @@ import (
 	bb "github.com/blackhorseya/ryze/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 	"github.com/google/wire"
+	"go.uber.org/zap"
 )
 
 // BlockSet is the provider set of biz
@@ -32,7 +33,24 @@ func (i *impl) ListBlocks(ctx contextx.Contextx, condition bb.ListBlocksConditio
 	panic("implement me")
 }
 
-func (i *impl) ListenNewBlock(ctx contextx.Contextx) error {
-	// todo: 2023/4/30|sean|impl me
-	panic("implement me")
+func (i *impl) ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
+	blocks, err := i.repo.SubscribeNewBlock(ctx)
+	if err != nil {
+		ctx.Error("listen new block error", zap.Error(err))
+		return nil, err
+	}
+
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				ctx.Info("context done")
+				return
+			case block := <-blocks:
+				ctx.Info("get new block", zap.Any("block", block))
+			}
+		}
+	}()
+
+	return blocks, nil
 }
