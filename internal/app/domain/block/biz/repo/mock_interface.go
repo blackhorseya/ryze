@@ -35,6 +35,20 @@ func (m *MockIRepo) EXPECT() *MockIRepoMockRecorder {
 	return m.recorder
 }
 
+// CreateNewBlock mocks base method.
+func (m *MockIRepo) CreateNewBlock(ctx contextx.Contextx, newBlock *model.Block) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateNewBlock", ctx, newBlock)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateNewBlock indicates an expected call of CreateNewBlock.
+func (mr *MockIRepoMockRecorder) CreateNewBlock(ctx, newBlock interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateNewBlock", reflect.TypeOf((*MockIRepo)(nil).CreateNewBlock), ctx, newBlock)
+}
+
 // GetBlockByHash mocks base method.
 func (m *MockIRepo) GetBlockByHash(ctx contextx.Contextx, hash []byte) (*model.Block, error) {
 	m.ctrl.T.Helper()
@@ -65,17 +79,17 @@ func (mr *MockIRepoMockRecorder) GetBlockByHeight(ctx, height interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlockByHeight", reflect.TypeOf((*MockIRepo)(nil).GetBlockByHeight), ctx, height)
 }
 
-// ListenNewBlock mocks base method.
-func (m *MockIRepo) ListenNewBlock(ctx contextx.Contextx) (<-chan *model.Block, error) {
+// SubscribeNewBlock mocks base method.
+func (m *MockIRepo) SubscribeNewBlock(ctx contextx.Contextx) (<-chan *model.Block, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListenNewBlock", ctx)
+	ret := m.ctrl.Call(m, "SubscribeNewBlock", ctx)
 	ret0, _ := ret[0].(<-chan *model.Block)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListenNewBlock indicates an expected call of ListenNewBlock.
-func (mr *MockIRepoMockRecorder) ListenNewBlock(ctx interface{}) *gomock.Call {
+// SubscribeNewBlock indicates an expected call of SubscribeNewBlock.
+func (mr *MockIRepoMockRecorder) SubscribeNewBlock(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListenNewBlock", reflect.TypeOf((*MockIRepo)(nil).ListenNewBlock), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SubscribeNewBlock", reflect.TypeOf((*MockIRepo)(nil).SubscribeNewBlock), ctx)
 }

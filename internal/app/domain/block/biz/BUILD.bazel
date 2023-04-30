@@ -1,0 +1,32 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "biz",
+    srcs = [
+        "impl.go",
+        "wire_gen.go",
+    ],
+    importpath = "github.com/blackhorseya/ryze/internal/app/domain/block/biz",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/app/domain/block/biz/repo",
+        "//pkg/contextx",
+        "//pkg/entity/domain/block/biz",
+        "//pkg/entity/domain/block/model",
+        "@com_github_google_wire//:wire",
+        "@org_uber_go_zap//:zap",
+    ],
+)
+
+go_test(
+    name = "biz_test",
+    srcs = ["impl_test.go"],
+    embed = [":biz"],
+    deps = [
+        "//internal/app/domain/block/biz/repo",
+        "//pkg/entity/domain/block/biz",
+        "@com_github_golang_mock//gomock",
+        "@com_github_stretchr_testify//suite",
+        "@org_uber_go_zap//:zap",
+    ],
+)
