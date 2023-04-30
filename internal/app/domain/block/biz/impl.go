@@ -1,17 +1,25 @@
 package biz
 
 import (
+	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	bb "github.com/blackhorseya/ryze/pkg/entity/domain/block/biz"
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
+	"github.com/google/wire"
 )
 
+// BlockSet is the provider set of biz
+var BlockSet = wire.NewSet(NewImpl)
+
 type impl struct {
+	repo repo.IRepo
 }
 
 // NewImpl will create an object that implement IBiz interface
-func NewImpl() bb.IBiz {
-	return &impl{}
+func NewImpl(repo repo.IRepo) bb.IBiz {
+	return &impl{
+		repo: repo,
+	}
 }
 
 func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error) {

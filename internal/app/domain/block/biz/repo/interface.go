@@ -20,5 +20,5 @@ type IRepo interface {
 	ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
 }
 
-// ProviderSet is the provider set of repo
-var ProviderSet = wire.NewSet(NewEthOptions, NewImpl)
+// BlockSet is the provider set of repo
+var BlockSet = wire.NewSet(NewEthOptions, NewImpl)

@@ -7,15 +7,16 @@
 package biz
 
 import (
+	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/pkg/entity/domain/block/biz"
 	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
-func CreateBlockBiz() (biz.IBiz, error) {
-	iBiz := NewImpl()
-	return iBiz, nil
+func CreateBlockBiz(repo2 repo.IRepo) biz.IBiz {
+	iBiz := NewImpl(repo2)
+	return iBiz
 }
 
 // wire.go:
