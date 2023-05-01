@@ -1,6 +1,9 @@
 package repo
 
 import (
+	"time"
+
+	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo/dao"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -56,8 +59,18 @@ func (i *impl) GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *b
 }
 
 func (i *impl) CreateNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error {
-	// todo: 2023/4/30|sean|impl me
-	panic("implement me")
+	timeout, cancelFunc := contextx.WithTimeout(ctx, 1*time.Second)
+	defer cancelFunc()
+
+	created := dao.NewBlock(newBlock)
+	stmt := `INSERT INTO blocks (number, hash, parent_hash, timestamp) VALUES (:number, :hash, :parent_hash, :timestamp)`
+
+	_, err := i.rw.NamedExecContext(timeout, stmt, created)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
