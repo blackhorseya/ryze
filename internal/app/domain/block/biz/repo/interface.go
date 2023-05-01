@@ -8,6 +8,7 @@ import (
 	"github.com/google/wire"
 )
 
+// ListBlocksCondition is the condition of list blocks
 type ListBlocksCondition struct {
 	Limit  uint
 	Offset uint

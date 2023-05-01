@@ -7,6 +7,7 @@ import (
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 )
 
+// ListBlocksCondition represent the list blocks condition
 type ListBlocksCondition struct {
 	Page uint
 	Size uint
@@ -17,7 +18,7 @@ type IBiz interface {
 	GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error)
 
 	// ListBlocks serve caller to given conditions to list all blocks
-	ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total int, err error)
+	ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total uint, err error)
 
 	// ListenNewBlock serve caller to listen new block
 	ListenNewBlock(ctx contextx.Contextx) error

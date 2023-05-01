@@ -51,11 +51,11 @@ func (mr *MockIBizMockRecorder) GetBlockByHash(ctx, hash interface{}) *gomock.Ca
 }
 
 // ListBlocks mocks base method.
-func (m *MockIBiz) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) ([]*model.Block, int, error) {
+func (m *MockIBiz) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) ([]*model.Block, uint, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListBlocks", ctx, condition)
 	ret0, _ := ret[0].([]*model.Block)
-	ret1, _ := ret[1].(int)
+	ret1, _ := ret[1].(uint)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }

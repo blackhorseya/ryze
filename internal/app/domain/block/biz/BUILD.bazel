@@ -10,6 +10,7 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//internal/app/domain/block/biz/repo",
+        "//internal/pkg/errorx",
         "//pkg/contextx",
         "//pkg/entity/domain/block/biz",
         "//pkg/entity/domain/block/model",
@@ -24,7 +25,9 @@ go_test(
     embed = [":biz"],
     deps = [
         "//internal/app/domain/block/biz/repo",
+        "//pkg/contextx",
         "//pkg/entity/domain/block/biz",
+        "//pkg/entity/domain/block/model",
         "@com_github_golang_mock//gomock",
         "@com_github_stretchr_testify//suite",
         "@org_uber_go_zap//:zap",
