@@ -3,6 +3,7 @@ module github.com/blackhorseya/ryze
 go 1.20
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ethereum/go-ethereum v1.11.6
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-sql-driver/mysql v1.7.1

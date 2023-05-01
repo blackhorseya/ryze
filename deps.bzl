@@ -775,6 +775,13 @@ def go_dependencies():
         version = "v0.0.0-20190221164911-e7d9fbe030e4",
     )
     go_repository(
+        name = "com_github_data_dog_go_sqlmock",
+        importpath = "github.com/DATA-DOG/go-sqlmock",
+        sum = "h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=",
+        version = "v1.5.0",
+    )
+
+    go_repository(
         name = "com_github_datadog_zstd",
         importpath = "github.com/DataDog/zstd",
         sum = "h1:vUG4lAyuPCXO0TLbXvPv7EB7cNK1QV/luu55UHLrrn8=",
