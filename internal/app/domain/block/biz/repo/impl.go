@@ -1,6 +1,8 @@
 package repo
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo/dao"
@@ -57,6 +59,52 @@ func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Bl
 func (i *impl) GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *bm.Block, err error) {
 	// todo: 2023/4/29|sean|implement me
 	panic("implement me")
+}
+
+func (i *impl) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total uint, err error) {
+	timeout, cancelFunc := contextx.WithTimeout(ctx, 3*time.Second)
+	defer cancelFunc()
+
+	selection := `SELECT number, hash, parent_hash, timestamp FROM blocks`
+	count := fmt.Sprintf("SELECT COUNT(*) AS total FROM (%s) AS t", selection)
+
+	err = i.rw.QueryRowxContext(timeout, count).Scan(&total)
+	if err != nil {
+		ctx.Error("count total blocks failed", zap.Error(err), zap.String("stmt", count))
+		return nil, 0, err
+	}
+
+	query := []string{selection}
+	var args []interface{}
+
+	// append order by
+	query = append(query, `ORDER BY timestamp DESC`)
+
+	// append limit
+	if condition.Limit > 0 {
+		query = append(query, `LIMIT ?`)
+		args = append(args, condition.Limit)
+	}
+
+	// append offset
+	if condition.Offset > 0 {
+		query = append(query, `OFFSET ?`)
+		args = append(args, condition.Offset)
+	}
+
+	// concat query to stmt
+	stmt := strings.Join(query, " ")
+
+	var got dao.Blocks
+	err = i.rw.SelectContext(timeout, &got, stmt, args...)
+	if err != nil {
+		ctx.Error("select blocks failed", zap.Error(err), zap.String("stmt", stmt), zap.Any("args", args))
+		return nil, 0, err
+	}
+
+	ret := got.ToEntity()
+
+	return ret, total, nil
 }
 
 func (i *impl) CreateNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error {

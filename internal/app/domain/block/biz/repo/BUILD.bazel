@@ -36,6 +36,7 @@ go_test(
         "//pkg/contextx",
         "//pkg/entity/domain/block/model",
         "@com_github_data_dog_go_sqlmock//:go-sqlmock",
+        "@com_github_ethereum_go_ethereum//common",
         "@com_github_jmoiron_sqlx//:sqlx",
         "@com_github_stretchr_testify//suite",
         "@org_uber_go_zap//:zap",

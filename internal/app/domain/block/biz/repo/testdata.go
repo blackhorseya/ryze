@@ -8,6 +8,11 @@ import (
 )
 
 var (
+	timestamp1 = timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC))
+	timestamp2 = timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC))
+)
+
+var (
 	block1 = &bm.Block{
 		Number:           1,
 		Hash:             "0x1",
@@ -25,7 +30,7 @@ var (
 		Size:             0,
 		GasLimit:         0,
 		GasUsed:          0,
-		Timestamp:        timestamppb.New(time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)),
+		Timestamp:        timestamp1,
 		Transactions:     nil,
 		Uncles:           nil,
 	}
