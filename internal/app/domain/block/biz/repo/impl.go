@@ -31,23 +31,18 @@ func NewEthOptions(v *viper.Viper, logger *zap.Logger) (*EthOptions, error) {
 }
 
 type impl struct {
+	o      *EthOptions
 	rw     *sqlx.DB
 	socket *ethclient.Client
 }
 
 // NewImpl serve caller to get a new IRepo implementation instance
-func NewImpl(o *EthOptions, rw *sqlx.DB) (IRepo, error) {
-	socket, err := ethclient.Dial(o.Websocket)
-	if err != nil {
-		return nil, errors.Wrap(err, "dial eth websocket failed")
-	}
-
-	instance := &impl{
-		socket: socket,
+func NewImpl(o *EthOptions, rw *sqlx.DB) IRepo {
+	return &impl{
+		o:      o,
+		socket: nil,
 		rw:     rw,
 	}
-
-	return instance, nil
 }
 
 func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error) {
@@ -67,7 +62,7 @@ func (i *impl) CreateNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error {
 
 func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
 	headers := make(chan *types.Header)
-	sub, err := i.socket.SubscribeNewHead(ctx, headers)
+	sub, err := i.getSocket().SubscribeNewHead(ctx, headers)
 	if err != nil {
 		return nil, err
 	}
@@ -107,4 +102,17 @@ func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm
 	}()
 
 	return blocks, nil
+}
+
+func (i *impl) getSocket() *ethclient.Client {
+	if i.socket == nil {
+		socket, err := ethclient.Dial(i.o.Websocket)
+		if err != nil {
+			panic(err)
+		}
+
+		i.socket = socket
+	}
+
+	return i.socket
 }

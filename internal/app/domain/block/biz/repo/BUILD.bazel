@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "repo",
@@ -6,6 +6,7 @@ go_library(
         "impl.go",
         "interface.go",
         "mock_interface.go",
+        "wire_gen.go",
     ],
     importpath = "github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo",
     visibility = ["//:__subpackages__"],
@@ -19,6 +20,18 @@ go_library(
         "@com_github_jmoiron_sqlx//:sqlx",
         "@com_github_pkg_errors//:errors",
         "@com_github_spf13_viper//:viper",
+        "@org_uber_go_zap//:zap",
+    ],
+)
+
+go_test(
+    name = "repo_test",
+    srcs = ["impl_test.go"],
+    embed = [":repo"],
+    deps = [
+        "@com_github_data_dog_go_sqlmock//:go-sqlmock",
+        "@com_github_jmoiron_sqlx//:sqlx",
+        "@com_github_stretchr_testify//suite",
         "@org_uber_go_zap//:zap",
     ],
 )

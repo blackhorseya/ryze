@@ -45,10 +45,7 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(ethOptions, db)
-	if err != nil {
-		return nil, err
-	}
+	iRepo := repo.NewImpl(ethOptions, db)
 	iBiz := biz.NewImpl(iRepo)
 	listener := block.NewImpl(logger, iBiz)
 	migrate, err := mariadb.NewMigration(mariadbOptions, db)
