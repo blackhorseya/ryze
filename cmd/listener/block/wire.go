@@ -9,6 +9,7 @@ import (
 	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
+	"github.com/blackhorseya/ryze/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ryze/pkg/app"
 	"github.com/google/wire"
 )
@@ -18,10 +19,13 @@ var providerSet = wire.NewSet(
 	config.ProviderSet,
 	log.ProviderSet,
 
+	// storage
+	mariadb.ProviderSet,
+
 	// adapter
 	block.ListenerSet,
 
-	// implementation
+	// domain
 	biz.BlockSet,
 	repo.BlockSet,
 

@@ -5,6 +5,7 @@ import (
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
@@ -30,11 +31,12 @@ func NewEthOptions(v *viper.Viper, logger *zap.Logger) (*EthOptions, error) {
 }
 
 type impl struct {
+	rw     *sqlx.DB
 	socket *ethclient.Client
 }
 
 // NewImpl serve caller to get a new IRepo implementation instance
-func NewImpl(o *EthOptions) (IRepo, error) {
+func NewImpl(o *EthOptions, rw *sqlx.DB) (IRepo, error) {
 	socket, err := ethclient.Dial(o.Websocket)
 	if err != nil {
 		return nil, errors.Wrap(err, "dial eth websocket failed")
@@ -42,6 +44,7 @@ func NewImpl(o *EthOptions) (IRepo, error) {
 
 	instance := &impl{
 		socket: socket,
+		rw:     rw,
 	}
 
 	return instance, nil

@@ -68,11 +68,6 @@ func NewMigration(o *Options, rw *sqlx.DB) (*migrate.Migrate, error) {
 		return nil, err
 	}
 
-	err = m.Up()
-	if err != nil {
-		return nil, err
-	}
-
 	return m, nil
 }
 

@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
+	"github.com/blackhorseya/ryze/internal/pkg/storage/mariadb"
 	"github.com/blackhorseya/ryze/pkg/app"
 	"github.com/google/wire"
 )
@@ -36,13 +37,25 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(ethOptions)
+	mariadbOptions, err := mariadb.NewOptions(viper)
+	if err != nil {
+		return nil, err
+	}
+	db, err := mariadb.NewMariadb(mariadbOptions)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(ethOptions, db)
 	if err != nil {
 		return nil, err
 	}
 	iBiz := biz.NewImpl(iRepo)
 	listener := block.NewImpl(logger, iBiz)
-	servicer, err := NewService(logger, listener)
+	migrate, err := mariadb.NewMigration(mariadbOptions, db)
+	if err != nil {
+		return nil, err
+	}
+	servicer, err := NewService(logger, listener, migrate)
 	if err != nil {
 		return nil, err
 	}
@@ -51,4 +64,4 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, block.ListenerSet, biz.BlockSet, repo.BlockSet, NewService)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, mariadb.ProviderSet, block.ListenerSet, biz.BlockSet, repo.BlockSet, NewService)
