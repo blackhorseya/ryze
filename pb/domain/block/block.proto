@@ -22,7 +22,9 @@ message Block {
   int64 size = 14;
   int64 gas_limit = 15;
   int64 gas_used = 16;
+  // @gotags: swaggertype:"primitive,string"
   google.protobuf.Timestamp timestamp = 17;
+  // @gotags: json:"-"
   repeated google.protobuf.Any transactions = 18;
   repeated string uncles = 19;
 }

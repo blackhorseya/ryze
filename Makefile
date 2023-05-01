@@ -55,7 +55,7 @@ gen-pb: ## generate protobuf messages and services
 	## Starting generate pb
 	@protoc --proto_path=. \
 			--go_out=. --go_opt=module=github.com/blackhorseya/ryze \
-			--go-grpc_out=. --go-grpc_opt=module=github.com/blackhorseya/ekko,require_unimplemented_servers=false \
+			--go-grpc_out=. --go-grpc_opt=module=github.com/blackhorseya/ryze,require_unimplemented_servers=false \
 			./pb/domain/*/**.proto
 	@echo Successfully generated proto
 
@@ -67,3 +67,8 @@ gen-pb: ## generate protobuf messages and services
 gen-mock: ## generate mock
 	@go generate ./...
 	## Successfully generated mock
+
+.PHONY: gen-swagger
+gen-swagger: ## generate swagger spec
+	@swag init -q --dir ./cmd/restful,./ -o ./api/docs
+	@echo Successfully generated swagger spec

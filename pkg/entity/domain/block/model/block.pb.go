@@ -27,25 +27,27 @@ type Block struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Number           uint64                 `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
-	Hash             string                 `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
-	ParentHash       string                 `protobuf:"bytes,3,opt,name=parent_hash,json=parentHash,proto3" json:"parent_hash,omitempty"`
-	Nonce            string                 `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
-	Sha3Uncles       string                 `protobuf:"bytes,5,opt,name=sha3_uncles,json=sha3Uncles,proto3" json:"sha3_uncles,omitempty"`
-	LogsBloom        string                 `protobuf:"bytes,6,opt,name=logs_bloom,json=logsBloom,proto3" json:"logs_bloom,omitempty"`
-	TransactionsRoot string                 `protobuf:"bytes,7,opt,name=transactions_root,json=transactionsRoot,proto3" json:"transactions_root,omitempty"`
-	StateRoot        string                 `protobuf:"bytes,8,opt,name=state_root,json=stateRoot,proto3" json:"state_root,omitempty"`
-	ReceiptsRoot     string                 `protobuf:"bytes,9,opt,name=receipts_root,json=receiptsRoot,proto3" json:"receipts_root,omitempty"`
-	Miner            string                 `protobuf:"bytes,10,opt,name=miner,proto3" json:"miner,omitempty"`
-	Difficulty       int64                  `protobuf:"varint,11,opt,name=difficulty,proto3" json:"difficulty,omitempty"`
-	TotalDifficulty  int64                  `protobuf:"varint,12,opt,name=total_difficulty,json=totalDifficulty,proto3" json:"total_difficulty,omitempty"`
-	ExtraData        string                 `protobuf:"bytes,13,opt,name=extra_data,json=extraData,proto3" json:"extra_data,omitempty"`
-	Size             int64                  `protobuf:"varint,14,opt,name=size,proto3" json:"size,omitempty"`
-	GasLimit         int64                  `protobuf:"varint,15,opt,name=gas_limit,json=gasLimit,proto3" json:"gas_limit,omitempty"`
-	GasUsed          int64                  `protobuf:"varint,16,opt,name=gas_used,json=gasUsed,proto3" json:"gas_used,omitempty"`
-	Timestamp        *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Transactions     []*anypb.Any           `protobuf:"bytes,18,rep,name=transactions,proto3" json:"transactions,omitempty"`
-	Uncles           []string               `protobuf:"bytes,19,rep,name=uncles,proto3" json:"uncles,omitempty"`
+	Number           uint64 `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	Hash             string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+	ParentHash       string `protobuf:"bytes,3,opt,name=parent_hash,json=parentHash,proto3" json:"parent_hash,omitempty"`
+	Nonce            string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Sha3Uncles       string `protobuf:"bytes,5,opt,name=sha3_uncles,json=sha3Uncles,proto3" json:"sha3_uncles,omitempty"`
+	LogsBloom        string `protobuf:"bytes,6,opt,name=logs_bloom,json=logsBloom,proto3" json:"logs_bloom,omitempty"`
+	TransactionsRoot string `protobuf:"bytes,7,opt,name=transactions_root,json=transactionsRoot,proto3" json:"transactions_root,omitempty"`
+	StateRoot        string `protobuf:"bytes,8,opt,name=state_root,json=stateRoot,proto3" json:"state_root,omitempty"`
+	ReceiptsRoot     string `protobuf:"bytes,9,opt,name=receipts_root,json=receiptsRoot,proto3" json:"receipts_root,omitempty"`
+	Miner            string `protobuf:"bytes,10,opt,name=miner,proto3" json:"miner,omitempty"`
+	Difficulty       int64  `protobuf:"varint,11,opt,name=difficulty,proto3" json:"difficulty,omitempty"`
+	TotalDifficulty  int64  `protobuf:"varint,12,opt,name=total_difficulty,json=totalDifficulty,proto3" json:"total_difficulty,omitempty"`
+	ExtraData        string `protobuf:"bytes,13,opt,name=extra_data,json=extraData,proto3" json:"extra_data,omitempty"`
+	Size             int64  `protobuf:"varint,14,opt,name=size,proto3" json:"size,omitempty"`
+	GasLimit         int64  `protobuf:"varint,15,opt,name=gas_limit,json=gasLimit,proto3" json:"gas_limit,omitempty"`
+	GasUsed          int64  `protobuf:"varint,16,opt,name=gas_used,json=gasUsed,proto3" json:"gas_used,omitempty"`
+	// @gotags: swaggertype:"primitive,string"
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=timestamp,proto3" json:"timestamp,omitempty" swaggertype:"primitive,string"`
+	// @gotags: json:"-"
+	Transactions []*anypb.Any `protobuf:"bytes,18,rep,name=transactions,proto3" json:"-"`
+	Uncles       []string     `protobuf:"bytes,19,rep,name=uncles,proto3" json:"uncles,omitempty"`
 }
 
 func (x *Block) Reset() {

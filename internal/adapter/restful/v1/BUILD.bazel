@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "restful",
+    srcs = ["v1.go"],
+    importpath = "github.com/blackhorseya/ryze/internal/adapter/restful/v1",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/adapter/restful/v1/blocks",
+        "//pkg/entity/domain/block/biz",
+        "@com_github_gin_gonic_gin//:gin",
+    ],
+)

@@ -1,0 +1,119 @@
+basePath: /api
+definitions:
+  blocks.listBlocksResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.Block'
+        type: array
+      total:
+        type: integer
+    type: object
+  er.Error:
+    properties:
+      code:
+        type: integer
+      msg:
+        type: string
+    type: object
+  model.Block:
+    properties:
+      difficulty:
+        type: integer
+      extra_data:
+        type: string
+      gas_limit:
+        type: integer
+      gas_used:
+        type: integer
+      hash:
+        type: string
+      logs_bloom:
+        type: string
+      miner:
+        type: string
+      nonce:
+        type: string
+      number:
+        type: integer
+      parent_hash:
+        type: string
+      receipts_root:
+        type: string
+      sha3_uncles:
+        type: string
+      size:
+        type: integer
+      state_root:
+        type: string
+      timestamp:
+        description: '@gotags: swaggertype:"primitive,string"'
+        type: string
+      total_difficulty:
+        type: integer
+      transactions_root:
+        type: string
+      uncles:
+        items:
+          type: string
+        type: array
+    type: object
+  response.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      msg:
+        type: string
+    type: object
+info:
+  contact:
+    email: blackhorseya@gmail.com
+    name: sean.zheng
+    url: https://blog.seancheng.space
+  description: ryze is a blockchain explorer for the ryze blockchain
+  license:
+    name: GPL-3.0
+    url: https://spdx.org/licenses/GPL-3.0-only.html
+  title: ryze
+  version: 0.0.1
+paths:
+  /v1/blocks:
+    get:
+      consumes:
+      - application/json
+      description: List blocks
+      parameters:
+      - default: 1
+        description: page
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: page size
+        in: query
+        maximum: 100
+        minimum: 1
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/blocks.listBlocksResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/er.Error'
+      summary: List blocks
+      tags:
+      - Blocks
+swagger: "2.0"
