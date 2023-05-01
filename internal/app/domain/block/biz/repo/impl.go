@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // EthOptions declare the options of ethereum client
@@ -104,7 +105,7 @@ func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm
 					Size:             0,
 					GasLimit:         0,
 					GasUsed:          0,
-					Timestamp:        nil,
+					Timestamp:        timestamppb.New(time.Unix(int64(header.Time), 0)),
 					Transactions:     nil,
 					Uncles:           nil,
 				}

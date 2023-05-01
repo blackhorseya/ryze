@@ -33,21 +33,25 @@ func (i *impl) ListBlocks(ctx contextx.Contextx, condition bb.ListBlocksConditio
 	panic("implement me")
 }
 
-func (i *impl) ListenNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error) {
+func (i *impl) ListenNewBlock(ctx contextx.Contextx) error {
 	blocks, err := i.repo.SubscribeNewBlock(ctx)
 	if err != nil {
 		ctx.Error("listen new block error", zap.Error(err))
-		return nil, err
+		return err
 	}
 
 	for {
 		select {
 		case <-ctx.Done():
-			return
+			return nil
 		case block := <-blocks:
 			ctx.Info("get new block", zap.Any("block", block))
 
-			// todo: 2023/4/30|sean|breakpoint: save block to db
+			err = i.repo.CreateNewBlock(ctx, block)
+			if err != nil {
+				ctx.Error("create new block error", zap.Error(err))
+				continue
+			}
 		}
 	}
 }
