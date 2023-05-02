@@ -1,5 +1,9 @@
 package response
 
+import (
+	"net/http"
+)
+
 // Response declare unite adapters response format
 type Response struct {
 	Code    int         `json:"code,omitempty"`
@@ -15,3 +19,8 @@ func (resp *Response) WithData(data interface{}) *Response {
 		Data:    data,
 	}
 }
+
+var (
+	// OK request is success
+	OK = &Response{Code: http.StatusOK, Message: "ok"}
+)

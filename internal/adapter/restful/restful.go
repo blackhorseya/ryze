@@ -1,6 +1,8 @@
 package restful
 
 import (
+	"time"
+
 	_ "github.com/blackhorseya/ryze/api/docs" // import swagger spec
 	v1 "github.com/blackhorseya/ryze/internal/adapter/restful/v1"
 	"github.com/blackhorseya/ryze/pkg/adapter"
@@ -25,6 +27,10 @@ type impl struct {
 func NewImpl(logger *zap.Logger, router *gin.Engine, biz bb.IBiz) adapter.Restful {
 	router.Use(cors.AddAllowAll())
 	router.Use(ginzap.RecoveryWithZap(logger, true))
+	router.Use(ginzap.GinzapWithConfig(logger, &ginzap.Config{
+		TimeFormat: time.RFC3339,
+		UTC:        true,
+	}))
 	router.Use(contextx.AddContextxWitLoggerMiddleware(logger))
 	router.Use(er.AddErrorHandlingMiddleware())
 
