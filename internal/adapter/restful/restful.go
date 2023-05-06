@@ -1,6 +1,7 @@
 package restful
 
 import (
+	"net/http"
 	"time"
 
 	_ "github.com/blackhorseya/ryze/api/docs" // import swagger spec
@@ -10,6 +11,7 @@ import (
 	"github.com/blackhorseya/ryze/pkg/cors"
 	bb "github.com/blackhorseya/ryze/pkg/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/er"
+	"github.com/blackhorseya/ryze/pkg/response"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
@@ -46,6 +48,10 @@ func (i *impl) InitRouting() error {
 	api := i.router.Group("api")
 	{
 		api.GET("docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		api.GET("health", func(c *gin.Context) {
+			c.JSON(http.StatusOK, response.OK)
+		})
+
 		v1.Handle(api.Group("v1"), i.biz)
 	}
 

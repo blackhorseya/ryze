@@ -40,19 +40,19 @@ spec:
           {{- if .Values.startupProbe.enabled }}
           startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
-              path: /api/liveness
+              path: /api/health
               port: http
           {{- end }}
           {{- if .Values.livenessProbe.enabled }}
           livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
-              path: /api/liveness
+              path: /api/health
               port: http
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
             httpGet:
-              path: /api/readiness
+              path: /api/health
               port: http
           {{- end }}
           resources:
