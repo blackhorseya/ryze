@@ -15,6 +15,15 @@ container_image(
     workdir = "/workspace",
 )
 
+container_push(
+    name = "push-ryze-restful-image",
+    format = "Docker",
+    image = ":ryze-restful-image",
+    registry = "gcr.io",
+    repository = "sean-side/ryze-restful",
+    tag = "$(VERSION)",
+)
+
 container_image(
     name = "ryze-listener-block-image",
     base = "@alpine_linux_amd64//image",
@@ -22,4 +31,13 @@ container_image(
     entrypoint = ["./block"],
     files = ["//cmd/listener/block"],
     workdir = "/workspace",
+)
+
+container_push(
+    name = "push-ryze-listener-block-image",
+    format = "Docker",
+    image = ":ryze-listener-block-image",
+    registry = "gcr.io",
+    repository = "sean-side/ryze-listener-block",
+    tag = "$(VERSION)",
 )

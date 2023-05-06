@@ -1,5 +1,6 @@
 ## env for project
 PROJECT_NAME := $(shell basename $(PWD))
+VERSION := $(shell git describe --tags --always)
 
 ## env for helm
 HELM_REPO_NAME := sean-side
@@ -98,3 +99,14 @@ package-helm: ## package helm chart
 push-helm: ## push helm chart to gcs
 	@helm gcs push --force ./deployments/charts/$(PROJECT_NAME)-*.tgz $(HELM_REPO_NAME)
 	@helm repo update $(HELM_REPO_NAME)
+
+## docker
+.PHONY: push-ryze-restful-image
+push-ryze-restful-image: ## push ryze restful image to gcr
+	@echo "Starting push ryze restful image version: $(VERSION)"
+	@bazel run //:$@ --define=VERSION=$(VERSION)
+
+.PHONY: push-ryze-listener-block-image
+push-ryze-listener-block-image: ## push ryze restful image to gcr
+	@echo "Starting push ryze restful image version: $(VERSION)"
+	@bazel run //:$@ --define=VERSION=$(VERSION)
