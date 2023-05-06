@@ -68,6 +68,10 @@ gen-mock: ## generate mock
 	@go generate ./...
 	## Successfully generated mock
 
+.PHONY: gen-wire
+gen-wire: ## generate wire
+	@wire gen ./...
+
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger spec
 	@swag init -q --dir ./cmd/restful,./ -o ./api/docs
