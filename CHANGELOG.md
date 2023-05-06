@@ -1,3 +1,14 @@
+## 0.1.2 (2023-05-07)
+
+### Feat
+
+- impl get block by hash in repo
+- bind get block by hash api
+
+### Fix
+
+- ignore health check logger
+
 ## 0.1.1 (2023-05-07)
 
 ### Fix
