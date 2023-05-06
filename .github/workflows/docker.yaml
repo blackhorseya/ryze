@@ -1,0 +1,126 @@
+name: Docker
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20'
+          cache: true
+
+      - name: Install Bazel
+        run: |
+          npm install -g @bazel/bazelisk
+          bazel version
+
+      - name: Cache Bazel dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}-bazel-${{ hashFiles('**/WORKSPACE') }}
+
+      - name: Build
+        run: |
+          make build-go
+
+      - name: Test
+        run: |
+          make test-go
+
+  ryze-restful-image:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20'
+          cache: true
+
+      - name: Install Bazel
+        run: |
+          npm install -g @bazel/bazelisk
+          bazel version
+
+      - name: Cache Bazel dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}-bazel-${{ hashFiles('**/WORKSPACE') }}
+
+      - name: Login to gcr
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
+
+      - name: Build and push image
+        run: |
+          make push-ryze-restful-image
+
+  ryze-listener-block-image:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '^1.20'
+          cache: true
+
+      - name: Install Bazel
+        run: |
+          npm install -g @bazel/bazelisk
+          bazel version
+
+      - name: Cache Bazel dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/bazel
+          key: ${{ runner.os }}-bazel-${{ hashFiles('**/WORKSPACE') }}
+
+      - name: Login to gcr
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: gcr.io
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
+
+      - name: Build and push image
+        run: |
+          make push-ryze-listener-block-image
