@@ -1,12 +1,18 @@
 ## env for project
 PROJECT_NAME := ryze
 VERSION := $(shell git describe --tags --always)
+ENTITY_NAME := app
+ADAPTER_NAME := restful
+APP_NAME := $(ENTITY_NAME)-$(ADAPTER_NAME)
+APP_PATH := $(ADAPTER_NAME)/$(ENTITY_NAME)
 
 ## env for helm
 HELM_REPO_NAME := sean-side
 
 ## env for deployment
 DEPLOY_TO := prod
+NS := $(PROJECT_NAME)
+RELEASE_NAME := $(DEPLOY_TO)-$(PROJECT_NAME)-$(ENTITY_NAME)-$(ADAPTER_NAME)
 
 ## common
 .PHONY: check-%
@@ -103,9 +109,19 @@ push-helm: ## push helm chart to gcs
 	@helm gcs push --force ./deployments/charts/$(PROJECT_NAME)-*.tgz $(HELM_REPO_NAME)
 	@helm repo update $(HELM_REPO_NAME)
 
+.PHONY: upgrade-helm
+upgrade-helm: ## upgrade helm chart
+	@echo "Upgrading $(RELEASE_NAME) to $(VERSION)"
+	@echo "Using config: ./deployments/configs/$(APP_PATH)/$(DEPLOY_TO).yaml"
+	@helm upgrade $(RELEASE_NAME) $(HELM_REPO_NAME)/$(PROJECT_NAME) \
+	--install --namespace $(NS) --create-namespace \
+	--history-max 3 \
+	--values ./deployments/configs/$(APP_PATH)/$(DEPLOY_TO).yaml \
+	--set image.tag=$(VERSION)
+
 ## docker
-.PHONY: push-ryze-restful-image
-push-ryze-restful-image: ## push ryze restful image to gcr
+.PHONY: push-ryze-restful-app-image
+push-ryze-restful-app-image: ## push ryze restful image to gcr
 	@echo "Starting push ryze restful image version: $(VERSION)"
 	@bazel run //:$@ --define=VERSION=$(VERSION)
 
@@ -117,5 +133,7 @@ push-ryze-listener-block-image: ## push ryze restful image to gcr
 ## deployment
 .PHONY: deploy-db
 deploy-db: ## deploy db
-	@helm upgrade --install $(DEPLOY_TO)-$(PROJECT_NAME)-db bitnami/mariadb --namespace $(PROJECT_NAME) --create-namespace \
+	@helm upgrade --install $(DEPLOY_TO)-$(PROJECT_NAME)-db bitnami/mariadb \
+	--namespace $(NS) --create-namespace \
+	--history-max 3 \
 	-f ./deployments/configs/storage/mariadb/$(DEPLOY_TO).yaml

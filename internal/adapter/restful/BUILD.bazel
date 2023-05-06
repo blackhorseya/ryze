@@ -13,6 +13,7 @@ go_library(
         "//pkg/cors",
         "//pkg/entity/domain/block/biz",
         "//pkg/er",
+        "//pkg/response",
         "@com_github_gin_contrib_zap//:zap",
         "@com_github_gin_gonic_gin//:gin",
         "@com_github_google_wire//:wire",
