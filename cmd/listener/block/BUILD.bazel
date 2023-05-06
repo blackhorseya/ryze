@@ -18,7 +18,6 @@ go_library(
         "//internal/pkg/storage/mariadb",
         "//pkg/adapter",
         "//pkg/app",
-        "@com_github_golang_migrate_migrate_v4//:migrate",
         "@com_github_google_wire//:wire",
         "@com_github_pkg_errors//:errors",
         "@org_uber_go_zap//:zap",

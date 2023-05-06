@@ -33,10 +33,6 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	ethOptions, err := repo.NewEthOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
 	mariadbOptions, err := mariadb.NewOptions(viper)
 	if err != nil {
 		return nil, err
@@ -45,14 +41,25 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo := repo.NewImpl(ethOptions, db)
-	iBiz := biz.NewImpl(iRepo)
-	listener := block.NewImpl(logger, iBiz)
+	ethOptions, err := repo.NewEthOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	client, err := repo.NewEthClient(ethOptions, logger)
+	if err != nil {
+		return nil, err
+	}
 	migrate, err := mariadb.NewMigration(mariadbOptions, db)
 	if err != nil {
 		return nil, err
 	}
-	servicer, err := NewService(logger, listener, migrate)
+	iRepo, err := repo.NewImpl(logger, db, client, migrate)
+	if err != nil {
+		return nil, err
+	}
+	iBiz := biz.NewImpl(iRepo)
+	listener := block.NewImpl(logger, iBiz)
+	servicer, err := NewService(logger, listener)
 	if err != nil {
 		return nil, err
 	}

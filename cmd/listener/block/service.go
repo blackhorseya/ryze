@@ -7,7 +7,6 @@ import (
 
 	"github.com/blackhorseya/ryze/pkg/adapter"
 	"github.com/blackhorseya/ryze/pkg/app"
-	"github.com/golang-migrate/migrate/v4"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
@@ -15,30 +14,19 @@ import (
 type service struct {
 	logger   *zap.Logger
 	listener adapter.Listener
-	migrate  *migrate.Migrate
 }
 
 // NewService serve caller to create service instance
-func NewService(logger *zap.Logger, listener adapter.Listener, migrate *migrate.Migrate) (app.Servicer, error) {
+func NewService(logger *zap.Logger, listener adapter.Listener) (app.Servicer, error) {
 	svc := &service{
 		logger:   logger.With(zap.String("type", "service")),
 		listener: listener,
-		migrate:  migrate,
 	}
 
 	return svc, nil
 }
 
 func (s *service) Start() error {
-	if s.migrate != nil {
-		err := s.migrate.Up()
-		if err != nil {
-			if !errors.Is(err, migrate.ErrNoChange) {
-				return errors.Wrap(err, "migrate up error")
-			}
-		}
-	}
-
 	if s.listener != nil {
 		err := s.listener.Start()
 		if err != nil {

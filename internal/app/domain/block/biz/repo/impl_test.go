@@ -31,7 +31,7 @@ func (s *suiteTest) SetupTest() {
 	s.logger, _ = zap.NewDevelopment()
 	db, mock, _ := sqlmock.New()
 	s.rw = mock
-	s.repo = CreateTestRepo(nil, sqlx.NewDb(db, "mysql"))
+	s.repo, _ = CreateTestRepo(s.logger, nil, sqlx.NewDb(db, "mysql"), nil)
 }
 
 func (s *suiteTest) assert(t *testing.T) {
