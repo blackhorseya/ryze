@@ -1,3 +1,9 @@
+## 0.1.1 (2023-05-07)
+
+### Fix
+
+- dial ethclient with websocket
+
 ## 0.1.0 (2023-05-07)
 
 ### Feat
