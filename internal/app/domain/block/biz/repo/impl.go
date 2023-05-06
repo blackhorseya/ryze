@@ -10,6 +10,7 @@ import (
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/golang-migrate/migrate/v4"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -38,6 +39,10 @@ func NewEthOptions(v *viper.Viper, logger *zap.Logger) (*EthOptions, error) {
 
 // NewEthClient serve caller to get a new ethclient.Client instance
 func NewEthClient(o *EthOptions, logger *zap.Logger) (*ethclient.Client, error) {
+	if o.Websocket == "" {
+		return nil, nil
+	}
+
 	client, err := ethclient.Dial(o.Endpoint)
 	if err != nil {
 		return nil, errors.Wrap(err, "dial eth client failed")
@@ -54,11 +59,20 @@ type impl struct {
 }
 
 // NewImpl serve caller to get a new IRepo implementation instance
-func NewImpl(rw *sqlx.DB, socket *ethclient.Client) IRepo {
+func NewImpl(logger *zap.Logger, rw *sqlx.DB, socket *ethclient.Client, m *migrate.Migrate) (IRepo, error) {
+	if m != nil {
+		err := m.Up()
+		if err != nil && err != migrate.ErrNoChange {
+			if !errors.Is(err, migrate.ErrNoChange) {
+				return nil, errors.Wrap(err, "migrate up error")
+			}
+		}
+	}
+
 	return &impl{
 		socket: socket,
 		rw:     rw,
-	}
+	}, nil
 }
 
 func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error) {

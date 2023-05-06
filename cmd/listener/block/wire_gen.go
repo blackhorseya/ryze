@@ -49,14 +49,17 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo := repo.NewImpl(db, client)
-	iBiz := biz.NewImpl(iRepo)
-	listener := block.NewImpl(logger, iBiz)
 	migrate, err := mariadb.NewMigration(mariadbOptions, db)
 	if err != nil {
 		return nil, err
 	}
-	servicer, err := NewService(logger, listener, migrate)
+	iRepo, err := repo.NewImpl(logger, db, client, migrate)
+	if err != nil {
+		return nil, err
+	}
+	iBiz := biz.NewImpl(iRepo)
+	listener := block.NewImpl(logger, iBiz)
+	servicer, err := NewService(logger, listener)
 	if err != nil {
 		return nil, err
 	}

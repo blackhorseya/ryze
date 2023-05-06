@@ -56,7 +56,14 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo := repo.NewImpl(db, client)
+	migrate, err := mariadb.NewMigration(mariadbOptions, db)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(logger, db, client, migrate)
+	if err != nil {
+		return nil, err
+	}
 	iBiz := biz.NewImpl(iRepo)
 	adapterRestful := restful.NewImpl(logger, engine, iBiz)
 	servicer, err := NewService(logger, server, adapterRestful)

@@ -8,15 +8,20 @@ package repo
 
 import (
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/golang-migrate/migrate/v4"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
+	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
 
-func CreateTestRepo(eht *ethclient.Client, rw *sqlx.DB) IRepo {
-	iRepo := NewImpl(rw, eht)
-	return iRepo
+func CreateTestRepo(logger *zap.Logger, eth *ethclient.Client, rw *sqlx.DB, m *migrate.Migrate) (IRepo, error) {
+	iRepo, err := NewImpl(logger, rw, eth, m)
+	if err != nil {
+		return nil, err
+	}
+	return iRepo, nil
 }
 
 // wire.go:
