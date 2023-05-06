@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -76,8 +77,23 @@ func NewImpl(logger *zap.Logger, rw *sqlx.DB, socket *ethclient.Client, m *migra
 }
 
 func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error) {
-	// todo: 2023/4/29|sean|implement me
-	panic("implement me")
+	timeout, cancelFunc := contextx.WithTimeout(ctx, 3*time.Second)
+	defer cancelFunc()
+
+	stmt := `SELECT number, hash, parent_hash, timestamp FROM blocks WHERE hash = ?`
+
+	var got dao.Block
+	err = i.rw.GetContext(timeout, &got, stmt, hash)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+
+		ctx.Error("select block by hash failed", zap.Error(err), zap.String("stmt", stmt), zap.Any("args", hash))
+		return nil, err
+	}
+
+	return got.ToEntity(), nil
 }
 
 func (i *impl) GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *bm.Block, err error) {

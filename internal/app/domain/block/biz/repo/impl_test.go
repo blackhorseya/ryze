@@ -257,3 +257,76 @@ func (s *suiteTest) Test_impl_ListBlocks() {
 		})
 	}
 }
+
+func (s *suiteTest) Test_impl_GetBlockByHash() {
+	hash := common.Hex2Bytes("0x1")
+	columns := []string{"number", "hash", "parent_hash", "timestamp"}
+	stmt := `SELECT number, hash, parent_hash, timestamp FROM blocks WHERE hash = ?`
+
+	type args struct {
+		hash []byte
+		mock func()
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantRecord *bm.Block
+		wantErr    bool
+	}{
+		{
+			name: "get block by hash then error",
+			args: args{hash: hash, mock: func() {
+				s.rw.ExpectQuery(regexp.QuoteMeta(stmt)).
+					WithArgs(hash).
+					WillReturnError(errors.New("error"))
+			}},
+			wantRecord: nil,
+			wantErr:    true,
+		},
+		{
+			name: "not found block then return nil",
+			args: args{hash: hash, mock: func() {
+				s.rw.ExpectQuery(regexp.QuoteMeta(stmt)).
+					WithArgs(hash).
+					WillReturnRows(sqlmock.NewRows(columns))
+			}},
+			wantRecord: nil,
+			wantErr:    false,
+		},
+		{
+			name: "ok",
+			args: args{hash: hash, mock: func() {
+				block := dao.NewBlock(block1)
+
+				s.rw.ExpectQuery(regexp.QuoteMeta(stmt)).
+					WithArgs(hash).
+					WillReturnRows(sqlmock.NewRows(columns).AddRow(
+						block.Number,
+						block.Hash,
+						block.ParentHash,
+						block.Timestamp,
+					))
+			}},
+			wantRecord: block1,
+			wantErr:    false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotRecord, err := s.repo.GetBlockByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetBlockByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRecord, tt.wantRecord) {
+				t.Errorf("GetBlockByHash() gotRecord = %v, want %v", gotRecord, tt.wantRecord)
+			}
+
+			s.assert(t)
+		})
+	}
+}
