@@ -12,6 +12,7 @@ func Handle(g *gin.RouterGroup, biz bb.IBiz) {
 	}
 
 	g.GET("", instance.ListBlocks)
+	g.GET(":hash", instance.GetBlockByHash)
 }
 
 type impl struct {

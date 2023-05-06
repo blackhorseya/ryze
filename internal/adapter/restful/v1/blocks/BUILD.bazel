@@ -4,6 +4,7 @@ go_library(
     name = "blocks",
     srcs = [
         "blocks.go",
+        "get_block_by_hash.go",
         "get_blocks_list.go",
     ],
     importpath = "github.com/blackhorseya/ryze/internal/adapter/restful/v1/blocks",

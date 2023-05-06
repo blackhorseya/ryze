@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-var path = flag.String("c", "./deployments/configs/restful/local.yaml", "set config file path")
+var path = flag.String("c", "./deployments/configs/restful/app/local.yaml", "set config file path")
 
 func init() {
 	flag.Parse()

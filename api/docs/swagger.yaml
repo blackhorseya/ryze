@@ -116,4 +116,34 @@ paths:
       summary: List blocks
       tags:
       - Blocks
+  /v1/blocks/{hash}:
+    get:
+      consumes:
+      - application/json
+      description: Get block by hash
+      parameters:
+      - description: block hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Block'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/er.Error'
+      summary: Get block by hash
+      tags:
+      - Blocks
 swagger: "2.0"
