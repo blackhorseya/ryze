@@ -1,6 +1,25 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
 
 # gazelle:prefix github.com/blackhorseya/ryze
 # gazelle:proto disable_global
 
 gazelle(name = "gazelle")
+
+container_image(
+    name = "ryze-restful-image",
+    base = "@alpine_linux_amd64//image",
+    directory = "/workspace",
+    entrypoint = ["./restful"],
+    files = ["//cmd/restful"],
+    workdir = "/workspace",
+)
+
+container_image(
+    name = "ryze-listener-block-image",
+    base = "@alpine_linux_amd64//image",
+    directory = "/workspace",
+    entrypoint = ["./block"],
+    files = ["//cmd/listener/block"],
+    workdir = "/workspace",
+)
