@@ -13,6 +13,7 @@ HELM_REPO_NAME := sean-side
 DEPLOY_TO := prod
 NS := $(PROJECT_NAME)
 RELEASE_NAME := $(DEPLOY_TO)-$(PROJECT_NAME)-$(ENTITY_NAME)-$(ADAPTER_NAME)
+INCREMENT := PATCH
 
 ## common
 .PHONY: check-%
@@ -137,3 +138,9 @@ deploy-db: ## deploy db
 	--namespace $(NS) --create-namespace \
 	--history-max 3 \
 	-f ./deployments/configs/storage/mariadb/$(DEPLOY_TO).yaml
+
+.PHONY: deploy
+deploy: ## deploy application
+	@echo "Deploying $(RELEASE_NAME) to $(DEPLOY_TO)"
+	@cz bump --changelog -s --yes --increment $(INCREMENT)
+	@git push && git push --tags
