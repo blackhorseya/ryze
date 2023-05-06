@@ -7,14 +7,15 @@
 package repo
 
 import (
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
 )
 
 // Injectors from wire.go:
 
-func CreateTestRepo(o *EthOptions, rw *sqlx.DB) IRepo {
-	iRepo := NewImpl(o, rw)
+func CreateTestRepo(eht *ethclient.Client, rw *sqlx.DB) IRepo {
+	iRepo := NewImpl(rw, eht)
 	return iRepo
 }
 

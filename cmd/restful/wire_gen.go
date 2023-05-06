@@ -40,10 +40,6 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	}
 	engine := httpx.NewRouter(httpxOptions)
 	server := httpx.NewServer(httpxOptions, logger, engine)
-	ethOptions, err := repo.NewEthOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
 	mariadbOptions, err := mariadb.NewOptions(viper)
 	if err != nil {
 		return nil, err
@@ -52,7 +48,15 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo := repo.NewImpl(ethOptions, db)
+	ethOptions, err := repo.NewEthOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	client, err := repo.NewEthClient(ethOptions, logger)
+	if err != nil {
+		return nil, err
+	}
+	iRepo := repo.NewImpl(db, client)
 	iBiz := biz.NewImpl(iRepo)
 	adapterRestful := restful.NewImpl(logger, engine, iBiz)
 	servicer, err := NewService(logger, server, adapterRestful)
