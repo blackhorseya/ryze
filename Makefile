@@ -1,6 +1,9 @@
 ## env for project
 PROJECT_NAME := $(shell basename $(PWD))
 
+## env for helm
+HELM_REPO_NAME := sean-side
+
 ## common
 .PHONY: check-%
 check-%: ## check environment variable is exists
@@ -76,3 +79,22 @@ gen-wire: ## generate wire
 gen-swagger: ## generate swagger spec
 	@swag init -q --dir ./cmd/restful,./ -o ./api/docs
 	@echo Successfully generated swagger spec
+
+## helm
+.PHONY: lint-helm
+lint-helm: ## lint helm chart
+	@helm lint deployments/charts/*
+
+.PHONY: add-helm-repo
+add-helm-repo: ## add helm repo
+	@helm repo add --no-update $(HELM_REPO_NAME) gs://sean-helm-charts/charts
+	@helm repo update $(HELM_REPO_NAME)
+
+.PHONY: package-helm
+package-helm: ## package helm chart
+	@helm package ./deployments/charts/$(PROJECT_NAME) --destination ./deployments/charts
+
+.PHONY: push-helm
+push-helm: ## push helm chart to gcs
+	@helm gcs push --force ./deployments/charts/$(PROJECT_NAME)-*.tgz $(HELM_REPO_NAME)
+	@helm repo update $(HELM_REPO_NAME)
