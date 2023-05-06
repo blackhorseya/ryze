@@ -43,7 +43,7 @@ jobs:
         run: |
           make test-go
 
-  ryze-restful-image:
+  ryze-restful-app-image:
     runs-on: ubuntu-latest
     needs:
       - test
@@ -82,7 +82,7 @@ jobs:
 
       - name: Build and push image
         run: |
-          make push-ryze-restful-image
+          make push-ryze-restful-app-image
 
   ryze-listener-block-image:
     runs-on: ubuntu-latest
