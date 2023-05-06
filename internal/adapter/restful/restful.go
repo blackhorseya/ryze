@@ -32,6 +32,7 @@ func NewImpl(logger *zap.Logger, router *gin.Engine, biz bb.IBiz) adapter.Restfu
 	router.Use(ginzap.GinzapWithConfig(logger, &ginzap.Config{
 		TimeFormat: time.RFC3339,
 		UTC:        true,
+		SkipPaths:  []string{"/api/health"},
 	}))
 	router.Use(contextx.AddContextxWitLoggerMiddleware(logger))
 	router.Use(er.AddErrorHandlingMiddleware())
