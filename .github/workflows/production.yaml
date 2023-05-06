@@ -1,4 +1,4 @@
-name: Docker
+name: Production
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
         run: |
           make test-go
 
-  ryze-restful-image:
+  build-ryze-restful-app:
     runs-on: ubuntu-latest
     needs:
       - test
@@ -82,9 +82,38 @@ jobs:
 
       - name: Build and push image
         run: |
-          make push-ryze-restful-image
+          make push-ryze-restful-app-image
 
-  ryze-listener-block-image:
+  deploy-ryze-restful-app:
+    runs-on: ubuntu-latest
+    needs:
+      - build-ryze-restful-app
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.7.0
+
+      - name: Helm repo add
+        run: |
+          helm plugin install https://github.com/hayorov/helm-gcs.git
+          make add-helm-repo
+
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v3
+
+      - name: Deploy
+        env:
+          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir -p ~/.kube
+          echo $KUBECONFIG_FILE | base64 --decode > ~/.kube/config && export KUBECONFIG=~/.kube/config
+          make upgrade-helm DEPLOY_TO=prod ENTITY_NAME=app ADAPTER_NAME=restful
+
+  build-ryze-listener-block:
     runs-on: ubuntu-latest
     needs:
       - test
@@ -124,3 +153,32 @@ jobs:
       - name: Build and push image
         run: |
           make push-ryze-listener-block-image
+
+  deploy-ryze-listener-block:
+    runs-on: ubuntu-latest
+    needs:
+      - build-ryze-listener-block
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.7.0
+
+      - name: Helm repo add
+        run: |
+          helm plugin install https://github.com/hayorov/helm-gcs.git
+          make add-helm-repo
+
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v3
+
+      - name: Deploy
+        env:
+          KUBECONFIG_FILE: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir -p ~/.kube
+          echo $KUBECONFIG_FILE | base64 --decode > ~/.kube/config && export KUBECONFIG=~/.kube/config
+          make upgrade-helm DEPLOY_TO=prod ENTITY_NAME=block ADAPTER_NAME=listener
