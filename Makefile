@@ -44,11 +44,11 @@ update-package: ## update package
 
 .PHONY: test-go
 test-go: ## bazel test
-	@bazel test //...
+	@bazel test //... --define=VERSION=$(VERSION)
 
 .PHONY: build-go
 build-go: ## bazel build
-	@bazel build //...
+	@bazel build //... --define=VERSION=$(VERSION)
 
 ## generate
 .PHONY: gen-pb

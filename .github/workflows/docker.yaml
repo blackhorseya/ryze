@@ -81,9 +81,9 @@ jobs:
           path: ~/.cache/bazel
           key: ${{ runner.os }}-bazel-${{ hashFiles('**/WORKSPACE') }}
 
-      - name: build image
+      - name: Build and push image
         run: |
-          bazel run //:ryze-restful-image
+          make push-ryze-restful-image
 
   ryze-listener-block-image:
     runs-on: ubuntu-latest
@@ -115,6 +115,6 @@ jobs:
           path: ~/.cache/bazel
           key: ${{ runner.os }}-bazel-${{ hashFiles('**/WORKSPACE') }}
 
-      - name: build image
+      - name: Build and push image
         run: |
-          bazel run //:ryze-listener-block-image
+          make push-ryze-listener-block-image
