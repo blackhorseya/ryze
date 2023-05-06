@@ -1,9 +1,12 @@
 ## env for project
-PROJECT_NAME := $(shell basename $(PWD))
+PROJECT_NAME := ryze
 VERSION := $(shell git describe --tags --always)
 
 ## env for helm
 HELM_REPO_NAME := sean-side
+
+## env for deployment
+DEPLOY_TO := prod
 
 ## common
 .PHONY: check-%
@@ -110,3 +113,9 @@ push-ryze-restful-image: ## push ryze restful image to gcr
 push-ryze-listener-block-image: ## push ryze restful image to gcr
 	@echo "Starting push ryze restful image version: $(VERSION)"
 	@bazel run //:$@ --define=VERSION=$(VERSION)
+
+## deployment
+.PHONY: deploy-db
+deploy-db: ## deploy db
+	@helm upgrade --install $(DEPLOY_TO)-$(PROJECT_NAME)-db bitnami/mariadb --namespace $(PROJECT_NAME) --create-namespace \
+	-f ./deployments/configs/storage/mariadb/$(DEPLOY_TO).yaml
