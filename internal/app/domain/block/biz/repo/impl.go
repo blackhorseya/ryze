@@ -43,7 +43,7 @@ func NewEthClient(o *EthOptions, logger *zap.Logger) (*ethclient.Client, error) 
 		return nil, nil
 	}
 
-	client, err := ethclient.Dial(o.Endpoint)
+	client, err := ethclient.Dial(o.Websocket)
 	if err != nil {
 		return nil, errors.Wrap(err, "dial eth client failed")
 	}
