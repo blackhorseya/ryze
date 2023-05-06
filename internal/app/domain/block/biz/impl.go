@@ -25,8 +25,13 @@ func NewImpl(repo repo.IRepo) bb.IBiz {
 }
 
 func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error) {
-	// todo: 2023/4/30|sean|impl me
-	panic("implement me")
+	ret, err := i.repo.GetBlockByHash(ctx, hash)
+	if err != nil {
+		ctx.Error(errorx.ErrGetBlock.Error(), zap.Error(err), zap.String("hash", string(hash)))
+		return nil, errorx.ErrGetBlock
+	}
+
+	return ret, nil
 }
 
 func (i *impl) ListBlocks(ctx contextx.Contextx, condition bb.ListBlocksCondition) (records []*bm.Block, total uint, err error) {

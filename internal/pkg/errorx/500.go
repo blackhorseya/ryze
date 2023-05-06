@@ -14,4 +14,7 @@ var (
 var (
 	// ErrListBlocks is the error that list blocks failed
 	ErrListBlocks = er.New(http.StatusInternalServerError, 500100, "list blocks failed", "list blocks failed")
+
+	// ErrGetBlock is the error that get block failed
+	ErrGetBlock = er.New(http.StatusInternalServerError, 500101, "get block failed", "get block failed")
 )

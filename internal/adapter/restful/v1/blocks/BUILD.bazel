@@ -15,6 +15,7 @@ go_library(
         "//pkg/entity/domain/block/biz",
         "//pkg/entity/domain/block/model",
         "//pkg/response",
+        "@com_github_ethereum_go_ethereum//common",
         "@com_github_gin_gonic_gin//:gin",
     ],
 )

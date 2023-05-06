@@ -115,3 +115,59 @@ func (s *suiteTest) Test_impl_ListBlocks() {
 		})
 	}
 }
+
+func (s *suiteTest) Test_impl_GetBlockByHash() {
+	hash := []byte("hash")
+
+	type args struct {
+		hash []byte
+		mock func()
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantRecord *bm.Block
+		wantErr    bool
+	}{
+		{
+			name: "get by hash then error",
+			args: args{hash: hash, mock: func() {
+				s.repo.EXPECT().GetBlockByHash(gomock.Any(), hash).Return(nil, errors.New("error")).Times(1)
+			}},
+			wantRecord: nil,
+			wantErr:    true,
+		},
+		{
+			name: "not found then return nil",
+			args: args{hash: hash, mock: func() {
+				s.repo.EXPECT().GetBlockByHash(gomock.Any(), hash).Return(nil, nil).Times(1)
+			}},
+			wantRecord: nil,
+			wantErr:    false,
+		},
+		{
+			name: "ok",
+			args: args{hash: hash, mock: func() {
+				s.repo.EXPECT().GetBlockByHash(gomock.Any(), hash).Return(&bm.Block{Number: 1}, nil).Times(1)
+			}},
+			wantRecord: &bm.Block{Number: 1},
+			wantErr:    false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			gotRecord, err := s.biz.GetBlockByHash(contextx.BackgroundWithLogger(s.logger), tt.args.hash)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetBlockByHash() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(gotRecord, tt.wantRecord) {
+				t.Errorf("GetBlockByHash() gotRecord = %v, want %v", gotRecord, tt.wantRecord)
+			}
+		})
+	}
+}
