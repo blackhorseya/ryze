@@ -20,7 +20,7 @@ container_push(
     format = "Docker",
     image = ":ryze-restful-app-image",
     registry = "gcr.io",
-    repository = "sean-side/ryze-restful",
+    repository = "sean-side/ryze-restful-app",
     tag = "$(VERSION)",
 )
 

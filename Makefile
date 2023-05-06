@@ -120,8 +120,8 @@ upgrade-helm: ## upgrade helm chart
 	--set image.tag=$(VERSION)
 
 ## docker
-.PHONY: push-ryze-restful-image
-push-ryze-restful-image: ## push ryze restful image to gcr
+.PHONY: push-ryze-restful-app-image
+push-ryze-restful-app-image: ## push ryze restful image to gcr
 	@echo "Starting push ryze restful image version: $(VERSION)"
 	@bazel run //:$@ --define=VERSION=$(VERSION)
 
