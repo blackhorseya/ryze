@@ -1,3 +1,15 @@
+## 0.1.4 (2023-05-08)
+
+### Feat
+
+- **repo**: add send `new_block` message to kafka (#15)
+- impl publish new block to kafka
+- add kafkax and inject into repo
+
+### Fix
+
+- gen-go
+
 ## 0.1.3 (2023-05-07)
 
 ### Feat
