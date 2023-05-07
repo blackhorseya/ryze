@@ -14,6 +14,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"github.com/segmentio/kafka-go"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -57,10 +58,11 @@ func NewEthClient(o *EthOptions, logger *zap.Logger) (*ethclient.Client, error) 
 type impl struct {
 	rw     *sqlx.DB
 	socket *ethclient.Client
+	writer *kafka.Writer
 }
 
 // NewImpl serve caller to get a new IRepo implementation instance
-func NewImpl(logger *zap.Logger, rw *sqlx.DB, socket *ethclient.Client, m *migrate.Migrate) (IRepo, error) {
+func NewImpl(logger *zap.Logger, rw *sqlx.DB, socket *ethclient.Client, m *migrate.Migrate, writer *kafka.Writer) (IRepo, error) {
 	if m != nil {
 		err := m.Up()
 		if err != nil && err != migrate.ErrNoChange {
