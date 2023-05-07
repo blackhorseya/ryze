@@ -10,6 +10,7 @@ import (
 	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
 	"github.com/blackhorseya/ryze/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/ryze/internal/pkg/transports/kafkax"
 	"github.com/blackhorseya/ryze/pkg/app"
 	"github.com/google/wire"
 )
@@ -18,6 +19,9 @@ var providerSet = wire.NewSet(
 	// infra
 	config.ProviderSet,
 	log.ProviderSet,
+
+	// transport
+	kafkax.WriterSet,
 
 	// storage
 	mariadb.ProviderSet,

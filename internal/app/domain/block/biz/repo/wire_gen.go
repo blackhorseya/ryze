@@ -11,13 +11,14 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/google/wire"
 	"github.com/jmoiron/sqlx"
+	"github.com/segmentio/kafka-go"
 	"go.uber.org/zap"
 )
 
 // Injectors from wire.go:
 
-func CreateTestRepo(logger *zap.Logger, eth *ethclient.Client, rw *sqlx.DB, m *migrate.Migrate) (IRepo, error) {
-	iRepo, err := NewImpl(logger, rw, eth, m)
+func CreateTestRepo(logger *zap.Logger, eth *ethclient.Client, rw *sqlx.DB, m *migrate.Migrate, writer *kafka.Writer) (IRepo, error) {
+	iRepo, err := NewImpl(logger, rw, eth, m, writer)
 	if err != nil {
 		return nil, err
 	}

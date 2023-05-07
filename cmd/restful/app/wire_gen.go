@@ -14,6 +14,7 @@ import (
 	"github.com/blackhorseya/ryze/internal/pkg/httpx"
 	"github.com/blackhorseya/ryze/internal/pkg/log"
 	"github.com/blackhorseya/ryze/internal/pkg/storage/mariadb"
+	"github.com/blackhorseya/ryze/internal/pkg/transports/kafkax"
 	"github.com/blackhorseya/ryze/pkg/app"
 	"github.com/google/wire"
 )
@@ -60,7 +61,15 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 	if err != nil {
 		return nil, err
 	}
-	iRepo, err := repo.NewImpl(logger, db, client, migrate)
+	writerOptions, err := kafkax.NewWriterOptions(viper, logger)
+	if err != nil {
+		return nil, err
+	}
+	writer, err := kafkax.NewWriter(writerOptions)
+	if err != nil {
+		return nil, err
+	}
+	iRepo, err := repo.NewImpl(logger, db, client, migrate, writer)
 	if err != nil {
 		return nil, err
 	}
@@ -75,4 +84,4 @@ func CreateApplication(path2 string) (app.Servicer, error) {
 
 // wire.go:
 
-var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, httpx.ServerSet, mariadb.ProviderSet, restful.ProviderSet, biz.BlockSet, repo.BlockSet, NewService)
+var providerSet = wire.NewSet(config.ProviderSet, log.ProviderSet, httpx.ServerSet, kafkax.WriterSet, mariadb.ProviderSet, restful.ProviderSet, biz.BlockSet, repo.BlockSet, NewService)

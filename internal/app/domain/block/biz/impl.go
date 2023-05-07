@@ -74,6 +74,12 @@ func (i *impl) ListenNewBlock(ctx contextx.Contextx) error {
 				ctx.Error("create new block error", zap.Error(err))
 				continue
 			}
+
+			err = i.repo.PublishNewBlock(ctx, block)
+			if err != nil {
+				ctx.Error("publish new block error", zap.Error(err))
+				continue
+			}
 		}
 	}
 }

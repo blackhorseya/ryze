@@ -80,6 +80,20 @@ func (mr *MockIRepoMockRecorder) ListBlocks(ctx, condition interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBlocks", reflect.TypeOf((*MockIRepo)(nil).ListBlocks), ctx, condition)
 }
 
+// PublishNewBlock mocks base method.
+func (m *MockIRepo) PublishNewBlock(ctx contextx.Contextx, newBlock *model.Block) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PublishNewBlock", ctx, newBlock)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// PublishNewBlock indicates an expected call of PublishNewBlock.
+func (mr *MockIRepoMockRecorder) PublishNewBlock(ctx, newBlock interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PublishNewBlock", reflect.TypeOf((*MockIRepo)(nil).PublishNewBlock), ctx, newBlock)
+}
+
 // SubscribeNewBlock mocks base method.
 func (m *MockIRepo) SubscribeNewBlock(ctx contextx.Contextx) (<-chan *model.Block, error) {
 	m.ctrl.T.Helper()
