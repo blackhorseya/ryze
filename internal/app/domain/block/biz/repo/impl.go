@@ -96,11 +96,6 @@ func (i *impl) GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Bl
 	return got.ToEntity(), nil
 }
 
-func (i *impl) GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *bm.Block, err error) {
-	// todo: 2023/4/29|sean|implement me
-	panic("implement me")
-}
-
 func (i *impl) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total uint, err error) {
 	timeout, cancelFunc := contextx.WithTimeout(ctx, 3*time.Second)
 	defer cancelFunc()

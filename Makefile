@@ -77,14 +77,9 @@ gen-pb: ## generate protobuf messages and services
 	@protoc-go-inject-tag -input="./pkg/entity/domain/*/model/*.pb.go"
 	@echo Successfully injected tags
 
-.PHONY: gen-mock
-gen-mock: ## generate mock
-	@go generate ./...
-	## Successfully generated mock
-
-.PHONY: gen-wire
-gen-wire: ## generate wire
-	@wire gen ./...
+.PHONY: gen-go
+gen-go: ## go generate
+	@go generate -tags="wireinject" ./...
 
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger spec

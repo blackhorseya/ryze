@@ -64,21 +64,6 @@ func (mr *MockIRepoMockRecorder) GetBlockByHash(ctx, hash interface{}) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlockByHash", reflect.TypeOf((*MockIRepo)(nil).GetBlockByHash), ctx, hash)
 }
 
-// GetBlockByHeight mocks base method.
-func (m *MockIRepo) GetBlockByHeight(ctx contextx.Contextx, height uint64) (*model.Block, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBlockByHeight", ctx, height)
-	ret0, _ := ret[0].(*model.Block)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetBlockByHeight indicates an expected call of GetBlockByHeight.
-func (mr *MockIRepoMockRecorder) GetBlockByHeight(ctx, height interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlockByHeight", reflect.TypeOf((*MockIRepo)(nil).GetBlockByHeight), ctx, height)
-}
-
 // ListBlocks mocks base method.
 func (m *MockIRepo) ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) ([]*model.Block, uint, error) {
 	m.ctrl.T.Helper()

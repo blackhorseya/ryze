@@ -19,9 +19,6 @@ type IRepo interface {
 	// GetBlockByHash serve caller to given block hash to get block info
 	GetBlockByHash(ctx contextx.Contextx, hash []byte) (record *bm.Block, err error)
 
-	// GetBlockByHeight serve caller to given block height to get block info
-	GetBlockByHeight(ctx contextx.Contextx, height uint64) (record *bm.Block, err error)
-
 	// ListBlocks serve caller to give condition to get block list
 	ListBlocks(ctx contextx.Contextx, condition ListBlocksCondition) (records []*bm.Block, total uint, err error)
 
