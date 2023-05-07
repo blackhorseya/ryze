@@ -2,6 +2,7 @@ package repo
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -18,6 +19,10 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+const (
+	topicNewBlock = "new_block"
 )
 
 // EthOptions declare the options of ethereum client
@@ -75,6 +80,7 @@ func NewImpl(logger *zap.Logger, rw *sqlx.DB, socket *ethclient.Client, m *migra
 	return &impl{
 		socket: socket,
 		rw:     rw,
+		writer: writer,
 	}, nil
 }
 
@@ -201,4 +207,23 @@ func (i *impl) SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm
 	}()
 
 	return blocks, nil
+}
+
+func (i *impl) PublishNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error {
+	value, err := json.Marshal(newBlock)
+	if err != nil {
+		return errors.Wrap(err, "marshal new block failed")
+	}
+
+	err = i.writer.WriteMessages(ctx, kafka.Message{
+		Topic: topicNewBlock,
+		Key:   []byte(newBlock.Hash),
+		Value: value,
+		Time:  time.Now(),
+	})
+	if err != nil {
+		return errors.Wrap(err, "write new block to kafka failed")
+	}
+
+	return nil
 }

@@ -1,6 +1,8 @@
 package kafkax
 
 import (
+	"crypto/tls"
+
 	"github.com/google/wire"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
@@ -40,6 +42,9 @@ func NewWriter(o *WriterOptions) (*kafka.Writer, error) {
 		Balancer: &kafka.Hash{},
 		Transport: &kafka.Transport{
 			SASL: mechanism,
+			TLS: &tls.Config{
+				InsecureSkipVerify: true,
+			},
 		},
 	}
 

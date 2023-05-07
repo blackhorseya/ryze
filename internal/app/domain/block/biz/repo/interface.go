@@ -27,6 +27,9 @@ type IRepo interface {
 
 	// SubscribeNewBlock serve caller to listen new block
 	SubscribeNewBlock(ctx contextx.Contextx) (newBlockChan <-chan *bm.Block, err error)
+
+	// PublishNewBlock serve caller to publish new block
+	PublishNewBlock(ctx contextx.Contextx, newBlock *bm.Block) error
 }
 
 // BlockSet is the provider set of repo
