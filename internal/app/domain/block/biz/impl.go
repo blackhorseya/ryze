@@ -1,6 +1,8 @@
 package biz
 
 import (
+	"sync"
+
 	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo"
 	"github.com/blackhorseya/ryze/internal/pkg/errorx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -69,17 +71,24 @@ func (i *impl) ListenNewBlock(ctx contextx.Contextx) error {
 		case block := <-blocks:
 			ctx.Info("get new block", zap.Any("block", block))
 
-			err = i.repo.CreateNewBlock(ctx, block)
-			if err != nil {
-				ctx.Error("create new block error", zap.Error(err))
-				continue
-			}
+			wg := &sync.WaitGroup{}
+			go func() {
+				wg.Add(1)
+				err = i.repo.CreateNewBlock(ctx, block)
+				if err != nil {
+					ctx.Error("create new block error", zap.Error(err))
+				}
+			}()
 
-			err = i.repo.PublishNewBlock(ctx, block)
-			if err != nil {
-				ctx.Error("publish new block error", zap.Error(err))
-				continue
-			}
+			go func() {
+				wg.Add(1)
+				err = i.repo.PublishNewBlock(ctx, block)
+				if err != nil {
+					ctx.Error("publish new block error", zap.Error(err))
+				}
+			}()
+
+			wg.Wait()
 		}
 	}
 }
