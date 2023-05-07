@@ -1,3 +1,9 @@
+## 0.1.5 (2023-05-08)
+
+### Perf
+
+- async handle new block when received
+
 ## 0.1.4 (2023-05-08)
 
 ### Feat
