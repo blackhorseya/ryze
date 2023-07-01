@@ -53,8 +53,8 @@ update-package: ## update package
 	@echo Successfully updated package
 
 .PHONY: test-go
-test-go: ## bazel test
-	@bazel test //... --define=VERSION=$(VERSION)
+test-go: ## run go test
+	@sh $(shell pwd)/scripts/go.test.sh
 
 .PHONY: build-go
 build-go: ## bazel build
