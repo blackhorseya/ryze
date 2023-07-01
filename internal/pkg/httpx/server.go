@@ -5,36 +5,18 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/httpx"
 	"github.com/blackhorseya/ryze/pkg/netx"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 )
 
-// Options declare http configuration
-type Options struct {
-	Host string `json:"host" yaml:"host"`
-	Port int    `json:"port" yaml:"port"`
-	Mode string `json:"mode" yaml:"mode"`
-}
-
-func NewOptions(v *viper.Viper) (*Options, error) {
-	ret := new(Options)
-
-	err := v.UnmarshalKey("http", ret)
-	if err != nil {
-		return nil, errors.Wrap(err, "load http options failed")
-	}
-
-	return ret, nil
-}
-
-func NewRouter(opts *Options) *gin.Engine {
-	gin.SetMode(opts.Mode)
+func NewRouter(cfg *config.Config) *gin.Engine {
+	gin.SetMode(cfg.HTTP.Mode)
 
 	return gin.New()
 }
@@ -48,10 +30,10 @@ type server struct {
 	httpServer http.Server
 }
 
-func NewServer(opts *Options, logger *zap.Logger, router *gin.Engine) httpx.Server {
+func NewServer(cfg *config.Config, logger *zap.Logger, router *gin.Engine) httpx.Server {
 	return &server{
-		host:       opts.Host,
-		port:       opts.Port,
+		host:       cfg.HTTP.Host,
+		port:       cfg.HTTP.Port,
 		logger:     logger,
 		router:     router,
 		httpServer: http.Server{},
@@ -106,4 +88,4 @@ func (s *server) Stop() error {
 }
 
 // ServerSet declare http server set
-var ServerSet = wire.NewSet(NewOptions, NewRouter, NewServer)
+var ServerSet = wire.NewSet(NewRouter, NewServer)

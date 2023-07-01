@@ -33,4 +33,4 @@ type IRepo interface {
 }
 
 // BlockSet is the provider set of repo
-var BlockSet = wire.NewSet(NewEthOptions, NewEthClient, NewImpl)
+var BlockSet = wire.NewSet(NewEthClient, NewImpl)

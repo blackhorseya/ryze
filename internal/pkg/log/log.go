@@ -3,53 +3,33 @@ package log
 import (
 	"os"
 
+	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/google/wire"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-// Options declare log's configuration
-type Options struct {
-	Level    string
-	Encoding string
-}
-
-// NewOptions serve caller to create Options
-func NewOptions(v *viper.Viper) (*Options, error) {
-	var (
-		err error
-		o   = new(Options)
-	)
-
-	if err = v.UnmarshalKey("log", o); err != nil {
-		return nil, err
-	}
-
-	return o, nil
-}
-
 // NewLogger serve caller to create zap.Logger
-func NewLogger(o *Options) (*zap.Logger, error) {
+func NewLogger(cfg *config.Config) (*zap.Logger, error) {
 	var (
 		err    error
 		level  = zap.NewAtomicLevel()
 		logger *zap.Logger
 	)
 
-	err = level.UnmarshalText([]byte(o.Level))
+	err = level.UnmarshalText([]byte(cfg.Log.Level))
 	if err != nil {
 		return nil, err
 	}
 
 	cw := zapcore.Lock(os.Stdout)
-	config := zap.NewDevelopmentEncoderConfig()
-	config.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	enc := zapcore.NewConsoleEncoder(config)
-	if o.Encoding == "json" {
-		config = zap.NewProductionEncoderConfig()
-		config.EncodeTime = zapcore.RFC3339NanoTimeEncoder
-		enc = zapcore.NewJSONEncoder(config)
+	c := zap.NewDevelopmentEncoderConfig()
+	c.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	enc := zapcore.NewConsoleEncoder(c)
+	if cfg.Log.Output == "json" {
+		c = zap.NewProductionEncoderConfig()
+		c.EncodeTime = zapcore.RFC3339NanoTimeEncoder
+		enc = zapcore.NewJSONEncoder(c)
 	}
 
 	cores := make([]zapcore.Core, 0, 2)
@@ -60,10 +40,10 @@ func NewLogger(o *Options) (*zap.Logger, error) {
 
 	zap.ReplaceGlobals(logger)
 
-	logger.Info("logger init success", zap.Any("options", o))
+	logger.Info("logger init success", zap.Any("log", cfg.Log))
 
 	return logger, nil
 }
 
 // ProviderSet is a provider set for wire
-var ProviderSet = wire.NewSet(NewLogger, NewOptions)
+var ProviderSet = wire.NewSet(NewLogger)

@@ -22,43 +22,24 @@ import (
 
 // CreateApplication serve caller to create application instance
 func CreateApplication(path2 string) (app.Servicer, error) {
-	viper, err := config.NewViper(path2)
+	configConfig := config.NewConfig(path2)
+	logger, err := log.NewLogger(configConfig)
 	if err != nil {
 		return nil, err
 	}
-	options, err := log.NewOptions(viper)
+	db, err := mariadb.NewMariadb(configConfig)
 	if err != nil {
 		return nil, err
 	}
-	logger, err := log.NewLogger(options)
+	client, err := repo.NewEthClient(configConfig, logger)
 	if err != nil {
 		return nil, err
 	}
-	mariadbOptions, err := mariadb.NewOptions(viper)
+	migrate, err := mariadb.NewMigration(configConfig, db)
 	if err != nil {
 		return nil, err
 	}
-	db, err := mariadb.NewMariadb(mariadbOptions)
-	if err != nil {
-		return nil, err
-	}
-	ethOptions, err := repo.NewEthOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
-	client, err := repo.NewEthClient(ethOptions, logger)
-	if err != nil {
-		return nil, err
-	}
-	migrate, err := mariadb.NewMigration(mariadbOptions, db)
-	if err != nil {
-		return nil, err
-	}
-	writerOptions, err := kafkax.NewWriterOptions(viper, logger)
-	if err != nil {
-		return nil, err
-	}
-	writer, err := kafkax.NewWriter(writerOptions)
+	writer, err := kafkax.NewWriter(configConfig)
 	if err != nil {
 		return nil, err
 	}

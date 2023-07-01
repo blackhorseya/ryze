@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/blackhorseya/ryze/internal/app/domain/block/biz/repo/dao"
+	"github.com/blackhorseya/ryze/internal/pkg/config"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	bm "github.com/blackhorseya/ryze/pkg/entity/domain/block/model"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -16,7 +17,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/segmentio/kafka-go"
-	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -25,32 +25,13 @@ const (
 	topicNewBlock = "new_block"
 )
 
-// EthOptions declare the options of ethereum client
-type EthOptions struct {
-	Endpoint  string `json:"endpoint" yaml:"endpoint"`
-	Websocket string `json:"websocket" yaml:"websocket"`
-}
-
-// NewEthOptions serve caller to get a new EthOptions instance
-func NewEthOptions(v *viper.Viper, logger *zap.Logger) (*EthOptions, error) {
-	o := new(EthOptions)
-	err := v.UnmarshalKey("eth", o)
-	if err != nil {
-		return nil, errors.Wrap(err, "unmarshal eth options failed")
-	}
-
-	logger.Info("get eth options success")
-
-	return o, nil
-}
-
 // NewEthClient serve caller to get a new ethclient.Client instance
-func NewEthClient(o *EthOptions, logger *zap.Logger) (*ethclient.Client, error) {
-	if o.Websocket == "" {
+func NewEthClient(cfg *config.Config, logger *zap.Logger) (*ethclient.Client, error) {
+	if cfg.ETH.Websocket == "" {
 		return nil, nil
 	}
 
-	client, err := ethclient.Dial(o.Websocket)
+	client, err := ethclient.Dial(cfg.ETH.Websocket)
 	if err != nil {
 		return nil, errors.Wrap(err, "dial eth client failed")
 	}
