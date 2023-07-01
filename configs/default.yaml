@@ -1,0 +1,12 @@
+log:
+  level: debug
+  output: console
+
+db:
+  url: "root:changeme@tcp(localhost:3306)/ryze?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
+  source: "github://blackhorseya/ryze/scripts/migrations"
+
+http:
+  host: 0.0.0.0
+  port: 1992
+  mode: debug

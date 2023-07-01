@@ -1,31 +1,41 @@
 package config
 
 import (
-	"fmt"
+	"encoding/json"
 
 	"github.com/google/wire"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 )
 
-// NewConfig serve caller to create a viper.Viper
-func NewConfig(path string) (*viper.Viper, error) {
-	var (
-		err error
-		v   = viper.New()
-	)
+// ProviderSet is a provider set for wire
+var ProviderSet = wire.NewSet(NewViper)
 
-	v.AddConfigPath(".")
-	v.SetConfigFile(path)
-
-	if err = v.ReadInConfig(); err != nil {
-		return nil, errors.Wrap(err, "read config file error")
-	}
-
-	fmt.Printf("read config file success, path: %s\n", v.ConfigFileUsed())
-
-	return v, nil
+type Log struct {
+	Level  string `json:"level" yaml:"level"`
+	Output string `json:"output" yaml:"output"`
 }
 
-// ProviderSet is a provider set for wire
-var ProviderSet = wire.NewSet(NewConfig)
+type HTTP struct {
+	Host string `json:"host" yaml:"host"`
+	Port int    `json:"port" yaml:"port"`
+	Mode string `json:"mode" yaml:"mode"`
+}
+
+type DB struct {
+	URL    string `json:"url" yaml:"url"`
+	Source string `json:"source" yaml:"source"`
+}
+
+type Settings struct {
+	Log  *Log  `json:"log" yaml:"log"`
+	HTTP *HTTP `json:"http" yaml:"http"`
+	DB   *DB   `json:"db" yaml:"db"`
+}
+
+func (s *Settings) String() string {
+	bytes, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return ""
+	}
+
+	return string(bytes)
+}

@@ -22,7 +22,7 @@ import (
 
 // CreateApplication serve caller to create application instance
 func CreateApplication(path2 string) (app.Servicer, error) {
-	viper, err := config.NewConfig(path2)
+	viper, err := config.NewViper(path2)
 	if err != nil {
 		return nil, err
 	}
