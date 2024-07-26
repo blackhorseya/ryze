@@ -39,15 +39,29 @@ gazelle: ## run gazelle with bazel
 
 .PHONY: build
 build: ## build go binary
-	@bazel build //...
+	@go build ./...
 
 .PHONY: test
 test: ## test go binary
-	@bazel test --verbose_failures //...
-
-.PHONY: coverage
-coverage: ## generate coverage report
 	@go test -json -coverprofile=cover.out ./... >result.json
+
+.PHONY: gen-pb
+gen-pb: ## generate protobuf
+	@echo Starting generate pb
+	@find ./pb -name '*.proto' | while read -r proto_file; do \
+		protoc --proto_path=./pb \
+		    --go_out=paths=source_relative:./ \
+		    --go-grpc_out=paths=source_relative,require_unimplemented_servers=false:./ \
+		    --go-grpc-mock_out=paths=source_relative,require_unimplemented_servers=false:./ \
+		    $$proto_file; \
+	done
+	@echo Successfully generated proto
+
+	@echo Starting inject tags
+	@find ./pb -name '*.pb.go' | while read -r pb_file; do \
+		protoc-go-inject-tag -input=$$pb_file; \
+	done
+	@echo Successfully injected tags
 
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger

@@ -1,4 +1,7 @@
 syntax = "proto3";
+package block;
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/block/model";
 
 import "google/protobuf/timestamp.proto";
 
@@ -38,5 +41,6 @@ service BlockService {
   rpc GetBlock(GetBlockRequest) returns (Block) {}
 
   // Retrieves a stream of blocks within a specified height range.
+
   rpc GetBlocks(GetBlocksRequest) returns (stream Block) {}
 }
