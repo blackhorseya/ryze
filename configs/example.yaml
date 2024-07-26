@@ -1,0 +1,4 @@
+networks:
+  ton:
+    name: ton
+    testnet: false
