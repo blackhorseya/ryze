@@ -3,10 +3,10 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 message Transaction {
-    string id = 1;
-    string block_id = 2;
-    string from = 3;
-    string to = 4;
+    bytes id = 1;
+    bytes block_id = 2;
+    bytes from = 3;
+    bytes to = 4;
     double amount = 5;
     google.protobuf.Timestamp timestamp = 6;
 }
