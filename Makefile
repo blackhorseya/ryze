@@ -49,6 +49,12 @@ test: ## test go binary
 coverage: ## generate coverage report
 	@go test -json -coverprofile=cover.out ./... >result.json
 
+.PHONY: gen-pb
+gen-pb: ## generate protobuf
+	protoc --go_out=. --go_opt=paths=source_relative \
+           --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+           pb/entity/domain/*/model/*.proto
+
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger
 	@#swag init -q -g impl.go -d ./adapter/restaurant/restful,./entity,./pkg \
