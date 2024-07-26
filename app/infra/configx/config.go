@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/blackhorseya/ryze/pkg/logging"
 	"github.com/spf13/viper"
 )
 
 // Configuration is the application configuration
 type Configuration struct {
+	Log      logging.Options     `json:"log" yaml:"log"`
 	Networks map[string]*Network `json:"networks" yaml:"networks"`
 }
 
@@ -35,6 +37,11 @@ func NewConfiguration(v *viper.Viper) (*Configuration, error) {
 	err = v.Unmarshal(&config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal configuration: %w", err)
+	}
+
+	err = logging.Init(config.Log)
+	if err != nil {
+		return nil, fmt.Errorf("failed to init logging: %w", err)
 	}
 
 	return config, nil

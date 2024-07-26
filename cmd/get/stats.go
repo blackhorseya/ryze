@@ -32,6 +32,8 @@ var statsCmd = &cobra.Command{
 		info, err := api.GetMasterchainInfo(contextx.Background())
 		cobra.CheckErr(err)
 
-		cmd.Println(info)
+		// display info
+		cmd.Println("Masterchain Info:")
+		cmd.Printf("  Height: %d\n", info.SeqNo)
 	},
 }
