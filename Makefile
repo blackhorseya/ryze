@@ -42,7 +42,11 @@ build: ## build go binary
 	@go build ./...
 
 .PHONY: test
-test: ## test go binary
+test: ## run test
+	@go test -v ./...
+
+.PHONY: coverage
+coverage: ## generate coverage
 	@go test -json -coverprofile=cover.out ./... >result.json
 
 .PHONY: gen-pb
