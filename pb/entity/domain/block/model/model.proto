@@ -1,1 +1,10 @@
 syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+message Block {
+    string id = 1;
+    int64 height = 2;
+    google.protobuf.Timestamp timestamp = 3;
+    repeated string transaction_ids = 4;
+}
