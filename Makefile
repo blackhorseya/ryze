@@ -33,13 +33,9 @@ clean: ## clean build directory
 	@rm -rf cover.out result.json ./deployments/charts/*.tgz
 	@rm -rf $(BUILD_DIR)
 
-.PHONY: gazelle
-gazelle: ## run gazelle with bazel
-	@bazel run //:gazelle
-
 .PHONY: build
 build: ## build go binary
-	@go build ./...
+	@go build -v ./...
 
 .PHONY: test
 test: ## run test
