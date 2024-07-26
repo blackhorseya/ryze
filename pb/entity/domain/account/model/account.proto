@@ -1,0 +1,37 @@
+syntax = "proto3";
+package account;
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/account/model";
+
+import "google/protobuf/timestamp.proto";
+
+// Represents a blockchain account.
+message Account {
+  bytes address = 1;
+  double balance = 2;
+  google.protobuf.Timestamp created_at = 3;
+}
+
+// Request message for retrieving account details.
+message GetAccountRequest {
+  bytes address = 1;
+}
+
+// Request message for creating a new account.
+message CreateAccountRequest {
+  bytes address = 1;
+}
+
+// Request message for retrieving transactions of an account.
+message GetAccountTransactionsRequest {
+  bytes address = 1;
+}
+
+// Service definition for managing accounts.
+service AccountService {
+  // Retrieves the details of an account by address.
+  rpc GetAccount(GetAccountRequest) returns (Account) {}
+
+  // Creates a new account with the specified address.
+  rpc CreateAccount(CreateAccountRequest) returns (Account) {}
+}
