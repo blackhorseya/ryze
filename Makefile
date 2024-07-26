@@ -39,21 +39,19 @@ gazelle: ## run gazelle with bazel
 
 .PHONY: build
 build: ## build go binary
-	@bazel build //...
+	@go build ./...
 
 .PHONY: test
 test: ## test go binary
-	@bazel test --verbose_failures //...
-
-.PHONY: coverage
-coverage: ## generate coverage report
 	@go test -json -coverprofile=cover.out ./... >result.json
 
 .PHONY: gen-pb
 gen-pb: ## generate protobuf
-	protoc --go_out=. --go_opt=paths=source_relative \
-           --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-           pb/entity/domain/*/model/*.proto
+	protoc --proto_path=./pb \
+    		--go_out=paths=source_relative:./ \
+    		--go-grpc_out=paths=source_relative,require_unimplemented_servers=false:./ \
+    		--go-grpc-mock_out=paths=source_relative,require_unimplemented_servers=false:./ \
+    		./pb/entity/domain/*/*/*.proto
 
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger
