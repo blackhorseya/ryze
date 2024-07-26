@@ -1,9 +1,9 @@
 package get
 
 import (
-	"fmt"
-
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
+	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -15,12 +15,23 @@ var statsCmd = &cobra.Command{
 		config, err := configx.NewConfiguration(viper.GetViper())
 		cobra.CheckErr(err)
 
-		network, ok := config.Networks["ton"]
+		tonConfig, ok := config.Networks["ton"]
 		if !ok {
 			cmd.PrintErr("ton network not found")
 			return
 		}
 
-		fmt.Println(network)
+		network := "mainnet"
+		if tonConfig.Testnet {
+			network = "testnet"
+		}
+
+		api, err := tonx.NewAPIClient(tonx.Options{Network: network})
+		cobra.CheckErr(err)
+
+		info, err := api.GetMasterchainInfo(contextx.Background())
+		cobra.CheckErr(err)
+
+		cmd.Println(info)
 	},
 }
