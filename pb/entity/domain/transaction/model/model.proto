@@ -2,11 +2,59 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
+// Represents a transaction on the blockchain.
 message Transaction {
-    bytes id = 1;
-    bytes block_id = 2;
-    bytes from = 3;
-    bytes to = 4;
-    double amount = 5;
-    google.protobuf.Timestamp timestamp = 6;
+  // Unique identifier of the transaction.
+  bytes id = 1;
+
+  // Identifier of the block that includes this transaction.
+  bytes block_id = 2;
+
+  // Address of the sender.
+  bytes from = 3;
+
+  // Address of the recipient.
+  bytes to = 4;
+
+  // Amount of currency transferred in the transaction.
+  double amount = 5;
+
+  // Timestamp of when the transaction was created.
+  google.protobuf.Timestamp timestamp = 6;
+}
+
+// Request message for retrieving a single transaction by its ID.
+message GetTransactionRequest {
+  // Unique identifier of the transaction to retrieve.
+  bytes id = 1;
+}
+
+// Request message for retrieving all transactions within a specific block.
+message GetTransactionsRequest {
+  // Identifier of the block to retrieve transactions from.
+  bytes block_id = 1;
+}
+
+// Request message for creating a new transaction.
+message CreateTransactionRequest {
+  // Address of the sender.
+  bytes from = 1;
+
+  // Address of the recipient.
+  bytes to = 2;
+
+  // Amount of currency to transfer in the transaction.
+  double amount = 3;
+}
+
+// Service definition for handling transactions.
+service TransactionService {
+  // Retrieves a single transaction by its ID.
+  rpc GetTransaction(GetTransactionRequest) returns (Transaction) {}
+
+  // Retrieves all transactions within a specific block.
+  rpc GetTransactions(GetTransactionsRequest) returns (stream Transaction) {}
+
+  // Creates a new transaction and returns the created transaction.
+  rpc CreateTransaction(CreateTransactionRequest) returns (Transaction) {}
 }

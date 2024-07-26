@@ -2,9 +2,41 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
+// Represents a block in the blockchain.
 message Block {
-    bytes id = 1;
-    int64 height = 2;
-    google.protobuf.Timestamp timestamp = 3;
-    repeated bytes transaction_ids = 4;
+  // Unique identifier of the block.
+  bytes id = 1;
+
+  // Height of the block in the blockchain.
+  int64 height = 2;
+
+  // Timestamp of when the block was created.
+  google.protobuf.Timestamp timestamp = 3;
+
+  // List of transaction IDs included in the block.
+  repeated bytes transaction_ids = 4;
+}
+
+// Request message for retrieving a single block by its ID.
+message GetBlockRequest {
+  // Unique identifier of the block to retrieve.
+  bytes id = 1;
+}
+
+// Request message for retrieving a range of blocks by their heights.
+message GetBlocksRequest {
+  // Starting height of the range of blocks to retrieve.
+  int64 start_height = 1;
+
+  // Ending height of the range of blocks to retrieve.
+  int64 end_height = 2;
+}
+
+// Service definition for handling blocks.
+service BlockService {
+  // Retrieves a single block by its ID.
+  rpc GetBlock(GetBlockRequest) returns (Block) {}
+
+  // Retrieves a stream of blocks within a specified height range.
+  rpc GetBlocks(GetBlocksRequest) returns (stream Block) {}
 }
