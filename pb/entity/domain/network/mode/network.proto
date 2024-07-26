@@ -1,0 +1,37 @@
+syntax = "proto3";
+package network;
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/network/model";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+// Represents the statistics of the blockchain network.
+message NetworkStats {
+  int64 total_blocks = 1;
+  int64 total_transactions = 2;
+  int64 total_accounts = 3;
+  int64 latest_block_height = 4;
+  google.protobuf.Timestamp latest_block_time = 5;
+}
+
+// Represents the status of a node in the blockchain network.
+message NodeStatus {
+  bytes node_id = 1;
+  bool is_connected = 2;
+  google.protobuf.Timestamp last_active = 3;
+}
+
+// Request message for retrieving the status of a specific node.
+message GetNodeStatusRequest {
+  bytes node_id = 1;
+}
+
+// Service definition for managing network status and statistics.
+service NetworkService {
+  // Retrieves the current network statistics.
+  rpc GetNetworkStats(google.protobuf.Empty) returns (NetworkStats) {}
+
+  // Retrieves the status of a specific node by its ID.
+  rpc GetNodeStatus(GetNodeStatusRequest) returns (NodeStatus) {}
+}
