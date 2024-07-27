@@ -9,6 +9,7 @@ package scan
 import (
 	"github.com/blackhorseya/ryze/adpater/block/wirex"
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 )
@@ -20,9 +21,28 @@ func New(v *viper.Viper) (adapterx.Restful, error) {
 	if err != nil {
 		return nil, err
 	}
+	application, err := initApplication(configuration)
+	if err != nil {
+		return nil, err
+	}
 	injector := &wirex.Injector{
 		C: configuration,
+		A: application,
 	}
-	adapterxRestful := NewRestful(injector)
+	server, err := initServer(application)
+	if err != nil {
+		return nil, err
+	}
+	adapterxRestful := NewRestful(injector, server)
 	return adapterxRestful, nil
+}
+
+// wire.go:
+
+func initApplication(config *configx.Configuration) (*configx.Application, error) {
+	return config.Services["block-scan"], nil
+}
+
+func initServer(app *configx.Application) (*httpx.Server, error) {
+	return httpx.NewServer(app.HTTP)
 }
