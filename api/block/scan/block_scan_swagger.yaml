@@ -1,0 +1,14 @@
+basePath: /api
+info:
+  contact:
+    email: blackhorseya@gmail.com
+    name: Sean Zheng
+    url: https://blog.seancheng.space
+  description: Ryze Block Scan API document.
+  license:
+    name: GPL-3.0
+    url: https://spdx.org/licenses/GPL-3.0-only.html
+  title: Ryze Block Scan API
+  version: 0.1.0
+paths: {}
+swagger: "2.0"
