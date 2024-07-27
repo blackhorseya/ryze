@@ -32,30 +32,3 @@ func TestNewServer(t *testing.T) {
 		return
 	}
 }
-
-func TestOptions_GetAddr(t *testing.T) {
-	type fields struct {
-		Host string
-		Port int
-		Mode string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			o := &Options{
-				Host: tt.fields.Host,
-				Port: tt.fields.Port,
-				Mode: tt.fields.Mode,
-			}
-			if got := o.GetAddr(); got != tt.want {
-				t.Errorf("GetAddr() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
