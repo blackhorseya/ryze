@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type impl struct {
@@ -16,7 +17,12 @@ func NewBlockService() model.BlockServiceServer {
 
 func (i *impl) GetBlock(ctx context.Context, request *model.GetBlockRequest) (*model.Block, error) {
 	// TODO: 2024/7/27|sean|implement me
-	panic("implement me")
+	return &model.Block{
+		Id:             request.Id,
+		Height:         0,
+		Timestamp:      timestamppb.Now(),
+		TransactionIds: nil,
+	}, nil
 }
 
 func (i *impl) GetBlocks(request *model.GetBlocksRequest, server model.BlockService_GetBlocksServer) error {
