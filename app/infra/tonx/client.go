@@ -22,6 +22,8 @@ type Options struct {
 type Client struct {
 	*liteclient.ConnectionPool
 	mock.Mock
+
+	Config *liteclient.GlobalConfig
 }
 
 // NewClient is a function that creates a new API client.
@@ -33,12 +35,18 @@ func NewClient(options Options) (*Client, error) {
 
 	client := liteclient.NewConnectionPool()
 
-	err := client.AddConnectionsFromConfigUrl(contextx.Background(), configURL)
+	config, err := liteclient.GetConfigFromUrl(contextx.Background(), configURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get config from url: %w", err)
+	}
+
+	err = client.AddConnectionsFromConfig(contextx.Background(), config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add connections from config: %w", err)
 	}
 
 	return &Client{
 		ConnectionPool: client,
+		Config:         config,
 	}, nil
 }

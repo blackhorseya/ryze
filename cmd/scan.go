@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/xssnick/tonutils-go/ton"
@@ -31,6 +32,12 @@ var scanCmd = &cobra.Command{
 		if tonConfig.Testnet {
 			network = "testnet"
 		}
+
+		client, err := tonx.NewClient(tonx.Options{Network: network})
+		cobra.CheckErr(err)
+
+		api := ton.NewAPIClient(client, ton.ProofCheckPolicyFast).WithRetry()
+		api.SetTrustedBlockFromConfig(client.Config)
 
 		cmd.Printf("Scanning Ton blockchain Network: %s...\n", network)
 
