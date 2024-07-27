@@ -33,14 +33,14 @@ var scanCmd = &cobra.Command{
 
 		var start, end int
 		if startFlag == 0 {
-			// todo: 2024/7/27|sean|get start block from blockchain
+			// TODO: 2024/7/27|sean|get start block from blockchain
 			// start = tonConfig.StartHeight
 		} else {
 			start = startFlag
 		}
 
 		if endFlag == 0 {
-			// todo: 2024/7/27|sean|get current block from blockchain
+			// TODO: 2024/7/27|sean|get current block from blockchain
 			// end = tonConfig.CurrentHeight
 		} else {
 			end = endFlag
