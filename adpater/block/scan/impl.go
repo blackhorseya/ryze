@@ -7,7 +7,10 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
+	"github.com/blackhorseya/ryze/pkg/responsex"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 )
 
@@ -58,10 +61,26 @@ func (i *restful) AwaitSignal() error {
 }
 
 func (i *restful) InitRouting() error {
-	// TODO: 2024/7/27|sean|implement me
+	router := i.server.Router
+
+	// api
+	api := router.Group("/api")
+	{
+		api.GET("/healthz", i.healthz)
+		api.GET("/docs/*any", ginSwagger.WrapHandler(
+			swaggerFiles.Handler,
+			ginSwagger.InstanceName("block_scan"),
+		))
+	}
+
 	return nil
 }
 
 func (i *restful) GetRouter() *gin.Engine {
 	return i.server.Router
+}
+
+// healthz is used to handle health check
+func (i *restful) healthz(c *gin.Context) {
+	responsex.OK(c, nil)
 }
