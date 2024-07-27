@@ -65,8 +65,8 @@ gen-pb: ## generate protobuf
 
 .PHONY: gen-swagger
 gen-swagger: ## generate swagger
-	@#swag init -q -g impl.go -d ./adapter/restaurant/restful,./entity,./pkg \
-#  -o ./api/restaurant/restful --instanceName restaurant_restful --parseDependency
+	@swag init -q -g impl.go -d ./adapter/block/scan,./entity,./pkg \
+  -o ./api/block/scan --instanceName block_scan --parseDependency
 
 ### testing
 .PHONY: test-api-order

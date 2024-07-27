@@ -7,7 +7,7 @@
 package scan
 
 import (
-	"github.com/blackhorseya/ryze/adpater/block/wirex"
+	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"

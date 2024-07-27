@@ -3,7 +3,8 @@ package scan
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/adpater/block/wirex"
+	"github.com/blackhorseya/ryze/adapter/block/wirex"
+	_ "github.com/blackhorseya/ryze/api/block/scan" // import swagger
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -14,6 +15,18 @@ import (
 	"go.uber.org/zap"
 )
 
+// @title Ryze Block Scan API
+// @version 0.1.0
+// @description Ryze Block Scan API document.
+//
+// @contact.name Sean Zheng
+// @contact.email blackhorseya@gmail.com
+// @contact.url https://blog.seancheng.space
+//
+// @license.name GPL-3.0
+// @license.url https://spdx.org/licenses/GPL-3.0-only.html
+//
+// @BasePath /api
 type restful struct {
 	injector *wirex.Injector
 	server   *httpx.Server
