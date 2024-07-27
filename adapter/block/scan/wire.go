@@ -5,16 +5,31 @@
 package scan
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
 
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
-	return config.Services["block-scan"], nil
+	app, ok := config.Services["block-scan"]
+	if !ok {
+		return nil, errors.New("[block-scan] service not found")
+	}
+
+	err := otelx.SetupOTelSDK(contextx.Background(), app)
+	if err != nil {
+		return nil, fmt.Errorf("failed to setup OpenTelemetry SDK: %w", err)
+	}
+
+	return app, nil
 }
 
 func initServer(app *configx.Application) (*httpx.Server, error) {

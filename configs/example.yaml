@@ -2,6 +2,17 @@ log:
   level: debug
   format: console
 
+services:
+  block-scan:
+    name: dev-block-scan
+
+    http:
+      port: 1992
+      mode: debug
+
+    otel:
+      target: "localhost:4317"
+
 networks:
   ton:
     name: ton
