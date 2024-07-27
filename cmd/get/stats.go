@@ -6,6 +6,7 @@ import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/xssnick/tonutils-go/ton"
 )
 
 var statsCmd = &cobra.Command{
@@ -26,8 +27,10 @@ var statsCmd = &cobra.Command{
 			network = "testnet"
 		}
 
-		api, err := tonx.NewAPIClient(tonx.Options{Network: network})
+		client, err := tonx.NewClient(tonx.Options{Network: network})
 		cobra.CheckErr(err)
+
+		api := ton.NewAPIClient(client)
 
 		info, err := api.GetMasterchainInfo(contextx.Background())
 		cobra.CheckErr(err)

@@ -6,7 +6,6 @@ import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/stretchr/testify/mock"
 	"github.com/xssnick/tonutils-go/liteclient"
-	"github.com/xssnick/tonutils-go/ton"
 )
 
 const (
@@ -19,14 +18,14 @@ type Options struct {
 	Network string `json:"network" yaml:"network"`
 }
 
-// APIClient is a struct that represents the API client.
-type APIClient struct {
-	*ton.APIClient
+// Client is a struct that represents the API client.
+type Client struct {
+	*liteclient.ConnectionPool
 	mock.Mock
 }
 
-// NewAPIClient is a function that creates a new API client.
-func NewAPIClient(options Options) (*APIClient, error) {
+// NewClient is a function that creates a new API client.
+func NewClient(options Options) (*Client, error) {
 	configURL := mainnetConfigURL
 	if options.Network == "testnet" {
 		configURL = testnetConfigURL
@@ -39,7 +38,7 @@ func NewAPIClient(options Options) (*APIClient, error) {
 		return nil, fmt.Errorf("failed to add connections from config: %w", err)
 	}
 
-	return &APIClient{
-		APIClient: ton.NewAPIClient(client),
+	return &Client{
+		ConnectionPool: client,
 	}, nil
 }

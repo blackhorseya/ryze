@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/xssnick/tonutils-go/ton"
 )
 
 var (
@@ -54,4 +57,8 @@ func init() {
 	rootCmd.AddCommand(scanCmd)
 	scanCmd.Flags().IntVar(&startFlag, "start", 0, "The start block number")
 	scanCmd.Flags().IntVar(&endFlag, "end", 0, "The end block number")
+}
+
+func getShardID(shard *ton.BlockIDExt) string {
+	return fmt.Sprintf("%d|%d", shard.Workchain, shard.Shard)
 }
