@@ -124,6 +124,12 @@ var scanCmd = &cobra.Command{
 	},
 }
 
+func init() {
+	rootCmd.AddCommand(scanCmd)
+	scanCmd.Flags().Uint32Var(&startFlag, "start", 0, "The start block number")
+	scanCmd.Flags().Uint32Var(&endFlag, "end", 0, "The end block number")
+}
+
 func getNotSeenShards(
 	ctx context.Context,
 	api ton.APIClientWrapped,
@@ -154,12 +160,6 @@ func getNotSeenShards(
 
 	ret = append(ret, shard)
 	return ret, nil
-}
-
-func init() {
-	rootCmd.AddCommand(scanCmd)
-	scanCmd.Flags().Uint32Var(&startFlag, "start", 0, "The start block number")
-	scanCmd.Flags().Uint32Var(&endFlag, "end", 0, "The end block number")
 }
 
 func getShardID(shard *ton.BlockIDExt) string {
