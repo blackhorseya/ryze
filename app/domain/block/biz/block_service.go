@@ -62,7 +62,17 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 	}
 
 	for {
-		ctx.Info("scanning master block", zap.Uint32("seq_no", master.SeqNo))
+		err = stream.Send(&model.Block{
+			Id:             nil,
+			Height:         master.SeqNo,
+			Timestamp:      nil,
+			TransactionIds: nil,
+		})
+		if err != nil {
+			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err))
+			return err
+		}
+		ctx.Info("block sent", zap.Uint32("seq_no", master.SeqNo))
 
 		next := master.SeqNo + 1
 		master, err = api.WaitForBlock(next).LookupBlock(ctx, master.Workchain, master.Shard, next)

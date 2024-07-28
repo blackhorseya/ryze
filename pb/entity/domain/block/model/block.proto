@@ -11,7 +11,7 @@ message Block {
   bytes id = 1;
 
   // Height of the block in the blockchain.
-  int64 height = 2;
+  uint32 height = 2;
 
   // Timestamp of when the block was created.
   google.protobuf.Timestamp timestamp = 3;
@@ -29,19 +29,19 @@ message GetBlockRequest {
 // Request message for retrieving a range of blocks by their heights.
 message GetBlocksRequest {
   // Starting height of the range of blocks to retrieve.
-  int64 start_height = 1;
+  uint32 start_height = 1;
 
   // Ending height of the range of blocks to retrieve.
-  int64 end_height = 2;
+  uint32 end_height = 2;
 }
 
 // Request message for scanning blocks.
 message ScanBlockRequest {
   // Starting height of the range of blocks to scan.
-  int64 start_height = 1;
+  uint32 start_height = 1;
 
   // Ending height of the range of blocks to scan.
-  int64 end_height = 2;
+  uint32 end_height = 2;
 }
 
 // Service definition for handling blocks.

@@ -40,5 +40,6 @@ func (s *suiteTester) Test_impl_ScanBlock() {
 	defer cancelFunc()
 
 	stream.EXPECT().Context().Return(timeout).Times(1)
+	stream.EXPECT().Send(gomock.Any()).Return(nil).MinTimes(1)
 	_ = s.biz.ScanBlock(&model.ScanBlockRequest{}, stream)
 }
