@@ -59,6 +59,7 @@ func (i *restful) Start() error {
 	ctx.Info("start restful server", zap.String("swagger_url", swaggerURL))
 
 	// TODO: 2024/7/28|sean|add block scan logic here
+	// i.injector.BlockService.ScanBlock(&model.ScanBlockRequest{}, stream)
 
 	return nil
 }
