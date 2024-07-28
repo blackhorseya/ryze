@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -37,6 +38,10 @@ func initServer(app *configx.Application) (*httpx.Server, error) {
 	return httpx.NewServer(app.HTTP)
 }
 
+func initTonx() (*tonx.Client, error) {
+	return tonx.NewClient(tonx.Options{Network: "mainnet"})
+}
+
 func New(v *viper.Viper) (adapterx.Restful, error) {
 	panic(wire.Build(
 		wire.Struct(new(wirex.Injector), "*"),
@@ -47,5 +52,6 @@ func New(v *viper.Viper) (adapterx.Restful, error) {
 		initServer,
 
 		biz.NewBlockService,
+		initTonx,
 	))
 }
