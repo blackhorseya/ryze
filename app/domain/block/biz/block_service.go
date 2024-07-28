@@ -3,16 +3,20 @@ package biz
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type impl struct {
+	client *tonx.Client
 }
 
 // NewBlockService is used to create a new model.BlockServiceServer
-func NewBlockService() model.BlockServiceServer {
-	return &impl{}
+func NewBlockService(client *tonx.Client) model.BlockServiceServer {
+	return &impl{
+		client: client,
+	}
 }
 
 func (i *impl) GetBlock(ctx context.Context, request *model.GetBlockRequest) (*model.Block, error) {
