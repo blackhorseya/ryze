@@ -35,12 +35,23 @@ message GetBlocksRequest {
   int64 end_height = 2;
 }
 
+// Request message for scanning blocks.
+message ScanBlockRequest {
+  // Starting height of the range of blocks to scan.
+  int64 start_height = 1;
+
+  // Ending height of the range of blocks to scan.
+  int64 end_height = 2;
+}
+
 // Service definition for handling blocks.
 service BlockService {
   // Retrieves a single block by its ID.
   rpc GetBlock(GetBlockRequest) returns (Block) {}
 
   // Retrieves a stream of blocks within a specified height range.
-
   rpc GetBlocks(GetBlocksRequest) returns (stream Block) {}
+
+  // Scans a range of blocks.
+  rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
 }
