@@ -29,3 +29,8 @@ func (i *impl) GetBlocks(request *model.GetBlocksRequest, server model.BlockServ
 	// TODO: 2024/7/27|sean|implement me
 	panic("implement me")
 }
+
+func (i *impl) ScanBlock(request *model.ScanBlockRequest, server model.BlockService_ScanBlockServer) error {
+	// TODO: 2024/7/28|sean|implement me
+	panic("implement me")
+}
