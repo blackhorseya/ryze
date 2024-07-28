@@ -58,6 +58,8 @@ func (i *restful) Start() error {
 	swaggerURL := fmt.Sprintf("http://localhost:%d/api/docs/index.html", i.injector.A.HTTP.Port)
 	ctx.Info("start restful server", zap.String("swagger_url", swaggerURL))
 
+	// TODO: 2024/7/28|sean|add block scan logic here
+
 	return nil
 }
 

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
+	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
@@ -33,9 +34,11 @@ func New(v *viper.Viper) (adapterx.Restful, error) {
 	if err != nil {
 		return nil, err
 	}
+	blockServiceServer := biz.NewBlockService()
 	injector := &wirex.Injector{
-		C: configuration,
-		A: application,
+		C:            configuration,
+		A:            application,
+		BlockService: blockServiceServer,
 	}
 	server, err := initServer(application)
 	if err != nil {
