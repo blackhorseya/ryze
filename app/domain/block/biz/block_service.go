@@ -80,25 +80,24 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 	}
 
 	for {
-		err = stream.Send(&model.Block{
-			Id:             "",
-			Workchain:      master.Workchain,
-			Shard:          master.Shard,
-			SeqNo:          master.SeqNo,
-			Timestamp:      nil,
-			TransactionIds: nil,
-		})
-		if err != nil {
-			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err))
-			return err
+		newBlock, err2 := model.NewBlock(master.Workchain, master.Shard, master.SeqNo)
+		if err2 != nil {
+			ctx.Error("failed to create block", zap.Error(err2))
+			return err2
+		}
+
+		err2 = stream.Send(newBlock)
+		if err2 != nil {
+			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err2))
+			return err2
 		}
 		ctx.Info("block sent", zap.Uint32("seq_no", master.SeqNo))
 
 		next := master.SeqNo + 1
-		master, err = api.WaitForBlock(next).LookupBlock(ctx, master.Workchain, master.Shard, next)
-		if err != nil {
-			ctx.Error("failed to lookup block", zap.Uint32("seq_no", next), zap.Error(err))
-			return err
+		master, err2 = api.WaitForBlock(next).LookupBlock(ctx, master.Workchain, master.Shard, next)
+		if err2 != nil {
+			ctx.Error("failed to lookup block", zap.Uint32("seq_no", next), zap.Error(err2))
+			return err2
 		}
 	}
 }
