@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 // Represents a block in the blockchain.
 message Block {
   // Unique identifier of the block.
-  bytes id = 1;
+  string id = 1;
 
   // Height of the block in the blockchain.
   uint32 height = 2;

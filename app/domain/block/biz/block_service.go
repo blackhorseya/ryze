@@ -40,7 +40,6 @@ func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*mod
 	}
 
 	return &model.Block{
-		Id:             blockID.RootHash,
 		Height:         block.BlockInfo.SeqNo,
 		Timestamp:      timestamppb.New(time.Unix(int64(block.BlockInfo.GenUtime), 0)),
 		TransactionIds: nil,
@@ -78,7 +77,6 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 
 	for {
 		err = stream.Send(&model.Block{
-			Id:             nil,
 			Height:         master.SeqNo,
 			Timestamp:      nil,
 			TransactionIds: nil,
