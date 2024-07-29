@@ -42,14 +42,13 @@ func initTonx() (*tonx.Client, error) {
 	return tonx.NewClient(tonx.Options{Network: "mainnet"})
 }
 
-func New(v *viper.Viper) (adapterx.Restful, error) {
+func New(v *viper.Viper) (adapterx.Service, error) {
 	panic(wire.Build(
 		wire.Struct(new(wirex.Injector), "*"),
 		configx.NewConfiguration,
 		initApplication,
 
-		NewRestful,
-		initServer,
+		NewService,
 
 		biz.NewBlockService,
 		initTonx,
