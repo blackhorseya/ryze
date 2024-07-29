@@ -87,7 +87,7 @@ test-load: ## test stress
 ## docker
 .PHONY: docker-push
 docker-push: ## push docker image
-	@bazel run //:push --platforms=@rules_go//go/toolchain:linux_amd64 -- --tag=$(VERSION)
+	## docker push $(PROJECT_NAME):$(VERSION)
 
 ## deployments
 DEPLOY_TO := prod
