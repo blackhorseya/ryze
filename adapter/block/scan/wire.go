@@ -8,12 +8,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/google/wire"
@@ -34,23 +32,13 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 	return app, nil
 }
 
-func initServer(app *configx.Application) (*httpx.Server, error) {
-	return httpx.NewServer(app.HTTP)
-}
-
-func initTonx() (*tonx.Client, error) {
-	return tonx.NewClient(tonx.Options{Network: "mainnet"})
-}
-
 func New(v *viper.Viper) (adapterx.Service, error) {
 	panic(wire.Build(
-		wire.Struct(new(wirex.Injector), "*"),
 		configx.NewConfiguration,
 		initApplication,
 
 		NewService,
-
-		biz.NewBlockService,
-		initTonx,
+		biz.NewBlockServiceClient,
+		grpcx.NewClient,
 	))
 }
