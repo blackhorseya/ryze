@@ -22,8 +22,9 @@ message Block {
 
 // Request message for retrieving a single block by its ID.
 message GetBlockRequest {
-  // Unique identifier of the block to retrieve.
-  bytes id = 1;
+  int32 workchain = 1;
+  int64 shard = 2;
+  uint32 seq_no = 3;
 }
 
 // Request message for retrieving a range of blocks by their heights.

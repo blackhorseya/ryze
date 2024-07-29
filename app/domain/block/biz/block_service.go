@@ -2,7 +2,7 @@ package biz
 
 import (
 	"context"
-	"encoding/hex"
+	"time"
 
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -25,14 +25,24 @@ func NewBlockService(client *tonx.Client) model.BlockServiceServer {
 
 func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*model.Block, error) {
 	ctx := contextx.WithContext(c)
-	hexID := hex.EncodeToString(request.Id)
-	ctx.Debug("get block", zap.String("hex_id", hexID))
 
-	// TODO: 2024/7/27|sean|implement me
+	api := ton.NewAPIClient(i.client)
+	blockID, err := api.LookupBlock(ctx, request.Workchain, request.Shard, request.SeqNo)
+	if err != nil {
+		ctx.Error("failed to lookup block", zap.Error(err))
+		return nil, err
+	}
+
+	block, err := api.GetBlockData(ctx, blockID)
+	if err != nil {
+		ctx.Error("failed to get block data", zap.Error(err))
+		return nil, err
+	}
+
 	return &model.Block{
-		Id:             request.Id,
-		Height:         0,
-		Timestamp:      timestamppb.Now(),
+		Id:             blockID.RootHash,
+		Height:         block.BlockInfo.SeqNo,
+		Timestamp:      timestamppb.New(time.Unix(int64(block.BlockInfo.GenUtime), 0)),
 		TransactionIds: nil,
 	}, nil
 }
