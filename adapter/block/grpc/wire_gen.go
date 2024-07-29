@@ -14,6 +14,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
@@ -40,7 +41,12 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 		A:            application,
 		BlockService: blockServiceServer,
 	}
-	service := NewGRPC(injector)
+	initServers := NewInitServersFn(injector)
+	server, err := grpcx.NewServer(application, initServers)
+	if err != nil {
+		return nil, err
+	}
+	service := NewGRPC(injector, server)
 	return service, nil
 }
 
