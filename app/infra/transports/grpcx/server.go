@@ -70,7 +70,7 @@ func (s *Server) Start(ctx contextx.Contextx) error {
 
 // Stop stops the server.
 func (s *Server) Stop(ctx contextx.Contextx) error {
-	s.grpcserver.GracefulStop()
+	s.grpcserver.Stop()
 
 	return nil
 }
