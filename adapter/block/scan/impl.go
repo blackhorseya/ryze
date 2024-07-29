@@ -1,8 +1,9 @@
 package scan
 
 import (
-	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	_ "github.com/blackhorseya/ryze/api/block/scan" // import swagger
+	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 )
@@ -20,12 +21,14 @@ import (
 //
 // @BasePath /api
 type restful struct {
-	injector *wirex.Injector
+	app         *configx.Application
+	blockClient model.BlockServiceClient
 }
 
-func NewService(injector *wirex.Injector) adapterx.Service {
+func NewService(app *configx.Application, blockClient model.BlockServiceClient) adapterx.Service {
 	return &restful{
-		injector: injector,
+		app:         app,
+		blockClient: blockClient,
 	}
 }
 

@@ -9,12 +9,10 @@ package scan
 import (
 	"errors"
 	"fmt"
-	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
@@ -35,17 +33,15 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := initTonx()
+	client, err := grpcx.NewClient(configuration)
 	if err != nil {
 		return nil, err
 	}
-	blockServiceServer := biz.NewBlockService(client)
-	injector := &wirex.Injector{
-		C:            configuration,
-		A:            application,
-		BlockService: blockServiceServer,
+	blockServiceClient, err := biz.NewBlockServiceClient(client)
+	if err != nil {
+		return nil, err
 	}
-	service := NewService(injector)
+	service := NewService(application, blockServiceClient)
 	return service, nil
 }
 
@@ -63,12 +59,4 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 	}
 
 	return app, nil
-}
-
-func initServer(app *configx.Application) (*httpx.Server, error) {
-	return httpx.NewServer(app.HTTP)
-}
-
-func initTonx() (*tonx.Client, error) {
-	return tonx.NewClient(tonx.Options{Network: "mainnet"})
 }
