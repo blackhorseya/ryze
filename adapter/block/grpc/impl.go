@@ -25,9 +25,7 @@ func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Service {
 	}
 }
 
-func (i *impl) Start() error {
-	ctx := contextx.Background()
-
+func (i *impl) Start(ctx contextx.Contextx) error {
 	err := i.server.Start(ctx)
 	if err != nil {
 		ctx.Error("Failed to start grpc server", zap.Error(err))
@@ -39,8 +37,7 @@ func (i *impl) Start() error {
 	return nil
 }
 
-func (i *impl) AwaitSignal() error {
-	ctx := contextx.Background()
+func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
 	ctx.Info("receive signal to stop server")
 
 	if err := i.server.Stop(ctx); err != nil {

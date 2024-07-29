@@ -6,6 +6,7 @@ import (
 	"syscall"
 
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +34,10 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 			service, err := c.GetService(v)
 			cobra.CheckErr(err)
 
-			err = service.Start()
+			ctx, cancelFunc := contextx.WithCancel(contextx.Background())
+			defer cancelFunc()
+
+			err = service.Start(ctx)
 			cobra.CheckErr(err)
 
 			signalChan := make(chan os.Signal, 1)
@@ -41,7 +45,7 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 
 			<-signalChan
 
-			err = service.AwaitSignal()
+			err = service.AwaitSignal(ctx)
 			cobra.CheckErr(err)
 		},
 	}

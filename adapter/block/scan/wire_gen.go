@@ -26,7 +26,7 @@ import (
 
 // Injectors from wire.go:
 
-func New(v *viper.Viper) (adapterx.Restful, error) {
+func New(v *viper.Viper) (adapterx.Service, error) {
 	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
 		return nil, err
@@ -45,12 +45,8 @@ func New(v *viper.Viper) (adapterx.Restful, error) {
 		A:            application,
 		BlockService: blockServiceServer,
 	}
-	server, err := initServer(application)
-	if err != nil {
-		return nil, err
-	}
-	adapterxRestful := NewRestful(injector, server)
-	return adapterxRestful, nil
+	service := NewService(injector)
+	return service, nil
 }
 
 // wire.go:
