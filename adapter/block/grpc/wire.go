@@ -13,6 +13,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/google/wire"
@@ -47,5 +48,8 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 
 		biz.NewBlockService,
 		initTonx,
+
+		grpcx.NewServer,
+		NewInitServersFn,
 	))
 }
