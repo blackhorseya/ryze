@@ -1,6 +1,7 @@
 package grpcx
 
 import (
+	"github.com/blackhorseya/ryze/pkg/contextx"
 	"google.golang.org/grpc"
 )
 
@@ -11,10 +12,25 @@ type Server struct {
 
 // NewServer creates a new grpc server.
 func NewServer() (*Server, error) {
-	var grpcserver *grpc.Server
+	var server *grpc.Server
+
+	server = grpc.NewServer()
+
 	// TODO: 2024/7/29|sean|implement grpc server here
 
 	return &Server{
-		grpcserver: grpcserver,
+		grpcserver: server,
 	}, nil
+}
+
+// Start begins the server.
+func (s *Server) Start(ctx contextx.Contextx) error {
+	// TODO: 2024/7/29|sean|implement me
+	panic("implement me")
+}
+
+// Stop stops the server.
+func (s *Server) Stop(ctx contextx.Contextx) error {
+	// TODO: 2024/7/29|sean|implement me
+	panic("implement me")
 }
