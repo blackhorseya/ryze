@@ -3,9 +3,6 @@
 package scan
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
 	"testing"
 
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -25,11 +22,6 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Start() error = %v", err)
 	}
-
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
-
-	<-signalChan
 
 	err = service.AwaitSignal(ctx)
 	if err != nil {
