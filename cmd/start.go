@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/blackhorseya/ryze/adapter/block/grpc"
+	"github.com/blackhorseya/ryze/pkg/cmdx"
 	"github.com/spf13/cobra"
 )
 
@@ -12,6 +14,8 @@ var startCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(startCmd)
+
+	startCmd.AddCommand(cmdx.NewServiceCmd("block-grpc", "start block grpc service", grpc.New))
 
 	// Here you will define your flags and configuration settings.
 
