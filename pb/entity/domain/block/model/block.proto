@@ -10,14 +10,15 @@ message Block {
   // Unique identifier of the block.
   string id = 1;
 
-  // Height of the block in the blockchain.
-  uint32 height = 2;
+  int32 workchain = 2;
+  int64 shard = 3;
+  uint32 seq_no = 4;
 
   // Timestamp of when the block was created.
-  google.protobuf.Timestamp timestamp = 3;
+  google.protobuf.Timestamp timestamp = 5;
 
   // List of transaction IDs included in the block.
-  repeated bytes transaction_ids = 4;
+  repeated bytes transaction_ids = 6;
 }
 
 // Request message for retrieving a single block by its ID.

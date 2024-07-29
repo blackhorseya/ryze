@@ -33,17 +33,21 @@ func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*mod
 		return nil, err
 	}
 
-	block, err := api.GetBlockData(ctx, blockID)
+	blockData, err := api.GetBlockData(ctx, blockID)
 	if err != nil {
 		ctx.Error("failed to get block data", zap.Error(err))
 		return nil, err
 	}
+	ctx.Debug("get block data from ton", zap.Any("block_data", &blockData))
 
-	return &model.Block{
-		Height:         block.BlockInfo.SeqNo,
-		Timestamp:      timestamppb.New(time.Unix(int64(block.BlockInfo.GenUtime), 0)),
-		TransactionIds: nil,
-	}, nil
+	ret, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err))
+		return nil, err
+	}
+	ret.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+
+	return ret, nil
 }
 
 func (i *impl) GetBlocks(request *model.GetBlocksRequest, server model.BlockService_GetBlocksServer) error {
@@ -77,7 +81,10 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 
 	for {
 		err = stream.Send(&model.Block{
-			Height:         master.SeqNo,
+			Id:             "",
+			Workchain:      master.Workchain,
+			Shard:          master.Shard,
+			SeqNo:          master.SeqNo,
 			Timestamp:      nil,
 			TransactionIds: nil,
 		})
