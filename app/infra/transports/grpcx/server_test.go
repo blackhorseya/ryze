@@ -6,10 +6,13 @@ import (
 
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
+	"google.golang.org/grpc"
 )
 
 func TestNewServer(t *testing.T) {
-	server, err := NewServer(&configx.Application{})
+	server, err := NewServer(&configx.Application{}, func(s *grpc.Server) {
+		t.Log("init grpc server")
+	})
 	if err != nil {
 		t.Errorf("Error: %v", err)
 		return

@@ -14,6 +14,9 @@ import (
 	"google.golang.org/grpc"
 )
 
+// InitServers define register handler
+type InitServers func(s *grpc.Server)
+
 // Server represents the grpc server.
 type Server struct {
 	grpcserver *grpc.Server
@@ -21,7 +24,7 @@ type Server struct {
 }
 
 // NewServer creates a new grpc server.
-func NewServer(app *configx.Application) (*Server, error) {
+func NewServer(app *configx.Application, init InitServers) (*Server, error) {
 	logger := contextx.Background().Logger
 	server := grpc.NewServer(
 		grpc.StreamInterceptor(grpcmiddleware.ChainStreamServer(
@@ -37,6 +40,8 @@ func NewServer(app *configx.Application) (*Server, error) {
 			grpcrecovery.UnaryServerInterceptor(),
 		)),
 	)
+
+	init(server)
 
 	return &Server{
 		grpcserver: server,
