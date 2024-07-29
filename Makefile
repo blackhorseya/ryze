@@ -85,9 +85,14 @@ test-load: ## test stress
 	@#k6 run --env SCENARIO=average_load ./tests/k6/order.api.test.js --out=cloud
 
 ## docker
+IMAGE_NAME := ghcr.io/blackhorseya/$(PROJECT_NAME)
+
 .PHONY: docker-push
 docker-push: ## push docker image
-	## docker push $(PROJECT_NAME):$(VERSION)
+	@echo "Pushing Docker image to $(IMAGE_NAME):$(VERSION)"
+	docker buildx build --push \
+  --tag $(IMAGE_NAME):latest \
+  --tag $(IMAGE_NAME):$(VERSION) .
 
 ## deployments
 DEPLOY_TO := prod

@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - main
 
 jobs:
   build:
@@ -29,6 +31,10 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        run: |-
+          make docker-push
 
   create-release:
     runs-on: ubuntu-latest
