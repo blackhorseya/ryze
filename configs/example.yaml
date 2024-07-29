@@ -3,12 +3,11 @@ log:
   format: console
 
 services:
-  block-scan:
-    name: dev-block-scan
+  block-grpc:
+    name: example-block-grpc
 
-    http:
-      port: 1992
-      mode: debug
+    grpc:
+      port: 1993
 
     otel:
       target: "localhost:4317"
