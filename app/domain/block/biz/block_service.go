@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"encoding/hex"
 
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -22,7 +23,11 @@ func NewBlockService(client *tonx.Client) model.BlockServiceServer {
 	}
 }
 
-func (i *impl) GetBlock(ctx context.Context, request *model.GetBlockRequest) (*model.Block, error) {
+func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*model.Block, error) {
+	ctx := contextx.WithContext(c)
+	hexID := hex.EncodeToString(request.Id)
+	ctx.Debug("get block", zap.String("hex_id", hexID))
+
 	// TODO: 2024/7/27|sean|implement me
 	return &model.Block{
 		Id:             request.Id,
