@@ -33,7 +33,7 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 				return
 			}
 
-			ctx.Info("receive block", zap.Any("block", block))
+			ctx.Info("receive block", zap.Any("block", &block))
 		}
 	}()
 
