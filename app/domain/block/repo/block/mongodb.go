@@ -35,7 +35,7 @@ func (i *mongodb) GetByID(ctx contextx.Contextx, id string) (item *model.Block, 
 	defer cancelFunc()
 
 	var got blockDocument
-	filter := bson.M{}
+	filter := bson.M{"metadata._id": id}
 	err = i.rw.Database(dbName).Collection(collName).FindOne(timeout, filter).Decode(&got)
 	if err != nil {
 		ctx.Error("failed to find a block from mongodb", zap.Error(err), zap.Any("id", id))
