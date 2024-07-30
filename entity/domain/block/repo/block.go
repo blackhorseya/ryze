@@ -11,6 +11,4 @@ import (
 type IBlockRepo interface {
 	GetByID(ctx contextx.Contextx, id string) (item *model.Block, err error)
 	Create(ctx contextx.Contextx, item *model.Block) (err error)
-	Update(ctx contextx.Contextx, item *model.Block) (err error)
-	Delete(ctx contextx.Contextx, id string) (err error)
 }

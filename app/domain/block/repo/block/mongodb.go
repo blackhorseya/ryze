@@ -61,13 +61,3 @@ func (i *mongodb) Create(ctx contextx.Contextx, item *model.Block) (err error) {
 
 	return nil
 }
-
-func (i *mongodb) Update(ctx contextx.Contextx, item *model.Block) (err error) {
-	// TODO: 2024/7/31|sean|implement me
-	panic("implement me")
-}
-
-func (i *mongodb) Delete(ctx contextx.Contextx, id string) (err error) {
-	// TODO: 2024/7/31|sean|implement me
-	panic("implement me")
-}

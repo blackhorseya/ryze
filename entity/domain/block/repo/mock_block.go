@@ -54,20 +54,6 @@ func (mr *MockIBlockRepoMockRecorder) Create(ctx, item any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIBlockRepo)(nil).Create), ctx, item)
 }
 
-// Delete mocks base method.
-func (m *MockIBlockRepo) Delete(ctx contextx.Contextx, id string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ctx, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Delete indicates an expected call of Delete.
-func (mr *MockIBlockRepoMockRecorder) Delete(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockIBlockRepo)(nil).Delete), ctx, id)
-}
-
 // GetByID mocks base method.
 func (m *MockIBlockRepo) GetByID(ctx contextx.Contextx, id string) (*model.Block, error) {
 	m.ctrl.T.Helper()
@@ -81,18 +67,4 @@ func (m *MockIBlockRepo) GetByID(ctx contextx.Contextx, id string) (*model.Block
 func (mr *MockIBlockRepoMockRecorder) GetByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIBlockRepo)(nil).GetByID), ctx, id)
-}
-
-// Update mocks base method.
-func (m *MockIBlockRepo) Update(ctx contextx.Contextx, item *model.Block) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", ctx, item)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockIBlockRepoMockRecorder) Update(ctx, item any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockIBlockRepo)(nil).Update), ctx, item)
 }
