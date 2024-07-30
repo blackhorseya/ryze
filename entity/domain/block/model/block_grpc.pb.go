@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	BlockService_GetBlock_FullMethodName  = "/block.BlockService/GetBlock"
-	BlockService_GetBlocks_FullMethodName = "/block.BlockService/GetBlocks"
-	BlockService_ScanBlock_FullMethodName = "/block.BlockService/ScanBlock"
+	BlockService_GetBlock_FullMethodName           = "/block.BlockService/GetBlock"
+	BlockService_GetBlocks_FullMethodName          = "/block.BlockService/GetBlocks"
+	BlockService_ScanBlock_FullMethodName          = "/block.BlockService/ScanBlock"
+	BlockService_FetchAndStoreBlock_FullMethodName = "/block.BlockService/FetchAndStoreBlock"
 )
 
 // BlockServiceClient is the client API for BlockService service.
@@ -34,6 +35,7 @@ type BlockServiceClient interface {
 	GetBlocks(ctx context.Context, in *GetBlocksRequest, opts ...grpc.CallOption) (BlockService_GetBlocksClient, error)
 	// Scans a range of blocks.
 	ScanBlock(ctx context.Context, in *ScanBlockRequest, opts ...grpc.CallOption) (BlockService_ScanBlockClient, error)
+	FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest, opts ...grpc.CallOption) (*FetchAndStoreBlockResponse, error)
 }
 
 type blockServiceClient struct {
@@ -117,6 +119,15 @@ func (x *blockServiceScanBlockClient) Recv() (*Block, error) {
 	return m, nil
 }
 
+func (c *blockServiceClient) FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest, opts ...grpc.CallOption) (*FetchAndStoreBlockResponse, error) {
+	out := new(FetchAndStoreBlockResponse)
+	err := c.cc.Invoke(ctx, BlockService_FetchAndStoreBlock_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BlockServiceServer is the server API for BlockService service.
 // All implementations should embed UnimplementedBlockServiceServer
 // for forward compatibility
@@ -127,6 +138,7 @@ type BlockServiceServer interface {
 	GetBlocks(*GetBlocksRequest, BlockService_GetBlocksServer) error
 	// Scans a range of blocks.
 	ScanBlock(*ScanBlockRequest, BlockService_ScanBlockServer) error
+	FetchAndStoreBlock(context.Context, *FetchAndStoreBlockRequest) (*FetchAndStoreBlockResponse, error)
 }
 
 // UnimplementedBlockServiceServer should be embedded to have forward compatible implementations.
@@ -141,6 +153,9 @@ func (UnimplementedBlockServiceServer) GetBlocks(*GetBlocksRequest, BlockService
 }
 func (UnimplementedBlockServiceServer) ScanBlock(*ScanBlockRequest, BlockService_ScanBlockServer) error {
 	return status.Errorf(codes.Unimplemented, "method ScanBlock not implemented")
+}
+func (UnimplementedBlockServiceServer) FetchAndStoreBlock(context.Context, *FetchAndStoreBlockRequest) (*FetchAndStoreBlockResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchAndStoreBlock not implemented")
 }
 
 // UnsafeBlockServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -214,6 +229,24 @@ func (x *blockServiceScanBlockServer) Send(m *Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _BlockService_FetchAndStoreBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FetchAndStoreBlockRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BlockServiceServer).FetchAndStoreBlock(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BlockService_FetchAndStoreBlock_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BlockServiceServer).FetchAndStoreBlock(ctx, req.(*FetchAndStoreBlockRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BlockService_ServiceDesc is the grpc.ServiceDesc for BlockService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -224,6 +257,10 @@ var BlockService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlock",
 			Handler:    _BlockService_GetBlock_Handler,
+		},
+		{
+			MethodName: "FetchAndStoreBlock",
+			Handler:    _BlockService_FetchAndStoreBlock_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

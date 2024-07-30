@@ -519,6 +519,26 @@ func (m *MockBlockServiceClient) EXPECT() *MockBlockServiceClientMockRecorder {
 	return m.recorder
 }
 
+// FetchAndStoreBlock mocks base method.
+func (m *MockBlockServiceClient) FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest, opts ...grpc.CallOption) (*FetchAndStoreBlockResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FetchAndStoreBlock", varargs...)
+	ret0, _ := ret[0].(*FetchAndStoreBlockResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAndStoreBlock indicates an expected call of FetchAndStoreBlock.
+func (mr *MockBlockServiceClientMockRecorder) FetchAndStoreBlock(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAndStoreBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).FetchAndStoreBlock), varargs...)
+}
+
 // GetBlock mocks base method.
 func (m *MockBlockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*Block, error) {
 	m.ctrl.T.Helper()
@@ -600,6 +620,21 @@ func NewMockBlockServiceServer(ctrl *gomock.Controller) *MockBlockServiceServer 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockBlockServiceServer) EXPECT() *MockBlockServiceServerMockRecorder {
 	return m.recorder
+}
+
+// FetchAndStoreBlock mocks base method.
+func (m *MockBlockServiceServer) FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest) (*FetchAndStoreBlockResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FetchAndStoreBlock", ctx, in)
+	ret0, _ := ret[0].(*FetchAndStoreBlockResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FetchAndStoreBlock indicates an expected call of FetchAndStoreBlock.
+func (mr *MockBlockServiceServerMockRecorder) FetchAndStoreBlock(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FetchAndStoreBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FetchAndStoreBlock), ctx, in)
 }
 
 // GetBlock mocks base method.
