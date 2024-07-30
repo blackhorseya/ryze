@@ -101,3 +101,11 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 		}
 	}
 }
+
+func (i *impl) FetchAndStoreBlock(
+	ctx context.Context,
+	request *model.FetchAndStoreBlockRequest,
+) (*model.FetchAndStoreBlockResponse, error) {
+	// TODO: 2024/7/31|sean|implement me
+	panic("implement me")
+}
