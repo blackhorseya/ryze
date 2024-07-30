@@ -103,9 +103,19 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 }
 
 func (i *impl) FetchAndStoreBlock(
-	ctx context.Context,
+	c context.Context,
 	request *model.FetchAndStoreBlockRequest,
 ) (*model.FetchAndStoreBlockResponse, error) {
-	// TODO: 2024/7/31|sean|implement me
-	panic("implement me")
+	block, err := i.GetBlock(c, &model.GetBlockRequest{
+		Workchain: request.Workchain,
+		Shard:     request.Shard,
+		SeqNo:     request.SeqNo,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.FetchAndStoreBlockResponse{
+		Block: block,
+	}, nil
 }
