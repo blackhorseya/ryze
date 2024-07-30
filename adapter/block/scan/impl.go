@@ -27,13 +27,23 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 	}
 	go func() {
 		for {
-			block, err2 := stream.Recv()
+			newBlock, err2 := stream.Recv()
 			if err2 != nil {
-				ctx.Error("receive block error", zap.Error(err2))
+				ctx.Error("receive newBlock error", zap.Error(err2))
 				return
 			}
 
-			ctx.Info("receive block", zap.Any("block", &block))
+			block, err2 := i.blockClient.FetchAndStoreBlock(contextx.Background(), &model.FetchAndStoreBlockRequest{
+				Workchain: newBlock.Workchain,
+				Shard:     newBlock.Shard,
+				SeqNo:     newBlock.SeqNo,
+			})
+			if err2 != nil {
+				ctx.Error("fetch and store newBlock error", zap.Error(err2))
+				return
+			}
+
+			ctx.Info("fetch and store newBlock success", zap.Any("block", &block))
 		}
 	}()
 
