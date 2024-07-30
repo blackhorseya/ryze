@@ -23,15 +23,21 @@ func NewService(app *configx.Application, blockClient model.BlockServiceClient) 
 func (i *scan) Start(ctx contextx.Contextx) error {
 	// TODO: 2024/7/28|sean|add block scan logic here
 	// i.injector.BlockService.ScanBlock(&model.ScanBlockRequest{}, stream)
-	block, err := i.blockClient.GetBlock(ctx, &model.GetBlockRequest{
-		Workchain: -1,
-		Shard:     8000000000000000,
-		SeqNo:     39346131,
-	})
+	stream, err := i.blockClient.ScanBlock(ctx, &model.ScanBlockRequest{})
 	if err != nil {
 		return err
 	}
-	ctx.Debug("get block", zap.Any("block", &block))
+	go func() {
+		for {
+			block, err2 := stream.Recv()
+			if err2 != nil {
+				ctx.Error("receive block error", zap.Error(err2))
+				return
+			}
+
+			ctx.Info("receive block", zap.Any("block", block))
+		}
+	}()
 
 	return nil
 }

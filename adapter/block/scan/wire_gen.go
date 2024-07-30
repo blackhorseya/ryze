@@ -18,10 +18,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-import (
-	_ "github.com/blackhorseya/ryze/api/block/scan"
-)
-
 // Injectors from wire.go:
 
 func New(v *viper.Viper) (adapterx.Service, error) {
