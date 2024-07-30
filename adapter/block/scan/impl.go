@@ -21,8 +21,6 @@ func NewService(app *configx.Application, blockClient model.BlockServiceClient) 
 }
 
 func (i *scan) Start(ctx contextx.Contextx) error {
-	// TODO: 2024/7/28|sean|add block scan logic here
-	// i.injector.BlockService.ScanBlock(&model.ScanBlockRequest{}, stream)
 	stream, err := i.blockClient.ScanBlock(ctx, &model.ScanBlockRequest{})
 	if err != nil {
 		return err
@@ -44,6 +42,5 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 
 func (i *scan) AwaitSignal(ctx contextx.Contextx) error {
 	ctx.Info("await signal")
-	// TODO: 2024/7/29|sean|add block scan await signal logic here
 	return nil
 }
