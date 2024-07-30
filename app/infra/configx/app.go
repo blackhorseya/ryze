@@ -14,6 +14,12 @@ type Application struct {
 	HTTP httpx.Options `json:"http" yaml:"http"`
 	GRPC GRPC          `json:"grpc" yaml:"grpc"`
 
+	Storage struct {
+		Mongodb struct {
+			DSN string `json:"dsn" yaml:"dsn"`
+		} `json:"mongodb" yaml:"mongodb"`
+	} `json:"storage" yaml:"storage"`
+
 	OTel struct {
 		Target string `json:"target" yaml:"target"`
 	} `json:"otel" yaml:"otel"`
