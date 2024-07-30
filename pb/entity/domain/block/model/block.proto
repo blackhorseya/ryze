@@ -8,16 +8,24 @@ import "google/protobuf/timestamp.proto";
 // Represents a block in the blockchain.
 message Block {
   // Unique identifier of the block.
+  // @gotags: bson:"_id"
   string id = 1;
 
+  // @gotags: bson:"workchain"
   int32 workchain = 2;
+
+  // @gotags: bson:"shard"
   int64 shard = 3;
+
+  // @gotags: bson:"seq_no"
   uint32 seq_no = 4;
 
   // Timestamp of when the block was created.
+  // @gotags: bson:"timestamp" swaggertype:"string"
   google.protobuf.Timestamp timestamp = 5;
 
   // List of transaction IDs included in the block.
+  // @gotags: bson:"transaction_ids"
   repeated bytes transaction_ids = 6;
 }
 

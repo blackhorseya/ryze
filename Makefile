@@ -58,9 +58,7 @@ gen-pb: ## generate protobuf
 	@echo Successfully generated proto
 
 	@echo Starting inject tags
-	@find ./pb -name '*.pb.go' | while read -r pb_file; do \
-		protoc-go-inject-tag -input=$$pb_file; \
-	done
+	@protoc-go-inject-tag -input="./entity/domain/*/model/*.pb.go"
 	@echo Successfully injected tags
 
 .PHONY: gen-swagger

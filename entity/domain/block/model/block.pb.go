@@ -28,14 +28,20 @@ type Block struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Unique identifier of the block.
-	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Workchain int32  `protobuf:"varint,2,opt,name=workchain,proto3" json:"workchain,omitempty"`
-	Shard     int64  `protobuf:"varint,3,opt,name=shard,proto3" json:"shard,omitempty"`
-	SeqNo     uint32 `protobuf:"varint,4,opt,name=seq_no,json=seqNo,proto3" json:"seq_no,omitempty"`
+	// @gotags: bson:"_id"
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" bson:"_id"`
+	// @gotags: bson:"workchain"
+	Workchain int32 `protobuf:"varint,2,opt,name=workchain,proto3" json:"workchain,omitempty" bson:"workchain"`
+	// @gotags: bson:"shard"
+	Shard int64 `protobuf:"varint,3,opt,name=shard,proto3" json:"shard,omitempty" bson:"shard"`
+	// @gotags: bson:"seq_no"
+	SeqNo uint32 `protobuf:"varint,4,opt,name=seq_no,json=seqNo,proto3" json:"seq_no,omitempty" bson:"seq_no"`
 	// Timestamp of when the block was created.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// @gotags: bson:"timestamp" swaggertype:"string"
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty" bson:"timestamp" swaggertype:"string"`
 	// List of transaction IDs included in the block.
-	TransactionIds [][]byte `protobuf:"bytes,6,rep,name=transaction_ids,json=transactionIds,proto3" json:"transaction_ids,omitempty"`
+	// @gotags: bson:"transaction_ids"
+	TransactionIds [][]byte `protobuf:"bytes,6,rep,name=transaction_ids,json=transactionIds,proto3" json:"transaction_ids,omitempty" bson:"transaction_ids"`
 }
 
 func (x *Block) Reset() {
