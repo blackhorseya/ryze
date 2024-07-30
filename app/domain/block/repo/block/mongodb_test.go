@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/stretchr/testify/suite"
@@ -42,4 +43,38 @@ func (s *suiteMongodbTester) TearDownTest() {
 
 func TestMongodbAll(t *testing.T) {
 	suite.Run(t, new(suiteMongodbTester))
+}
+
+func (s *suiteMongodbTester) Test_mongodb_Create() {
+	block, err := model.NewBlock(-1, 8000000000000000, 39382597)
+	s.Require().NoError(err)
+
+	type args struct {
+		ctx  contextx.Contextx
+		item *model.Block
+		mock func()
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name:    "ok",
+			args:    args{item: block},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		s.T().Run(tt.name, func(t *testing.T) {
+			tt.args.ctx = contextx.Background()
+			if tt.args.mock != nil {
+				tt.args.mock()
+			}
+
+			if err = s.repo.Create(tt.args.ctx, tt.args.item); (err != nil) != tt.wantErr {
+				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }
