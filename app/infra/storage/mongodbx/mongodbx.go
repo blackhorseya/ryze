@@ -41,7 +41,7 @@ type Container struct {
 
 // NewContainer returns a new mongodb container.
 func NewContainer(ctx contextx.Contextx) (*Container, error) {
-	container, err := mongodb.Run(ctx, "mongo:6")
+	container, err := mongodb.Run(ctx, "mongo:7")
 	if err != nil {
 		return nil, fmt.Errorf("run mongodb container: %w", err)
 	}
