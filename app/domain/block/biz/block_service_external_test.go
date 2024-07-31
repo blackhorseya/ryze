@@ -5,27 +5,45 @@ package biz
 import (
 	"testing"
 
+	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/pkg/contextx"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
 )
 
 type suiteExternal struct {
 	suite.Suite
 
+	rw  *mongo.Client
 	biz model.BlockServiceServer
 }
 
 func (s *suiteExternal) SetupTest() {
+	config, err := configx.NewConfiguration(viper.GetViper())
+	s.Require().NoError(err)
+
+	app, ok := config.Services["block-grpc"]
+	s.Require().True(ok)
+
 	client, err := tonx.NewClient(tonx.Options{Network: "mainnet"})
 	s.Require().NoError(err)
 
-	s.biz = NewBlockService(client)
+	rw, err := mongodbx.NewClient(app)
+	s.Require().NoError(err)
+	s.rw = rw
+
+	s.biz = NewExternalBlockService(client, s.rw)
 }
 
 func (s *suiteExternal) TearDownTest() {
+	if s.rw != nil {
+		_ = s.rw.Disconnect(contextx.Background())
+	}
 }
 
 func TestExternalAll(t *testing.T) {

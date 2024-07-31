@@ -6,6 +6,7 @@ import (
 
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
@@ -14,12 +15,14 @@ import (
 
 type impl struct {
 	client *tonx.Client
+	blocks repo.IBlockRepo
 }
 
 // NewBlockService is used to create a new model.BlockServiceServer
-func NewBlockService(client *tonx.Client) model.BlockServiceServer {
+func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) model.BlockServiceServer {
 	return &impl{
 		client: client,
+		blocks: blocks,
 	}
 }
 

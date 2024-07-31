@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -46,7 +47,8 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 		configx.NewConfiguration,
 		initApplication,
 
-		biz.NewBlockService,
+		biz.ProviderBlockServiceSet,
+		mongodbx.NewClient,
 		initTonx,
 
 		grpcx.NewServer,

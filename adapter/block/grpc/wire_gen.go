@@ -11,8 +11,10 @@ import (
 	"fmt"
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
+	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -35,7 +37,12 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	blockServiceServer := biz.NewBlockService(client)
+	mongoClient, err := mongodbx.NewClient(application)
+	if err != nil {
+		return nil, err
+	}
+	iBlockRepo := block.NewMongoDB(mongoClient)
+	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
 	injector := &wirex.Injector{
 		C:            configuration,
 		A:            application,
