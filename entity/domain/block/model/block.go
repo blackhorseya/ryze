@@ -11,5 +11,6 @@ func NewBlock(workchain int32, shard int64, seqno uint32) (*Block, error) {
 		Workchain: workchain,
 		Shard:     shard,
 		SeqNo:     seqno,
+		// TODO: 2024/7/31|sean|add timestamp field
 	}, nil
 }
