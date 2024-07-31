@@ -109,12 +109,20 @@ func (i *impl) FetchAndStoreBlock(
 	c context.Context,
 	request *model.FetchAndStoreBlockRequest,
 ) (*model.FetchAndStoreBlockResponse, error) {
-	block, err := i.GetBlock(c, &model.GetBlockRequest{
+	ctx := contextx.WithContext(c)
+
+	block, err := i.GetBlock(ctx, &model.GetBlockRequest{
 		Workchain: request.Workchain,
 		Shard:     request.Shard,
 		SeqNo:     request.SeqNo,
 	})
 	if err != nil {
+		return nil, err
+	}
+
+	err = i.blocks.Create(ctx, block)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err))
 		return nil, err
 	}
 
