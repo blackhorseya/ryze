@@ -61,3 +61,11 @@ func (i *mongodb) Create(ctx contextx.Contextx, item *model.Block) (err error) {
 
 	return nil
 }
+
+func (i *mongodb) List(
+	ctx contextx.Contextx,
+	condition repo.ListCondition,
+) (items []*model.Block, total int, err error) {
+	// TODO: 2024/7/31|sean|implement me
+	panic("implement me")
+}
