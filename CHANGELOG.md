@@ -1,3 +1,49 @@
+## 0.2.0 (2024-07-31)
+
+### Feat
+
+- implement List method for block entities (#30)
+- refactor MongoDB operations in block package
+- implement List method for block entities
+- refactor error handling and data fetching logic (#29)
+- refactor error handling and data fetching logic
+- improve error handling and logging in block creation (#28)
+- improve error handling and logging in block creation
+- refactor MongoDB integration in application (#27)
+- implement MongoDB integration for data retrieval and storage
+- refactor MongoDB integration in application
+- improve MongoDB testing and update container version
+- refactor MongoDB implementation and methods
+- refactor block repository files in domain directory
+- integrate MongoDB storage functionality (#25)
+- integrate MongoDB storage functionality
+- refactor block fetching logic in FetchAndStoreBlock function
+- implement FetchAndStoreBlock functionality across files (#24)
+- implement FetchAndStoreBlock functionality across files
+- consolidate grpc client implementation
+
+### Fix
+
+- implement retry logic and request parameters logging in API client
+- refactor MongoDB query methods
+
+### Refactor
+
+- refactor block service function signatures
+- remove retry limit parameter from API client initialization
+- update logging messages for block scanning and service logs
+- refactor data manipulation methods across files
+- pass `block` variable as pointer in `ctx.Info` function
+- improve block processing efficiency (#23)
+- improve block processing efficiency
+- refactor `restful` struct to `scan` struct (#22)
+- refactor `restful` struct to `scan` struct
+- refactor service initialization to use dependency injection
+- refactor service initialization and context handling (#21)
+- refactor service initialization and context handling
+- update function calls for improved code readability
+- update service name and port for block-grpc service
+
 ## 0.1.1 (2024-07-29)
 
 ## 0.1.0 (2024-07-29)
