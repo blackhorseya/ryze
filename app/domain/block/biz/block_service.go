@@ -29,10 +29,10 @@ func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) model.BlockSer
 func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*model.Block, error) {
 	ctx := contextx.WithContext(c)
 
-	api := ton.NewAPIClient(i.client)
+	api := ton.NewAPIClient(i.client).WithRetry()
 	blockID, err := api.LookupBlock(ctx, request.Workchain, request.Shard, request.SeqNo)
 	if err != nil {
-		ctx.Error("failed to lookup block", zap.Error(err))
+		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("request", &request))
 		return nil, err
 	}
 
@@ -94,10 +94,10 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err2))
 			return err2
 		}
-		ctx.Info("block sent", zap.Uint32("seq_no", master.SeqNo))
+		ctx.Info("block sent", zap.String("block_id", newBlock.Id))
 
 		next := master.SeqNo + 1
-		master, err2 = api.WaitForBlock(next).LookupBlock(ctx, master.Workchain, master.Shard, next)
+		master, err2 = api.WaitForBlock(next).LookupBlock(stickyContext, master.Workchain, master.Shard, next)
 		if err2 != nil {
 			ctx.Error("failed to lookup block", zap.Uint32("seq_no", next), zap.Error(err2))
 			return err2
