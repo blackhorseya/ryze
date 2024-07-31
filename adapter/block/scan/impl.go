@@ -29,7 +29,7 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 		for {
 			newBlock, err2 := stream.Recv()
 			if err2 != nil {
-				ctx.Error("receive newBlock error", zap.Error(err2))
+				ctx.Fatal("receive newBlock error", zap.Error(err2))
 				return
 			}
 
@@ -39,7 +39,7 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 				SeqNo:     newBlock.SeqNo,
 			})
 			if err2 != nil {
-				ctx.Error("fetch and store newBlock error", zap.Error(err2))
+				ctx.Fatal("fetch and store newBlock error", zap.Error(err2))
 				return
 			}
 
