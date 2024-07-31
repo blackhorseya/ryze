@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
@@ -53,9 +54,28 @@ func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*mod
 	return ret, nil
 }
 
-func (i *impl) GetBlocks(request *model.GetBlocksRequest, server model.BlockService_GetBlocksServer) error {
-	// TODO: 2024/7/27|sean|implement me
-	panic("implement me")
+func (i *impl) GetBlocks(request *model.GetBlocksRequest, stream model.BlockService_GetBlocksServer) error {
+	ctx, span := otelx.Span(contextx.Background(), "block.biz.GetBlocks")
+	defer span.End()
+
+	items, _, err := i.blocks.List(ctx, repo.ListCondition{
+		Limit: 0,
+		Skip:  0,
+	})
+	if err != nil {
+		ctx.Error("failed to list blocks", zap.Error(err))
+		return err
+	}
+
+	for _, item := range items {
+		err = stream.Send(item)
+		if err != nil {
+			ctx.Error("failed to send block", zap.Error(err))
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockService_ScanBlockServer) error {
