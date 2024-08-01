@@ -3,14 +3,18 @@ log:
   format: console
 
 services:
+  block-scan:
+    name: dev-block-scan
+
   block-grpc:
-    name: example-block-grpc
+    name: dev-block-grpc
 
     grpc:
       port: 1993
 
-    otel:
-      target: "localhost:4317"
+    storage:
+      mongodb:
+        dsn: mongodb://admin:changeme@mongodb/?retryWrites=true&w=majority
 
 networks:
   ton:
