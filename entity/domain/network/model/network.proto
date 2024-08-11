@@ -4,7 +4,6 @@ package network;
 option go_package = "github.com/blackhorseya/ryze/entity/domain/network/model";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
 // Represents the statistics of the blockchain network.
 message NetworkStats {
@@ -20,18 +19,4 @@ message NodeStatus {
   bytes node_id = 1;
   bool is_connected = 2;
   google.protobuf.Timestamp last_active = 3;
-}
-
-// Request message for retrieving the status of a specific node.
-message GetNodeStatusRequest {
-  bytes node_id = 1;
-}
-
-// Service definition for managing network status and statistics.
-service NetworkService {
-  // Retrieves the current network statistics.
-  rpc GetNetworkStats(google.protobuf.Empty) returns (NetworkStats) {}
-
-  // Retrieves the status of a specific node by its ID.
-  rpc GetNodeStatus(GetNodeStatusRequest) returns (NodeStatus) {}
 }

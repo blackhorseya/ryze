@@ -1,0 +1,21 @@
+syntax = "proto3";
+package network;
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/network/biz";
+
+import "google/protobuf/empty.proto";
+import "entity/domain/network/model/network.proto";
+
+// Request message for retrieving the status of a specific node.
+message GetNodeStatusRequest {
+  bytes node_id = 1;
+}
+
+// Service definition for managing network status and statistics.
+service NetworkService {
+  // Retrieves the current network statistics.
+  rpc GetNetworkStats(google.protobuf.Empty) returns (NetworkStats) {}
+
+  // Retrieves the status of a specific node by its ID.
+  rpc GetNodeStatus(GetNodeStatusRequest) returns (NodeStatus) {}
+}

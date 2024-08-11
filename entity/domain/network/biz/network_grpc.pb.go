@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.20.3
-// source: entity/domain/network/mode/network.proto
+// source: entity/domain/network/biz/network.proto
 
-package model
+package biz
 
 import (
 	context "context"
+	model "github.com/blackhorseya/ryze/entity/domain/network/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -29,9 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NetworkServiceClient interface {
 	// Retrieves the current network statistics.
-	GetNetworkStats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NetworkStats, error)
+	GetNetworkStats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*model.NetworkStats, error)
 	// Retrieves the status of a specific node by its ID.
-	GetNodeStatus(ctx context.Context, in *GetNodeStatusRequest, opts ...grpc.CallOption) (*NodeStatus, error)
+	GetNodeStatus(ctx context.Context, in *GetNodeStatusRequest, opts ...grpc.CallOption) (*model.NodeStatus, error)
 }
 
 type networkServiceClient struct {
@@ -42,8 +43,8 @@ func NewNetworkServiceClient(cc grpc.ClientConnInterface) NetworkServiceClient {
 	return &networkServiceClient{cc}
 }
 
-func (c *networkServiceClient) GetNetworkStats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*NetworkStats, error) {
-	out := new(NetworkStats)
+func (c *networkServiceClient) GetNetworkStats(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*model.NetworkStats, error) {
+	out := new(model.NetworkStats)
 	err := c.cc.Invoke(ctx, NetworkService_GetNetworkStats_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -51,8 +52,8 @@ func (c *networkServiceClient) GetNetworkStats(ctx context.Context, in *emptypb.
 	return out, nil
 }
 
-func (c *networkServiceClient) GetNodeStatus(ctx context.Context, in *GetNodeStatusRequest, opts ...grpc.CallOption) (*NodeStatus, error) {
-	out := new(NodeStatus)
+func (c *networkServiceClient) GetNodeStatus(ctx context.Context, in *GetNodeStatusRequest, opts ...grpc.CallOption) (*model.NodeStatus, error) {
+	out := new(model.NodeStatus)
 	err := c.cc.Invoke(ctx, NetworkService_GetNodeStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -65,19 +66,19 @@ func (c *networkServiceClient) GetNodeStatus(ctx context.Context, in *GetNodeSta
 // for forward compatibility
 type NetworkServiceServer interface {
 	// Retrieves the current network statistics.
-	GetNetworkStats(context.Context, *emptypb.Empty) (*NetworkStats, error)
+	GetNetworkStats(context.Context, *emptypb.Empty) (*model.NetworkStats, error)
 	// Retrieves the status of a specific node by its ID.
-	GetNodeStatus(context.Context, *GetNodeStatusRequest) (*NodeStatus, error)
+	GetNodeStatus(context.Context, *GetNodeStatusRequest) (*model.NodeStatus, error)
 }
 
 // UnimplementedNetworkServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedNetworkServiceServer struct {
 }
 
-func (UnimplementedNetworkServiceServer) GetNetworkStats(context.Context, *emptypb.Empty) (*NetworkStats, error) {
+func (UnimplementedNetworkServiceServer) GetNetworkStats(context.Context, *emptypb.Empty) (*model.NetworkStats, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNetworkStats not implemented")
 }
-func (UnimplementedNetworkServiceServer) GetNodeStatus(context.Context, *GetNodeStatusRequest) (*NodeStatus, error) {
+func (UnimplementedNetworkServiceServer) GetNodeStatus(context.Context, *GetNodeStatusRequest) (*model.NodeStatus, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetNodeStatus not implemented")
 }
 
@@ -145,5 +146,5 @@ var NetworkService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "entity/domain/network/mode/network.proto",
+	Metadata: "entity/domain/network/biz/network.proto",
 }
