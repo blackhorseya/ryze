@@ -8,7 +8,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/suite"
@@ -20,7 +20,7 @@ type suiteExternal struct {
 	suite.Suite
 
 	rw  *mongo.Client
-	biz model.BlockServiceServer
+	biz biz.BlockServiceServer
 }
 
 func (s *suiteExternal) SetupTest() {
@@ -52,7 +52,7 @@ func TestExternalAll(t *testing.T) {
 
 func (s *suiteExternal) Test_impl_GetBlock() {
 	ctx := contextx.Background()
-	block, err := s.biz.GetBlock(ctx, &model.GetBlockRequest{
+	block, err := s.biz.GetBlock(ctx, &biz.GetBlockRequest{
 		Workchain: -1,
 		Shard:     8000000000000000,
 		SeqNo:     39382597,
@@ -64,7 +64,7 @@ func (s *suiteExternal) Test_impl_GetBlock() {
 
 func (s *suiteExternal) Test_impl_FetchAndStoreBlock() {
 	ctx := contextx.Background()
-	block, err := s.biz.FetchAndStoreBlock(ctx, &model.FetchAndStoreBlockRequest{
+	block, err := s.biz.FetchAndStoreBlock(ctx, &biz.FetchAndStoreBlockRequest{
 		Workchain: -1,
 		Shard:     8000000000000000,
 		SeqNo:     39382597,

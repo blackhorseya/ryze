@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +18,7 @@ type suiteTester struct {
 	ctrl   *gomock.Controller
 	client *tonx.Client
 	blocks *repo.MockIBlockRepo
-	biz    model.BlockServiceServer
+	biz    biz.BlockServiceServer
 }
 
 func (s *suiteTester) SetupTest() {
@@ -37,12 +37,12 @@ func TestAll(t *testing.T) {
 }
 
 func (s *suiteTester) Test_impl_ScanBlock() {
-	stream := model.NewMockBlockService_ScanBlockServer(s.ctrl)
+	stream := biz.NewMockBlockService_ScanBlockServer(s.ctrl)
 
 	timeout, cancelFunc := contextx.WithTimeout(contextx.Background(), 2*time.Second)
 	defer cancelFunc()
 
 	stream.EXPECT().Context().Return(timeout).Times(1)
 	stream.EXPECT().Send(gomock.Any()).Return(nil).MinTimes(1)
-	_ = s.biz.ScanBlock(&model.ScanBlockRequest{}, stream)
+	_ = s.biz.ScanBlock(&biz.ScanBlockRequest{}, stream)
 }
