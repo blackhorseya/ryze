@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.20.3
-// source: entity/domain/transaction/model/transaction.proto
+// source: entity/domain/transaction/biz/transaction.proto
 
-package model
+package biz
 
 import (
 	context "context"
+	model "github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -29,11 +30,11 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransactionServiceClient interface {
 	// Retrieves a single transaction by its ID.
-	GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
+	GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error)
 	// Retrieves all transactions within a specific block.
 	GetTransactions(ctx context.Context, in *GetTransactionsRequest, opts ...grpc.CallOption) (TransactionService_GetTransactionsClient, error)
 	// Creates a new transaction and returns the created transaction.
-	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*Transaction, error)
+	CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error)
 }
 
 type transactionServiceClient struct {
@@ -44,8 +45,8 @@ func NewTransactionServiceClient(cc grpc.ClientConnInterface) TransactionService
 	return &transactionServiceClient{cc}
 }
 
-func (c *transactionServiceClient) GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
-	out := new(Transaction)
+func (c *transactionServiceClient) GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error) {
+	out := new(model.Transaction)
 	err := c.cc.Invoke(ctx, TransactionService_GetTransaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -69,7 +70,7 @@ func (c *transactionServiceClient) GetTransactions(ctx context.Context, in *GetT
 }
 
 type TransactionService_GetTransactionsClient interface {
-	Recv() (*Transaction, error)
+	Recv() (*model.Transaction, error)
 	grpc.ClientStream
 }
 
@@ -77,16 +78,16 @@ type transactionServiceGetTransactionsClient struct {
 	grpc.ClientStream
 }
 
-func (x *transactionServiceGetTransactionsClient) Recv() (*Transaction, error) {
-	m := new(Transaction)
+func (x *transactionServiceGetTransactionsClient) Recv() (*model.Transaction, error) {
+	m := new(model.Transaction)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *transactionServiceClient) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*Transaction, error) {
-	out := new(Transaction)
+func (c *transactionServiceClient) CreateTransaction(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error) {
+	out := new(model.Transaction)
 	err := c.cc.Invoke(ctx, TransactionService_CreateTransaction_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,24 +100,24 @@ func (c *transactionServiceClient) CreateTransaction(ctx context.Context, in *Cr
 // for forward compatibility
 type TransactionServiceServer interface {
 	// Retrieves a single transaction by its ID.
-	GetTransaction(context.Context, *GetTransactionRequest) (*Transaction, error)
+	GetTransaction(context.Context, *GetTransactionRequest) (*model.Transaction, error)
 	// Retrieves all transactions within a specific block.
 	GetTransactions(*GetTransactionsRequest, TransactionService_GetTransactionsServer) error
 	// Creates a new transaction and returns the created transaction.
-	CreateTransaction(context.Context, *CreateTransactionRequest) (*Transaction, error)
+	CreateTransaction(context.Context, *CreateTransactionRequest) (*model.Transaction, error)
 }
 
 // UnimplementedTransactionServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedTransactionServiceServer struct {
 }
 
-func (UnimplementedTransactionServiceServer) GetTransaction(context.Context, *GetTransactionRequest) (*Transaction, error) {
+func (UnimplementedTransactionServiceServer) GetTransaction(context.Context, *GetTransactionRequest) (*model.Transaction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTransaction not implemented")
 }
 func (UnimplementedTransactionServiceServer) GetTransactions(*GetTransactionsRequest, TransactionService_GetTransactionsServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetTransactions not implemented")
 }
-func (UnimplementedTransactionServiceServer) CreateTransaction(context.Context, *CreateTransactionRequest) (*Transaction, error) {
+func (UnimplementedTransactionServiceServer) CreateTransaction(context.Context, *CreateTransactionRequest) (*model.Transaction, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
 }
 
@@ -158,7 +159,7 @@ func _TransactionService_GetTransactions_Handler(srv interface{}, stream grpc.Se
 }
 
 type TransactionService_GetTransactionsServer interface {
-	Send(*Transaction) error
+	Send(*model.Transaction) error
 	grpc.ServerStream
 }
 
@@ -166,7 +167,7 @@ type transactionServiceGetTransactionsServer struct {
 	grpc.ServerStream
 }
 
-func (x *transactionServiceGetTransactionsServer) Send(m *Transaction) error {
+func (x *transactionServiceGetTransactionsServer) Send(m *model.Transaction) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -211,5 +212,5 @@ var TransactionService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "entity/domain/transaction/model/transaction.proto",
+	Metadata: "entity/domain/transaction/biz/transaction.proto",
 }
