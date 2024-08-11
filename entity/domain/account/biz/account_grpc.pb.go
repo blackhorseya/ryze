@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.20.3
-// source: entity/domain/account/model/account.proto
+// source: entity/domain/account/biz/account.proto
 
-package model
+package biz
 
 import (
 	context "context"
+	model "github.com/blackhorseya/ryze/entity/domain/account/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,9 +29,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountServiceClient interface {
 	// Retrieves the details of an account by address.
-	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*Account, error)
+	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*model.Account, error)
 	// Creates a new account with the specified address.
-	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*Account, error)
+	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*model.Account, error)
 }
 
 type accountServiceClient struct {
@@ -41,8 +42,8 @@ func NewAccountServiceClient(cc grpc.ClientConnInterface) AccountServiceClient {
 	return &accountServiceClient{cc}
 }
 
-func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*Account, error) {
-	out := new(Account)
+func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*model.Account, error) {
+	out := new(model.Account)
 	err := c.cc.Invoke(ctx, AccountService_GetAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -50,8 +51,8 @@ func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountReq
 	return out, nil
 }
 
-func (c *accountServiceClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*Account, error) {
-	out := new(Account)
+func (c *accountServiceClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*model.Account, error) {
+	out := new(model.Account)
 	err := c.cc.Invoke(ctx, AccountService_CreateAccount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -64,19 +65,19 @@ func (c *accountServiceClient) CreateAccount(ctx context.Context, in *CreateAcco
 // for forward compatibility
 type AccountServiceServer interface {
 	// Retrieves the details of an account by address.
-	GetAccount(context.Context, *GetAccountRequest) (*Account, error)
+	GetAccount(context.Context, *GetAccountRequest) (*model.Account, error)
 	// Creates a new account with the specified address.
-	CreateAccount(context.Context, *CreateAccountRequest) (*Account, error)
+	CreateAccount(context.Context, *CreateAccountRequest) (*model.Account, error)
 }
 
 // UnimplementedAccountServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedAccountServiceServer struct {
 }
 
-func (UnimplementedAccountServiceServer) GetAccount(context.Context, *GetAccountRequest) (*Account, error) {
+func (UnimplementedAccountServiceServer) GetAccount(context.Context, *GetAccountRequest) (*model.Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
 }
-func (UnimplementedAccountServiceServer) CreateAccount(context.Context, *CreateAccountRequest) (*Account, error) {
+func (UnimplementedAccountServiceServer) CreateAccount(context.Context, *CreateAccountRequest) (*model.Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
 
@@ -144,5 +145,5 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "entity/domain/account/model/account.proto",
+	Metadata: "entity/domain/account/biz/account.proto",
 }
