@@ -2,7 +2,7 @@ package scan
 
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
@@ -10,10 +10,10 @@ import (
 
 type scan struct {
 	app         *configx.Application
-	blockClient model.BlockServiceClient
+	blockClient biz.BlockServiceClient
 }
 
-func NewService(app *configx.Application, blockClient model.BlockServiceClient) adapterx.Service {
+func NewService(app *configx.Application, blockClient biz.BlockServiceClient) adapterx.Service {
 	return &scan{
 		app:         app,
 		blockClient: blockClient,
@@ -21,7 +21,7 @@ func NewService(app *configx.Application, blockClient model.BlockServiceClient) 
 }
 
 func (i *scan) Start(ctx contextx.Contextx) error {
-	stream, err := i.blockClient.ScanBlock(ctx, &model.ScanBlockRequest{})
+	stream, err := i.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{})
 	if err != nil {
 		return err
 	}
@@ -33,7 +33,7 @@ func (i *scan) Start(ctx contextx.Contextx) error {
 				return
 			}
 
-			block, err2 := i.blockClient.FetchAndStoreBlock(contextx.Background(), &model.FetchAndStoreBlockRequest{
+			block, err2 := i.blockClient.FetchAndStoreBlock(contextx.Background(), &biz.FetchAndStoreBlockRequest{
 				Workchain: newBlock.Workchain,
 				Shard:     newBlock.Shard,
 				SeqNo:     newBlock.SeqNo,

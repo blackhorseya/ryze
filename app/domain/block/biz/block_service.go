@@ -6,6 +6,7 @@ import (
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
+	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -20,14 +21,14 @@ type impl struct {
 }
 
 // NewBlockService is used to create a new model.BlockServiceServer
-func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) model.BlockServiceServer {
+func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) blockB.BlockServiceServer {
 	return &impl{
 		client: client,
 		blocks: blocks,
 	}
 }
 
-func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*model.Block, error) {
+func (i *impl) GetBlock(c context.Context, request *blockB.GetBlockRequest) (*model.Block, error) {
 	ctx := contextx.WithContext(c)
 
 	api := ton.NewAPIClient(i.client).WithRetry()
@@ -54,7 +55,7 @@ func (i *impl) GetBlock(c context.Context, request *model.GetBlockRequest) (*mod
 	return ret, nil
 }
 
-func (i *impl) GetBlocks(request *model.GetBlocksRequest, stream model.BlockService_GetBlocksServer) error {
+func (i *impl) GetBlocks(request *blockB.GetBlocksRequest, stream blockB.BlockService_GetBlocksServer) error {
 	ctx, span := otelx.Span(contextx.Background(), "block.biz.GetBlocks")
 	defer span.End()
 
@@ -78,7 +79,7 @@ func (i *impl) GetBlocks(request *model.GetBlocksRequest, stream model.BlockServ
 	return nil
 }
 
-func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockService_ScanBlockServer) error {
+func (i *impl) ScanBlock(request *blockB.ScanBlockRequest, stream blockB.BlockService_ScanBlockServer) error {
 	api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
 	api.SetTrustedBlockFromConfig(i.client.Config)
 
@@ -127,11 +128,11 @@ func (i *impl) ScanBlock(request *model.ScanBlockRequest, stream model.BlockServ
 
 func (i *impl) FetchAndStoreBlock(
 	c context.Context,
-	request *model.FetchAndStoreBlockRequest,
-) (*model.FetchAndStoreBlockResponse, error) {
+	request *blockB.FetchAndStoreBlockRequest,
+) (*blockB.FetchAndStoreBlockResponse, error) {
 	ctx := contextx.WithContext(c)
 
-	block, err := i.GetBlock(ctx, &model.GetBlockRequest{
+	block, err := i.GetBlock(ctx, &blockB.GetBlockRequest{
 		Workchain: request.Workchain,
 		Shard:     request.Shard,
 		SeqNo:     request.SeqNo,
@@ -146,7 +147,7 @@ func (i *impl) FetchAndStoreBlock(
 		return nil, err
 	}
 
-	return &model.FetchAndStoreBlockResponse{
+	return &blockB.FetchAndStoreBlockResponse{
 		Block: block,
 	}, nil
 }

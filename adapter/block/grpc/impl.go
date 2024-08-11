@@ -5,7 +5,7 @@ import (
 
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
@@ -51,6 +51,6 @@ func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
 // NewInitServersFn creates a new impl server init function.
 func NewInitServersFn(injector *wirex.Injector) grpcx.InitServers {
 	return func(s *grpc.Server) {
-		model.RegisterBlockServiceServer(s, injector.BlockService)
+		biz.RegisterBlockServiceServer(s, injector.BlockService)
 	}
 }
