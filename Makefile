@@ -48,13 +48,11 @@ coverage: ## generate coverage
 .PHONY: gen-pb
 gen-pb: ## generate protobuf
 	@echo Starting generate pb
-	@find ./pb -name '*.proto' | while read -r proto_file; do \
-		protoc --proto_path=./pb \
-		    --go_out=paths=source_relative:./ \
-		    --go-grpc_out=paths=source_relative,require_unimplemented_servers=false:./ \
-		    --go-grpc-mock_out=paths=source_relative,require_unimplemented_servers=false:./ \
-		    $$proto_file; \
-	done
+	@protoc --proto_path=./ \
+     		--go_out=paths=source_relative:./ \
+     		--go-grpc_out=paths=source_relative,require_unimplemented_servers=false:./ \
+     		--go-grpc-mock_out=paths=source_relative,require_unimplemented_servers=false:./ \
+     		./entity/domain/*/*/*.proto
 	@echo Successfully generated proto
 
 	@echo Starting inject tags
