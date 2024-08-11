@@ -7,7 +7,6 @@
 package grpc
 
 import (
-	"errors"
 	"fmt"
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
@@ -60,12 +59,12 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 // wire.go:
 
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
-	app, ok := config.Services["block-grpc"]
-	if !ok {
-		return nil, errors.New("[block-grpc] service not found")
+	app, err := config.GetService("block-grpc")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get block-grpc config: %w", err)
 	}
 
-	err := otelx.SetupOTelSDK(contextx.Background(), app)
+	err = otelx.SetupOTelSDK(contextx.Background(), app)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup OpenTelemetry SDK: %w", err)
 	}

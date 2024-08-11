@@ -26,8 +26,8 @@ func (s *suiteExternalMongodb) SetupTest() {
 	config, err := configx.NewConfiguration(viper.GetViper())
 	s.Require().NoError(err)
 
-	app, ok := config.Services["block-grpc"]
-	s.Require().True(ok)
+	app, err := config.GetService("block-grpc")
+	s.Require().NoError(err)
 
 	rw, err := mongodbx.NewClient(app)
 	s.Require().NoError(err)

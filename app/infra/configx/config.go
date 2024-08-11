@@ -48,3 +48,13 @@ func NewConfiguration(v *viper.Viper) (*Configuration, error) {
 
 	return config, nil
 }
+
+// GetService is used to get the service by name.
+func (x *Configuration) GetService(name string) (*Application, error) {
+	service, ok := x.Services[name]
+	if !ok {
+		return nil, fmt.Errorf("service %s not found", name)
+	}
+
+	return service, nil
+}

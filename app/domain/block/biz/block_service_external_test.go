@@ -27,8 +27,8 @@ func (s *suiteExternal) SetupTest() {
 	config, err := configx.NewConfiguration(viper.GetViper())
 	s.Require().NoError(err)
 
-	app, ok := config.Services["block-grpc"]
-	s.Require().True(ok)
+	app, err := config.GetService("block-grpc")
+	s.Require().NoError(err)
 
 	client, err := tonx.NewClient(tonx.Options{Network: "mainnet"})
 	s.Require().NoError(err)

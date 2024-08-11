@@ -5,7 +5,6 @@
 package scan
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
@@ -19,12 +18,12 @@ import (
 )
 
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
-	app, ok := config.Services["block-scan"]
-	if !ok {
-		return nil, errors.New("[block-scan] service not found")
+	app, err := config.GetService("block-scan")
+	if err != nil {
+		return nil, fmt.Errorf("failed to get block-scan config: %w", err)
 	}
 
-	err := otelx.SetupOTelSDK(contextx.Background(), app)
+	err = otelx.SetupOTelSDK(contextx.Background(), app)
 	if err != nil {
 		return nil, fmt.Errorf("failed to setup OpenTelemetry SDK: %w", err)
 	}
