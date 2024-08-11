@@ -10,6 +10,9 @@ import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 type impl struct {
@@ -51,6 +54,12 @@ func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
 // NewInitServersFn creates a new impl server init function.
 func NewInitServersFn(injector *wirex.Injector) grpcx.InitServers {
 	return func(s *grpc.Server) {
+		healthServer := health.NewServer()
+		grpc_health_v1.RegisterHealthServer(s, healthServer)
+		healthServer.SetServingStatus("block", grpc_health_v1.HealthCheckResponse_SERVING)
+
 		biz.RegisterBlockServiceServer(s, injector.BlockService)
+
+		reflection.Register(s)
 	}
 }
