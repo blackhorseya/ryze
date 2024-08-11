@@ -1,0 +1,61 @@
+syntax = "proto3";
+package block;
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/block/biz";
+
+import "entity/domain/block/model/block.proto";
+
+// Request message for retrieving a single block by its ID.
+message GetBlockRequest {
+  int32 workchain = 1;
+  int64 shard = 2;
+  uint32 seq_no = 3;
+}
+
+// Request message for retrieving a range of blocks by their heights.
+message GetBlocksRequest {
+  // Starting height of the range of blocks to retrieve.
+  uint32 start_height = 1;
+
+  // Ending height of the range of blocks to retrieve.
+  uint32 end_height = 2;
+}
+
+// Request message for scanning blocks.
+message ScanBlockRequest {
+  // Starting height of the range of blocks to scan.
+  uint32 start_height = 1;
+
+  // Ending height of the range of blocks to scan.
+  uint32 end_height = 2;
+}
+
+// Request message for fetching and storing a block.
+message FetchAndStoreBlockRequest {
+  int32 workchain = 1;
+  int64 shard = 2;
+  uint32 seq_no = 3;
+}
+
+// Response message for fetching and storing a block.
+message FetchAndStoreBlockResponse {
+  // Status of the operation.
+  string status = 1;
+
+  // The fetched and stored block.
+  Block block = 2;
+}
+
+// Service definition for handling blocks.
+service BlockService {
+  // Retrieves a single block by its ID.
+  rpc GetBlock(GetBlockRequest) returns (Block) {}
+
+  // Retrieves a stream of blocks within a specified height range.
+  rpc GetBlocks(GetBlocksRequest) returns (stream Block) {}
+
+  // Scans a range of blocks.
+  rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
+
+  rpc FetchAndStoreBlock(FetchAndStoreBlockRequest) returns (FetchAndStoreBlockResponse) {}
+}

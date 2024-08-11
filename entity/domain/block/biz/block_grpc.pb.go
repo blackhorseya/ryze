@@ -2,12 +2,13 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.20.3
-// source: entity/domain/block/model/block.proto
+// source: entity/domain/block/biz/block.proto
 
-package model
+package biz
 
 import (
 	context "context"
+	model "github.com/blackhorseya/ryze/entity/domain/block/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -30,7 +31,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BlockServiceClient interface {
 	// Retrieves a single block by its ID.
-	GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*Block, error)
+	GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error)
 	// Retrieves a stream of blocks within a specified height range.
 	GetBlocks(ctx context.Context, in *GetBlocksRequest, opts ...grpc.CallOption) (BlockService_GetBlocksClient, error)
 	// Scans a range of blocks.
@@ -46,8 +47,8 @@ func NewBlockServiceClient(cc grpc.ClientConnInterface) BlockServiceClient {
 	return &blockServiceClient{cc}
 }
 
-func (c *blockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*Block, error) {
-	out := new(Block)
+func (c *blockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
+	out := new(model.Block)
 	err := c.cc.Invoke(ctx, BlockService_GetBlock_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -71,7 +72,7 @@ func (c *blockServiceClient) GetBlocks(ctx context.Context, in *GetBlocksRequest
 }
 
 type BlockService_GetBlocksClient interface {
-	Recv() (*Block, error)
+	Recv() (*model.Block, error)
 	grpc.ClientStream
 }
 
@@ -79,8 +80,8 @@ type blockServiceGetBlocksClient struct {
 	grpc.ClientStream
 }
 
-func (x *blockServiceGetBlocksClient) Recv() (*Block, error) {
-	m := new(Block)
+func (x *blockServiceGetBlocksClient) Recv() (*model.Block, error) {
+	m := new(model.Block)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -103,7 +104,7 @@ func (c *blockServiceClient) ScanBlock(ctx context.Context, in *ScanBlockRequest
 }
 
 type BlockService_ScanBlockClient interface {
-	Recv() (*Block, error)
+	Recv() (*model.Block, error)
 	grpc.ClientStream
 }
 
@@ -111,8 +112,8 @@ type blockServiceScanBlockClient struct {
 	grpc.ClientStream
 }
 
-func (x *blockServiceScanBlockClient) Recv() (*Block, error) {
-	m := new(Block)
+func (x *blockServiceScanBlockClient) Recv() (*model.Block, error) {
+	m := new(model.Block)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -133,7 +134,7 @@ func (c *blockServiceClient) FetchAndStoreBlock(ctx context.Context, in *FetchAn
 // for forward compatibility
 type BlockServiceServer interface {
 	// Retrieves a single block by its ID.
-	GetBlock(context.Context, *GetBlockRequest) (*Block, error)
+	GetBlock(context.Context, *GetBlockRequest) (*model.Block, error)
 	// Retrieves a stream of blocks within a specified height range.
 	GetBlocks(*GetBlocksRequest, BlockService_GetBlocksServer) error
 	// Scans a range of blocks.
@@ -145,7 +146,7 @@ type BlockServiceServer interface {
 type UnimplementedBlockServiceServer struct {
 }
 
-func (UnimplementedBlockServiceServer) GetBlock(context.Context, *GetBlockRequest) (*Block, error) {
+func (UnimplementedBlockServiceServer) GetBlock(context.Context, *GetBlockRequest) (*model.Block, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlock not implemented")
 }
 func (UnimplementedBlockServiceServer) GetBlocks(*GetBlocksRequest, BlockService_GetBlocksServer) error {
@@ -196,7 +197,7 @@ func _BlockService_GetBlocks_Handler(srv interface{}, stream grpc.ServerStream) 
 }
 
 type BlockService_GetBlocksServer interface {
-	Send(*Block) error
+	Send(*model.Block) error
 	grpc.ServerStream
 }
 
@@ -204,7 +205,7 @@ type blockServiceGetBlocksServer struct {
 	grpc.ServerStream
 }
 
-func (x *blockServiceGetBlocksServer) Send(m *Block) error {
+func (x *blockServiceGetBlocksServer) Send(m *model.Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -217,7 +218,7 @@ func _BlockService_ScanBlock_Handler(srv interface{}, stream grpc.ServerStream) 
 }
 
 type BlockService_ScanBlockServer interface {
-	Send(*Block) error
+	Send(*model.Block) error
 	grpc.ServerStream
 }
 
@@ -225,7 +226,7 @@ type blockServiceScanBlockServer struct {
 	grpc.ServerStream
 }
 
-func (x *blockServiceScanBlockServer) Send(m *Block) error {
+func (x *blockServiceScanBlockServer) Send(m *model.Block) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -275,5 +276,5 @@ var BlockService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "entity/domain/block/model/block.proto",
+	Metadata: "entity/domain/block/biz/block.proto",
 }
