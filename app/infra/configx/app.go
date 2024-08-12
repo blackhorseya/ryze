@@ -27,6 +27,7 @@ type Application struct {
 
 // GRPC is the gRPC configuration.
 type GRPC struct {
+	URL  string `json:"url" yaml:"url"`
 	Host string `json:"host" yaml:"host"`
 	Port int    `json:"port" yaml:"port"`
 }

@@ -30,7 +30,7 @@ func (c *Client) Dial(service string) (*grpc.ClientConn, error) {
 		return nil, fmt.Errorf("service: [%s] not found", service)
 	}
 
-	target := fmt.Sprintf("localhost:%d", app.GRPC.Port)
+	target := fmt.Sprintf("%s:%d", app.GRPC.URL, app.GRPC.Port)
 	options := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
