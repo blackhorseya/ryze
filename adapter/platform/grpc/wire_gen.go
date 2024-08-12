@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
 	biz2 "github.com/blackhorseya/ryze/app/domain/network/biz"
+	biz3 "github.com/blackhorseya/ryze/app/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -48,7 +49,8 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	iBlockRepo := block.NewMongoDB(mongoClient)
 	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
 	networkServiceServer := biz2.NewNetworkService(client)
-	initServers := NewInitServersFn(blockServiceServer, networkServiceServer)
+	transactionServiceServer := biz3.NewTransactionService(client)
+	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		return nil, err

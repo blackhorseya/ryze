@@ -10,6 +10,7 @@ import (
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	blockB "github.com/blackhorseya/ryze/app/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/app/domain/network/biz"
+	txB "github.com/blackhorseya/ryze/app/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -53,6 +54,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 
 		blockB.ProviderBlockServiceSet,
 		netB.NewNetworkService,
+		txB.NewTransactionService,
 
 		initTonx,
 		mongodbx.NewClient,

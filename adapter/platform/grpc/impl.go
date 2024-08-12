@@ -7,6 +7,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
+	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
@@ -60,6 +61,7 @@ func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
 func NewInitServersFn(
 	blockServer blockB.BlockServiceServer,
 	networkServer netB.NetworkServiceServer,
+	txServer txB.TransactionServiceServer,
 ) grpcx.InitServers {
 	return func(s *grpc.Server) {
 		healthServer := health.NewServer()
@@ -68,6 +70,7 @@ func NewInitServersFn(
 
 		blockB.RegisterBlockServiceServer(s, blockServer)
 		netB.RegisterNetworkServiceServer(s, networkServer)
+		txB.RegisterTransactionServiceServer(s, txServer)
 
 		reflection.Register(s)
 	}
