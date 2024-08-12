@@ -1,10 +1,13 @@
 package grpc
 
 import (
+	"fmt"
+
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -12,21 +15,39 @@ import (
 )
 
 type impl struct {
+	injector *wirex.Injector
+	server   *grpcx.Server
 }
 
 // NewGRPC creates a new impl service.
 func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Service {
-	return &impl{}
+	return &impl{
+		injector: injector,
+		server:   server,
+	}
 }
 
 func (i *impl) Start(ctx contextx.Contextx) error {
-	// TODO: 2024/8/12|sean|implement me
-	panic("implement me")
+	err := i.server.Start(ctx)
+	if err != nil {
+		ctx.Error("Failed to start grpc server", zap.Error(err))
+		return err
+	}
+
+	ctx.Info("start grpc server")
+
+	return nil
 }
 
 func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
-	// TODO: 2024/8/12|sean|implement me
-	panic("implement me")
+	ctx.Info("receive signal to stop server")
+
+	if err := i.server.Stop(ctx); err != nil {
+		ctx.Error("Failed to stop server", zap.Error(err))
+		return fmt.Errorf("failed to stop server: %w", err)
+	}
+
+	return nil
 }
 
 // NewInitServersFn creates a new impl server init function.

@@ -22,7 +22,7 @@ var serviceName = "platform-grpc"
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
 	app, err := config.GetService(serviceName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get platform config: %w", err)
+		return nil, fmt.Errorf("failed to get %s config: %w", serviceName, err)
 	}
 
 	err = otelx.SetupOTelSDK(contextx.Background(), app)
