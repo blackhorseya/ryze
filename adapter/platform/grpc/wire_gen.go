@@ -9,8 +9,13 @@ package grpc
 import (
 	"fmt"
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
+	"github.com/blackhorseya/ryze/app/domain/block/biz"
+	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
+	biz2 "github.com/blackhorseya/ryze/app/domain/network/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -32,7 +37,18 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 		C: configuration,
 		A: application,
 	}
-	initServers := NewInitServersFn()
+	client, err := initTonx()
+	if err != nil {
+		return nil, err
+	}
+	mongoClient, err := mongodbx.NewClient(application)
+	if err != nil {
+		return nil, err
+	}
+	iBlockRepo := block.NewMongoDB(mongoClient)
+	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
+	networkServiceServer := biz2.NewNetworkService(client)
+	initServers := NewInitServersFn(blockServiceServer, networkServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		return nil, err
@@ -57,4 +73,8 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 	}
 
 	return app, nil
+}
+
+func initTonx() (*tonx.Client, error) {
+	return tonx.NewClient(tonx.Options{Network: "mainnet"})
 }

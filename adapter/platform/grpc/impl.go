@@ -5,6 +5,8 @@ import (
 
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
+	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
@@ -55,11 +57,17 @@ func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
 }
 
 // NewInitServersFn creates a new impl server init function.
-func NewInitServersFn() grpcx.InitServers {
+func NewInitServersFn(
+	blockServer blockB.BlockServiceServer,
+	networkServer netB.NetworkServiceServer,
+) grpcx.InitServers {
 	return func(s *grpc.Server) {
 		healthServer := health.NewServer()
 		grpc_health_v1.RegisterHealthServer(s, healthServer)
 		healthServer.SetServingStatus(serviceName, grpc_health_v1.HealthCheckResponse_SERVING)
+
+		blockB.RegisterBlockServiceServer(s, blockServer)
+		netB.RegisterNetworkServiceServer(s, networkServer)
 
 		reflection.Register(s)
 	}
