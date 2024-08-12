@@ -1,6 +1,7 @@
 package grpcx
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/blackhorseya/ryze/app/infra/configx"
@@ -28,6 +29,10 @@ func (c *Client) Dial(service string) (*grpc.ClientConn, error) {
 	app, ok := c.services[service]
 	if !ok {
 		return nil, fmt.Errorf("service: [%s] not found", service)
+	}
+
+	if app.GRPC.URL == "" || app.GRPC.Port == 0 {
+		return nil, errors.New("grpc url or port is empty")
 	}
 
 	target := fmt.Sprintf("%s:%d", app.GRPC.URL, app.GRPC.Port)
