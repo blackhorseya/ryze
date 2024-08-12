@@ -12,21 +12,13 @@ message GetTransactionRequest {
 }
 
 // Request message for retrieving all transactions within a specific block.
-message GetTransactionsRequest {
-  // Identifier of the block to retrieve transactions from.
-  bytes block_id = 1;
-}
+message ListTransactionsRequest {
+  int32 workchain = 1;
+  int64 shard = 2;
+  uint32 seq_no = 3;
 
-// Request message for creating a new transaction.
-message CreateTransactionRequest {
-  // Address of the sender.
-  bytes from = 1;
-
-  // Address of the recipient.
-  bytes to = 2;
-
-  // Amount of currency to transfer in the transaction.
-  double amount = 3;
+  int64 page = 4;
+  int64 page_size = 5;
 }
 
 // Service definition for handling transactions.
@@ -35,8 +27,5 @@ service TransactionService {
   rpc GetTransaction(GetTransactionRequest) returns (Transaction) {}
 
   // Retrieves all transactions within a specific block.
-  rpc GetTransactions(GetTransactionsRequest) returns (stream Transaction) {}
-
-  // Creates a new transaction and returns the created transaction.
-  rpc CreateTransaction(CreateTransactionRequest) returns (Transaction) {}
+  rpc ListTransactions(ListTransactionsRequest) returns (stream Transaction) {}
 }
