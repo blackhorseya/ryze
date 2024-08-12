@@ -32,6 +32,10 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	injector := &wirex.Injector{
+		C: configuration,
+		A: application,
+	}
 	client, err := initTonx()
 	if err != nil {
 		return nil, err
@@ -42,12 +46,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	}
 	iBlockRepo := block.NewMongoDB(mongoClient)
 	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
-	injector := &wirex.Injector{
-		C:            configuration,
-		A:            application,
-		BlockService: blockServiceServer,
-	}
-	initServers := NewInitServersFn(injector)
+	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		return nil, err
