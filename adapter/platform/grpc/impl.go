@@ -30,7 +30,11 @@ func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Service {
 func (i *impl) Start(ctx contextx.Contextx) error {
 	err := i.server.Start(ctx)
 	if err != nil {
-		ctx.Error("Failed to start grpc server", zap.Error(err))
+		ctx.Error(
+			"Failed to start grpc server",
+			zap.Error(err),
+			zap.String("addr", i.injector.A.GRPC.GetAddr()),
+		)
 		return err
 	}
 
