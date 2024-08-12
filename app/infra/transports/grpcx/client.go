@@ -6,6 +6,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -32,6 +33,7 @@ func (c *Client) Dial(service string) (*grpc.ClientConn, error) {
 	target := fmt.Sprintf("localhost:%d", app.GRPC.Port)
 	options := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(
 			grpc_prometheus.UnaryClientInterceptor,
 		)),
