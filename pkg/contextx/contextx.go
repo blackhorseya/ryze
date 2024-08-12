@@ -82,3 +82,18 @@ func FromGin(c *gin.Context) (Contextx, error) {
 
 	return ctx, nil
 }
+
+// FromContext returns a Contextx from context.Context.
+func FromContext(ctx context.Context) (Contextx, error) {
+	value := ctx.Value(KeyCtx)
+	if value == nil {
+		return Contextx{}, errors.New("contextx not found in context.Context")
+	}
+
+	c, ok := value.(Contextx)
+	if !ok {
+		return Contextx{}, errors.New("contextx type error")
+	}
+
+	return c, nil
+}
