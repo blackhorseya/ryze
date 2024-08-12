@@ -47,7 +47,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	}
 	iBlockRepo := block.NewMongoDB(mongoClient)
 	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
-	networkServiceServer := biz2.NewNetworkService()
+	networkServiceServer := biz2.NewNetworkService(client)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {

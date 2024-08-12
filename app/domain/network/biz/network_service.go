@@ -3,17 +3,21 @@ package biz
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/network/biz"
 	"github.com/blackhorseya/ryze/entity/domain/network/model"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type networkService struct {
+	client *tonx.Client
 }
 
 // NewNetworkService return a new network service
-func NewNetworkService() biz.NetworkServiceServer {
-	return &networkService{}
+func NewNetworkService(client *tonx.Client) biz.NetworkServiceServer {
+	return &networkService{
+		client: client,
+	}
 }
 
 func (i *networkService) GetNetworkStats(ctx context.Context, empty *emptypb.Empty) (*model.NetworkStats, error) {
