@@ -3,6 +3,7 @@ package contextx
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -84,16 +85,11 @@ func FromGin(c *gin.Context) (Contextx, error) {
 }
 
 // FromContext returns a Contextx from context.Context.
-func FromContext(ctx context.Context) (Contextx, error) {
-	value := ctx.Value(KeyCtx)
-	if value == nil {
-		return Contextx{}, errors.New("contextx not found in context.Context")
-	}
-
-	c, ok := value.(Contextx)
+func FromContext(c context.Context) (ctx Contextx, err error) {
+	ctx, ok := c.(Contextx)
 	if !ok {
-		return Contextx{}, errors.New("contextx type error")
+		return Contextx{}, fmt.Errorf("invalid context type: %T", c)
 	}
 
-	return c, nil
+	return ctx, nil
 }

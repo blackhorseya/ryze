@@ -3,9 +3,13 @@ package biz
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/network/biz"
 	"github.com/blackhorseya/ryze/entity/domain/network/model"
+	"github.com/blackhorseya/ryze/pkg/contextx"
+	"github.com/xssnick/tonutils-go/ton"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -20,9 +24,30 @@ func NewNetworkService(client *tonx.Client) biz.NetworkServiceServer {
 	}
 }
 
-func (i *networkService) GetNetworkStats(ctx context.Context, empty *emptypb.Empty) (*model.NetworkStats, error) {
-	// TODO: 2024/8/12|sean|implement me
-	panic("implement me")
+func (i *networkService) GetNetworkStats(c context.Context, empty *emptypb.Empty) (*model.NetworkStats, error) {
+	ctx, err := contextx.FromContext(c)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, span := otelx.Span(ctx, "network.biz.GetNetworkStats")
+	defer span.End()
+
+	api := ton.NewAPIClient(i.client).WithRetry()
+
+	stats, err := api.CurrentMasterchainInfo(ctx)
+	if err != nil {
+		ctx.Error("failed to get current masterchain info", zap.Error(err))
+		return nil, err
+	}
+
+	return &model.NetworkStats{
+		TotalBlocks:       0,
+		TotalTransactions: 0,
+		TotalAccounts:     0,
+		LatestBlockHeight: stats.SeqNo,
+		LatestBlockTime:   nil,
+	}, nil
 }
 
 func (i *networkService) GetNodeStatus(c context.Context, req *biz.GetNodeStatusRequest) (*model.NodeStatus, error) {
