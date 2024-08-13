@@ -78,7 +78,7 @@ func (i *txService) ListTransactions(
 					ctx.Error("get transaction error", zap.Error(err3), zap.Any("id", id))
 					return err3
 				}
-				ctx.Debug("get transaction", zap.Any("tx", &tx))
+				ctx.Debug("get transaction", zap.Any("tx", &tx), zap.String("tx_string", tx.String()))
 
 				txList = append(txList, txM.NewTransactionFromTon(tx))
 			}
