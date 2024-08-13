@@ -15,7 +15,7 @@ import (
 	biz3 "github.com/blackhorseya/ryze/app/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -42,11 +42,11 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	db, err := pgx.NewClient(application)
+	mongoClient, err := mongodbx.NewClient(application)
 	if err != nil {
 		return nil, err
 	}
-	iBlockRepo := block.NewGORM(db)
+	iBlockRepo := block.NewMongoDB(mongoClient)
 	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
 	networkServiceServer := biz2.NewNetworkService(client)
 	transactionServiceServer := biz3.NewTransactionService(client)
