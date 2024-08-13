@@ -18,6 +18,10 @@ type Application struct {
 		Mongodb struct {
 			DSN string `json:"dsn" yaml:"dsn"`
 		} `json:"mongodb" yaml:"mongodb"`
+
+		Postgresql struct {
+			DSN string `json:"dsn" yaml:"dsn"`
+		} `json:"postgresql" yaml:"postgresql"`
 	} `json:"storage" yaml:"storage"`
 
 	OTel struct {

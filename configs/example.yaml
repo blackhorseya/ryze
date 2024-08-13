@@ -3,14 +3,25 @@ log:
   format: console
 
 services:
-  block-scan:
-    name: dev-block-scan
+  platform-grpc:
+    name: dev-platform-grpc
+
+    grpc:
+      url: localhost
+      port: 50051
+
+    storage:
+      mongodb:
+        dsn: mongodb://admin:changeme@mongodb/?retryWrites=true&w=majority
+
+      postgresql:
+        dsn: "user=root password=changeme dbname=ryze host=postgresql port=5432 sslmode=disable"
 
   block-grpc:
     name: dev-block-grpc
 
     grpc:
-      port: 1993
+      port: 1992
 
     storage:
       mongodb:
