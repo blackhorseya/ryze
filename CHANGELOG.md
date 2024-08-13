@@ -1,3 +1,54 @@
+## 0.3.0 (2024-08-13)
+
+### Feat
+
+- create GORM implementation for block repository
+- refactor PostgreSQL client initialization in app infra (#37)
+- refactor service configurations and update ports
+- refactor PostgreSQL client initialization in app infra
+- implement detailed logging for transactions in service code (#36)
+- implement detailed logging for transactions in service code
+- refactor transaction handling in service layer
+- improve transaction handling and imports
+- integrate transaction service server in gRPC adapter
+- introduce transaction service to biz package in transaction domain
+- refactor transaction request message structure
+- implement gRPC server for block and network services
+- implement gRPC adapter with Wire dependency injection (#35)
+- implement gRPC adapter with Wire dependency injection
+- update `GRPC` struct with `URL` field usage
+- implement OpenTelemetry instrumentation for gRPC server
+- implement new function for retrieving context data (#34)
+- implement new function for retrieving context data
+- implement network server functionality in grpc and wire implementations (#33)
+- implement network server functionality in grpc and wire implementations
+- create network service struct and methods in domain biz directory
+- register health, reflection, and grpc servers
+- implement gRPC server interceptors
+- create transaction service and proto messages
+- define network related messages and services
+- define message structures for block related requests and responses
+
+### Fix
+
+- improve error handling for gRPC connection settings
+- refactor error handling and messages across multiple files
+
+### Refactor
+
+- update package imports and remove unnecessary file
+- refactor block service to use GORM instead of MongoDB
+- enhance NewTransactionFromTon function and fields
+- refactor logging and error handling in `impl` struct
+- refactor network service initialization across files
+- refactor dependency injection for block service integration
+- refactor server middleware and implement new functions (#32)
+- refactor server middleware and implement new functions
+- refactor import paths and mock initialization in test files
+- update import paths and function signatures in block service
+- restructure account domain files
+- refactor file structure and build process for protobuf files
+
 ## 0.2.0 (2024-07-31)
 
 ### Feat
