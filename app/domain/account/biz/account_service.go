@@ -2,10 +2,16 @@ package biz
 
 import (
 	"context"
+	"encoding/base64"
 
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/account/biz"
 	"github.com/blackhorseya/ryze/entity/domain/account/model"
+	"github.com/blackhorseya/ryze/pkg/contextx"
+	"github.com/xssnick/tonutils-go/address"
+	"github.com/xssnick/tonutils-go/ton"
+	"go.uber.org/zap"
 )
 
 type accountService struct {
@@ -20,6 +26,33 @@ func NewAccountService(client *tonx.Client) biz.AccountServiceServer {
 }
 
 func (i *accountService) GetAccount(c context.Context, req *biz.GetAccountRequest) (*model.Account, error) {
+	ctx, err := contextx.FromContext(c)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, span := otelx.Span(ctx, "account.biz.GetAccount")
+	defer span.End()
+
+	api := ton.NewAPIClient(i.client).WithRetry()
+	master, err := api.CurrentMasterchainInfo(ctx)
+	if err != nil {
+		ctx.Error("failed to get masterchain info", zap.Error(err))
+		return nil, err
+	}
+
+	addr := address.MustParseAddr(base64.StdEncoding.EncodeToString(req.Address))
+
+	// we use WaitForBlock to make sure block is ready,
+	// it is optional but escapes us from liteserver block not ready errors
+	res, err := api.WaitForBlock(master.SeqNo).GetAccount(ctx, master, addr)
+	if err != nil {
+		ctx.Error("failed to get account", zap.Error(err), zap.Any("address", addr))
+		return nil, err
+	}
+	ctx.Debug("get account from ton", zap.Any("account", res))
+
 	// TODO: 2024/8/16|sean|实现获取账户信息
-	panic("implement me")
+
+	return model.NewAccountFromSource(res), nil
 }
