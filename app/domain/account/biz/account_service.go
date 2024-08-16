@@ -40,7 +40,11 @@ func (i *accountService) GetAccount(c context.Context, req *biz.GetAccountReques
 		return nil, err
 	}
 
-	addr := address.MustParseAddr(req.Address)
+	addr, err := address.ParseAddr(req.Address)
+	if err != nil {
+		ctx.Error("failed to parse address", zap.Error(err), zap.String("address", req.Address))
+		return nil, err
+	}
 
 	// we use WaitForBlock to make sure block is ready,
 	// it is optional but escapes us from liteserver block not ready errors
