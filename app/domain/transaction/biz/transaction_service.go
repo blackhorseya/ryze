@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
@@ -11,6 +12,7 @@ import (
 	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/metadata"
 )
 
 type txService struct {
@@ -83,6 +85,14 @@ func (i *txService) ListTransactions(
 				txList = append(txList, txM.NewTransactionFromTon(tx))
 			}
 		}
+	}
+
+	err = stream.SetHeader(metadata.New(map[string]string{
+		"total": strconv.Itoa(len(txList)),
+	}))
+	if err != nil {
+		ctx.Error("set header error", zap.Error(err))
+		return err
 	}
 
 	for _, tx := range txList {
