@@ -38,15 +38,6 @@ services:
     volumes:
       - mongo-data:/data/db
 
-  postgresql:
-    image: postgres:14
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: changeme
-      POSTGRES_DB: ryze
-
 volumes:
   mongo-data:
   pg-data:
