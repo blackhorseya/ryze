@@ -7,7 +7,7 @@ import "entity/domain/account/model/account.proto";
 
 // Request message for retrieving account details.
 message GetAccountRequest {
-  bytes address = 1;
+  string address = 1;
 }
 
 // Service definition for managing accounts.
