@@ -81,7 +81,7 @@ func (s *suiteMongodbTester) Test_mongodb_Create() {
 }
 
 func (s *suiteMongodbTester) Test_mongodb_GetByID() {
-	block, err := model.NewBlock(-1, 8000000000000000, 39382597)
+	block, err := model.NewBlock(-1, -9223372036854775808, 39382597)
 	s.Require().NoError(err)
 
 	type args struct {
