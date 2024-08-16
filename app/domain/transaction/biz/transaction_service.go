@@ -1,7 +1,6 @@
 package biz
 
 import (
-	"context"
 	"strconv"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
@@ -24,11 +23,6 @@ func NewTransactionService(client *tonx.Client) txB.TransactionServiceServer {
 	return &txService{
 		client: client,
 	}
-}
-
-func (i *txService) GetTransaction(c context.Context, req *txB.GetTransactionRequest) (*txM.Transaction, error) {
-	// TODO: 2024/8/12|sean|implement me
-	panic("implement me")
 }
 
 func (i *txService) ListTransactions(

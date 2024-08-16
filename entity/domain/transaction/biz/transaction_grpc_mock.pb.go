@@ -278,26 +278,6 @@ func (m *MockTransactionServiceClient) EXPECT() *MockTransactionServiceClientMoc
 	return m.recorder
 }
 
-// GetTransaction mocks base method.
-func (m *MockTransactionServiceClient) GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetTransaction", varargs...)
-	ret0, _ := ret[0].(*model.Transaction)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTransaction indicates an expected call of GetTransaction.
-func (mr *MockTransactionServiceClientMockRecorder) GetTransaction(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockTransactionServiceClient)(nil).GetTransaction), varargs...)
-}
-
 // ListTransactions mocks base method.
 func (m *MockTransactionServiceClient) ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsClient, error) {
 	m.ctrl.T.Helper()
@@ -339,21 +319,6 @@ func NewMockTransactionServiceServer(ctrl *gomock.Controller) *MockTransactionSe
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransactionServiceServer) EXPECT() *MockTransactionServiceServerMockRecorder {
 	return m.recorder
-}
-
-// GetTransaction mocks base method.
-func (m *MockTransactionServiceServer) GetTransaction(ctx context.Context, in *GetTransactionRequest) (*model.Transaction, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTransaction", ctx, in)
-	ret0, _ := ret[0].(*model.Transaction)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTransaction indicates an expected call of GetTransaction.
-func (mr *MockTransactionServiceServerMockRecorder) GetTransaction(ctx, in interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTransaction", reflect.TypeOf((*MockTransactionServiceServer)(nil).GetTransaction), ctx, in)
 }
 
 // ListTransactions mocks base method.

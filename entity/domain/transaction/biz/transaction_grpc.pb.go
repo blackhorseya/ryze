@@ -20,7 +20,6 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TransactionService_GetTransaction_FullMethodName   = "/transaction.TransactionService/GetTransaction"
 	TransactionService_ListTransactions_FullMethodName = "/transaction.TransactionService/ListTransactions"
 )
 
@@ -28,8 +27,6 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransactionServiceClient interface {
-	// Retrieves a single transaction by its ID.
-	GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error)
 	// Retrieves all transactions within a specific block.
 	ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsClient, error)
 }
@@ -40,15 +37,6 @@ type transactionServiceClient struct {
 
 func NewTransactionServiceClient(cc grpc.ClientConnInterface) TransactionServiceClient {
 	return &transactionServiceClient{cc}
-}
-
-func (c *transactionServiceClient) GetTransaction(ctx context.Context, in *GetTransactionRequest, opts ...grpc.CallOption) (*model.Transaction, error) {
-	out := new(model.Transaction)
-	err := c.cc.Invoke(ctx, TransactionService_GetTransaction_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *transactionServiceClient) ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsClient, error) {
@@ -87,8 +75,6 @@ func (x *transactionServiceListTransactionsClient) Recv() (*model.Transaction, e
 // All implementations should embed UnimplementedTransactionServiceServer
 // for forward compatibility
 type TransactionServiceServer interface {
-	// Retrieves a single transaction by its ID.
-	GetTransaction(context.Context, *GetTransactionRequest) (*model.Transaction, error)
 	// Retrieves all transactions within a specific block.
 	ListTransactions(*ListTransactionsRequest, TransactionService_ListTransactionsServer) error
 }
@@ -97,9 +83,6 @@ type TransactionServiceServer interface {
 type UnimplementedTransactionServiceServer struct {
 }
 
-func (UnimplementedTransactionServiceServer) GetTransaction(context.Context, *GetTransactionRequest) (*model.Transaction, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTransaction not implemented")
-}
 func (UnimplementedTransactionServiceServer) ListTransactions(*ListTransactionsRequest, TransactionService_ListTransactionsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListTransactions not implemented")
 }
@@ -113,24 +96,6 @@ type UnsafeTransactionServiceServer interface {
 
 func RegisterTransactionServiceServer(s grpc.ServiceRegistrar, srv TransactionServiceServer) {
 	s.RegisterService(&TransactionService_ServiceDesc, srv)
-}
-
-func _TransactionService_GetTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTransactionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TransactionServiceServer).GetTransaction(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TransactionService_GetTransaction_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TransactionServiceServer).GetTransaction(ctx, req.(*GetTransactionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _TransactionService_ListTransactions_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -160,12 +125,7 @@ func (x *transactionServiceListTransactionsServer) Send(m *model.Transaction) er
 var TransactionService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "transaction.TransactionService",
 	HandlerType: (*TransactionServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "GetTransaction",
-			Handler:    _TransactionService_GetTransaction_Handler,
-		},
-	},
+	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "ListTransactions",

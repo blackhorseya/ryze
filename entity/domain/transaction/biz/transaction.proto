@@ -5,12 +5,6 @@ option go_package = "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 
 import "entity/domain/transaction/model/transaction.proto";
 
-// Request message for retrieving a single transaction by its ID.
-message GetTransactionRequest {
-  // Unique identifier of the transaction to retrieve.
-  bytes id = 1;
-}
-
 // Request message for retrieving all transactions within a specific block.
 message ListTransactionsRequest {
   int32 workchain = 1;
@@ -23,9 +17,6 @@ message ListTransactionsRequest {
 
 // Service definition for handling transactions.
 service TransactionService {
-  // Retrieves a single transaction by its ID.
-  rpc GetTransaction(GetTransactionRequest) returns (Transaction) {}
-
   // Retrieves all transactions within a specific block.
   rpc ListTransactions(ListTransactionsRequest) returns (stream Transaction) {}
 }
