@@ -35,26 +35,6 @@ func (m *MockAccountServiceClient) EXPECT() *MockAccountServiceClientMockRecorde
 	return m.recorder
 }
 
-// CreateAccount mocks base method.
-func (m *MockAccountServiceClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*model.Account, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CreateAccount", varargs...)
-	ret0, _ := ret[0].(*model.Account)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateAccount indicates an expected call of CreateAccount.
-func (mr *MockAccountServiceClientMockRecorder) CreateAccount(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockAccountServiceClient)(nil).CreateAccount), varargs...)
-}
-
 // GetAccount mocks base method.
 func (m *MockAccountServiceClient) GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*model.Account, error) {
 	m.ctrl.T.Helper()
@@ -96,21 +76,6 @@ func NewMockAccountServiceServer(ctrl *gomock.Controller) *MockAccountServiceSer
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAccountServiceServer) EXPECT() *MockAccountServiceServerMockRecorder {
 	return m.recorder
-}
-
-// CreateAccount mocks base method.
-func (m *MockAccountServiceServer) CreateAccount(ctx context.Context, in *CreateAccountRequest) (*model.Account, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateAccount", ctx, in)
-	ret0, _ := ret[0].(*model.Account)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateAccount indicates an expected call of CreateAccount.
-func (mr *MockAccountServiceServerMockRecorder) CreateAccount(ctx, in interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAccount", reflect.TypeOf((*MockAccountServiceServer)(nil).CreateAccount), ctx, in)
 }
 
 // GetAccount mocks base method.

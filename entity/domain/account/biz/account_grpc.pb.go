@@ -20,8 +20,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AccountService_GetAccount_FullMethodName    = "/account.AccountService/GetAccount"
-	AccountService_CreateAccount_FullMethodName = "/account.AccountService/CreateAccount"
+	AccountService_GetAccount_FullMethodName = "/account.AccountService/GetAccount"
 )
 
 // AccountServiceClient is the client API for AccountService service.
@@ -30,8 +29,6 @@ const (
 type AccountServiceClient interface {
 	// Retrieves the details of an account by address.
 	GetAccount(ctx context.Context, in *GetAccountRequest, opts ...grpc.CallOption) (*model.Account, error)
-	// Creates a new account with the specified address.
-	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*model.Account, error)
 }
 
 type accountServiceClient struct {
@@ -51,23 +48,12 @@ func (c *accountServiceClient) GetAccount(ctx context.Context, in *GetAccountReq
 	return out, nil
 }
 
-func (c *accountServiceClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*model.Account, error) {
-	out := new(model.Account)
-	err := c.cc.Invoke(ctx, AccountService_CreateAccount_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // AccountServiceServer is the server API for AccountService service.
 // All implementations should embed UnimplementedAccountServiceServer
 // for forward compatibility
 type AccountServiceServer interface {
 	// Retrieves the details of an account by address.
 	GetAccount(context.Context, *GetAccountRequest) (*model.Account, error)
-	// Creates a new account with the specified address.
-	CreateAccount(context.Context, *CreateAccountRequest) (*model.Account, error)
 }
 
 // UnimplementedAccountServiceServer should be embedded to have forward compatible implementations.
@@ -76,9 +62,6 @@ type UnimplementedAccountServiceServer struct {
 
 func (UnimplementedAccountServiceServer) GetAccount(context.Context, *GetAccountRequest) (*model.Account, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
-}
-func (UnimplementedAccountServiceServer) CreateAccount(context.Context, *CreateAccountRequest) (*model.Account, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
 
 // UnsafeAccountServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -110,24 +93,6 @@ func _AccountService_GetAccount_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AccountService_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateAccountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountServiceServer).CreateAccount(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AccountService_CreateAccount_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountServiceServer).CreateAccount(ctx, req.(*CreateAccountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // AccountService_ServiceDesc is the grpc.ServiceDesc for AccountService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -138,10 +103,6 @@ var AccountService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccount",
 			Handler:    _AccountService_GetAccount_Handler,
-		},
-		{
-			MethodName: "CreateAccount",
-			Handler:    _AccountService_CreateAccount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
