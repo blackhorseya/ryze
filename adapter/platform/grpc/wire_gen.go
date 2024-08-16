@@ -9,6 +9,7 @@ package grpc
 import (
 	"fmt"
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
+	biz4 "github.com/blackhorseya/ryze/app/domain/account/biz"
 	"github.com/blackhorseya/ryze/app/domain/block/biz"
 	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
 	biz2 "github.com/blackhorseya/ryze/app/domain/network/biz"
@@ -50,7 +51,8 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	blockServiceServer := biz.NewBlockService(client, iBlockRepo)
 	networkServiceServer := biz2.NewNetworkService(client)
 	transactionServiceServer := biz3.NewTransactionService(client)
-	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer)
+	accountServiceServer := biz4.NewAccountService(client)
+	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		return nil, err

@@ -5,6 +5,7 @@ import (
 
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	accountB "github.com/blackhorseya/ryze/entity/domain/account/biz"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
@@ -62,6 +63,7 @@ func NewInitServersFn(
 	blockServer blockB.BlockServiceServer,
 	networkServer netB.NetworkServiceServer,
 	txServer txB.TransactionServiceServer,
+	accountServer accountB.AccountServiceServer,
 ) grpcx.InitServers {
 	return func(s *grpc.Server) {
 		healthServer := health.NewServer()
@@ -71,6 +73,7 @@ func NewInitServersFn(
 		blockB.RegisterBlockServiceServer(s, blockServer)
 		netB.RegisterNetworkServiceServer(s, networkServer)
 		txB.RegisterTransactionServiceServer(s, txServer)
+		accountB.RegisterAccountServiceServer(s, accountServer)
 
 		reflection.Register(s)
 	}
