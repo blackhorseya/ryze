@@ -6,5 +6,6 @@ option go_package = "github.com/blackhorseya/ryze/entity/domain/account/model";
 // Represents a blockchain account.
 message Account {
   bytes address = 1;
-  double balance = 2;
+  string balance = 2;
+  bool is_active = 3;
 }
