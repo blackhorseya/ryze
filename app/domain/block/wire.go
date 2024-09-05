@@ -2,7 +2,7 @@
 
 //go:generate wire
 
-package biz
+package block
 
 import (
 	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
@@ -12,9 +12,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// ProviderBlockServiceSet is used to provide a new model.BlockServiceServer
-var ProviderBlockServiceSet = wire.NewSet(NewBlockService, block.NewMongoDB)
+// ProviderSet is used to provide a new model.BlockServiceServer
+var ProviderSet = wire.NewSet(
+	NewBlockService,
+	block.NewMongoDB,
+)
 
 func NewExternalBlockService(client *tonx.Client, rw *mongo.Client) biz.BlockServiceServer {
-	panic(wire.Build(ProviderBlockServiceSet))
+	panic(wire.Build(ProviderSet))
 }

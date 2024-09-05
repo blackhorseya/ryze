@@ -37,9 +37,12 @@ clean: ## clean build directory
 build: ## build go binary
 	@go build -v ./...
 
-.PHONY: test
-test: ## run test
-	@go test -v ./...
+.PHNOY: test
+test: test-unit
+
+.PHONY: test-unit
+test-unit: ## Run unit tests
+	go test -v --tags=!integration,!external ./...
 
 .PHONY: coverage
 coverage: ## generate coverage

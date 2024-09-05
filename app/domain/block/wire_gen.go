@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package biz
+package block
 
 import (
 	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
@@ -24,5 +24,7 @@ func NewExternalBlockService(client *tonx.Client, rw *mongo.Client) biz.BlockSer
 
 // wire.go:
 
-// ProviderBlockServiceSet is used to provide a new model.BlockServiceServer
-var ProviderBlockServiceSet = wire.NewSet(NewBlockService, block.NewMongoDB)
+// ProviderSet is used to provide a new model.BlockServiceServer
+var ProviderSet = wire.NewSet(
+	NewBlockService, block.NewMongoDB,
+)

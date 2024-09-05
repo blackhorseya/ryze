@@ -8,8 +8,8 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
-	blockB "github.com/blackhorseya/ryze/app/domain/block/biz"
-	netB "github.com/blackhorseya/ryze/app/domain/network/biz"
+	blockB "github.com/blackhorseya/ryze/app/domain/block"
+	netB "github.com/blackhorseya/ryze/app/domain/network"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -48,7 +48,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 		initApplication,
 
 		netB.NewNetworkService,
-		blockB.ProviderBlockServiceSet,
+		blockB.ProviderSet,
 		mongodbx.NewClient,
 		initTonx,
 

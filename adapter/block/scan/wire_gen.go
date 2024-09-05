@@ -8,7 +8,8 @@ package scan
 
 import (
 	"fmt"
-	"github.com/blackhorseya/ryze/app/domain/block/biz"
+
+	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
@@ -32,7 +33,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	blockServiceClient, err := biz.NewBlockServiceClient(client)
+	blockServiceClient, err := block.NewBlockServiceClient(client)
 	if err != nil {
 		return nil, err
 	}

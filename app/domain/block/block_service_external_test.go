@@ -1,6 +1,6 @@
 //go:build external
 
-package biz
+package block
 
 import (
 	"testing"
