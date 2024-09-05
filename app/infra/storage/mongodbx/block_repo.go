@@ -1,4 +1,4 @@
-package block
+package mongodbx
 
 import (
 	"time"

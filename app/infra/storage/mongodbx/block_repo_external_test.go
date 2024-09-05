@@ -1,12 +1,11 @@
 //go:build external
 
-package block
+package mongodbx
 
 import (
 	"testing"
 
 	"github.com/blackhorseya/ryze/app/infra/configx"
-	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -29,7 +28,7 @@ func (s *suiteExternalMongodb) SetupTest() {
 	app, err := config.GetService("block-grpc")
 	s.Require().NoError(err)
 
-	rw, err := mongodbx.NewClient(app)
+	rw, err := NewClient(app)
 	s.Require().NoError(err)
 
 	s.rw = rw

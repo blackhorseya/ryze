@@ -1,10 +1,9 @@
-package block
+package mongodbx
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -15,13 +14,13 @@ import (
 type suiteMongodbTester struct {
 	suite.Suite
 
-	container *mongodbx.Container
+	container *Container
 	rw        *mongo.Client
 	repo      repo.IBlockRepo
 }
 
 func (s *suiteMongodbTester) SetupTest() {
-	container, err := mongodbx.NewContainer(contextx.Background())
+	container, err := NewContainer(contextx.Background())
 	s.Require().NoError(err)
 	s.container = container
 
