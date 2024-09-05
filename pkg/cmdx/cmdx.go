@@ -1,12 +1,12 @@
 package cmdx
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -15,11 +15,11 @@ import (
 type ServiceCmd struct {
 	Use        string
 	Short      string
-	GetService func(v *viper.Viper) (adapterx.Service, error)
+	GetService func(v *viper.Viper) (adapterx.Server, func(), error)
 }
 
 // NewServiceCmd creates a new service command.
-func NewServiceCmd(use string, short string, svc func(v *viper.Viper) (adapterx.Service, error)) *cobra.Command {
+func NewServiceCmd(use string, short string, svc func(v *viper.Viper) (adapterx.Server, func(), error)) *cobra.Command {
 	return (&ServiceCmd{Use: use, Short: short, GetService: svc}).NewCmd()
 }
 
@@ -31,13 +31,13 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			v := viper.New()
 
-			service, err := c.GetService(v)
+			service, clean, err := c.GetService(v)
 			cobra.CheckErr(err)
+			defer clean()
 
-			ctx, cancelFunc := contextx.WithCancel(contextx.Background())
-			defer cancelFunc()
+			c := context.Background()
 
-			err = service.Start(ctx)
+			err = service.Start(c)
 			cobra.CheckErr(err)
 
 			signalChan := make(chan os.Signal, 1)
@@ -45,7 +45,7 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 
 			<-signalChan
 
-			err = service.AwaitSignal(ctx)
+			err = service.Shutdown(c)
 			cobra.CheckErr(err)
 		},
 	}

@@ -25,14 +25,14 @@ import (
 
 // Injectors from wire.go:
 
-func New(v *viper.Viper) (adapterx.Service, error) {
+func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	application, err := initApplication(configuration)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	injector := &wirex.Injector{
 		C: configuration,
@@ -40,11 +40,11 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	}
 	client, err := initTonx()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	mongoClient, err := mongodbx.NewClient(application)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
 	blockServiceServer := block.NewBlockService(client, iBlockRepo)
@@ -54,10 +54,11 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	service := NewGRPC(injector, server)
-	return service, nil
+	adapterxServer := NewGRPC(injector, server)
+	return adapterxServer, func() {
+	}, nil
 }
 
 // wire.go:

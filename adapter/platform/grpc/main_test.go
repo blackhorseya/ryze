@@ -13,10 +13,11 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	service, err := New(viper.New())
+	service, clean, err := New(viper.New())
 	if err != nil {
 		t.Fatalf("New() error = %v", err)
 	}
+	defer clean()
 
 	ctx, cancelFunc := contextx.WithCancel(contextx.Background())
 	defer cancelFunc()
@@ -31,7 +32,7 @@ func TestRun(t *testing.T) {
 
 	<-signalChan
 
-	err = service.AwaitSignal(ctx)
+	err = service.Shutdown(ctx)
 	if err != nil {
 		t.Fatalf("AwaitSignal() error = %v", err)
 	}
