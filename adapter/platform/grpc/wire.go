@@ -8,10 +8,10 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
-	accountB "github.com/blackhorseya/ryze/app/domain/account"
-	blockB "github.com/blackhorseya/ryze/app/domain/block"
-	netB "github.com/blackhorseya/ryze/app/domain/network"
-	txB "github.com/blackhorseya/ryze/app/domain/transaction"
+	"github.com/blackhorseya/ryze/app/domain/account"
+	"github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/network"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -53,10 +53,10 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		grpcx.NewServer,
 		NewInitServersFn,
 
-		blockB.ProviderSet,
-		netB.NewNetworkService,
-		txB.NewTransactionService,
-		accountB.NewAccountService,
+		account.ProviderSet,
+		block.ProviderSet,
+		network.ProviderSet,
+		transaction.ProviderSet,
 
 		initTonx,
 		mongodbx.NewClient,
