@@ -8,9 +8,8 @@ package grpc
 
 import (
 	"fmt"
-
 	"github.com/blackhorseya/ryze/adapter/block/wirex"
-	block2 "github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/domain/network"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
@@ -46,7 +45,7 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 		return nil, err
 	}
 	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
-	blockServiceServer := block2.NewBlockService(client, iBlockRepo)
+	blockServiceServer := block.NewBlockService(client, iBlockRepo)
 	networkServiceServer := network.NewNetworkService(client)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
