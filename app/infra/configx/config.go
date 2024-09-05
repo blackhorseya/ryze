@@ -11,9 +11,9 @@ import (
 
 // Configuration is the application configuration
 type Configuration struct {
-	Log      logging.Options     `json:"log" yaml:"log"`
-	Networks map[string]*Network `json:"networks" yaml:"networks"`
+	Log logging.Options `json:"log" yaml:"log"`
 
+	Networks map[string]*Network     `json:"networks" yaml:"networks"`
 	Services map[string]*Application `json:"services" yaml:"services"`
 }
 
