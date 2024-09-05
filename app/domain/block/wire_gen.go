@@ -17,7 +17,7 @@ import (
 // Injectors from wire.go:
 
 func NewExternalBlockService(client *tonx.Client, rw *mongo.Client) biz.BlockServiceServer {
-	iBlockRepo := block.NewMongoDB(rw)
+	iBlockRepo := block.NewBlockRepo(rw)
 	blockServiceServer := NewBlockService(client, iBlockRepo)
 	return blockServiceServer
 }
@@ -26,5 +26,5 @@ func NewExternalBlockService(client *tonx.Client, rw *mongo.Client) biz.BlockSer
 
 // ProviderSet is used to provide a new model.BlockServiceServer
 var ProviderSet = wire.NewSet(
-	NewBlockService, block.NewMongoDB,
+	NewBlockService, block.NewBlockRepo,
 )

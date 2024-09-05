@@ -15,7 +15,7 @@ import (
 // ProviderSet is used to provide a new model.BlockServiceServer
 var ProviderSet = wire.NewSet(
 	NewBlockService,
-	block.NewMongoDB,
+	block.NewBlockRepo,
 )
 
 func NewExternalBlockService(client *tonx.Client, rw *mongo.Client) biz.BlockServiceServer {

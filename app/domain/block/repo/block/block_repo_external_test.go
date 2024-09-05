@@ -33,7 +33,7 @@ func (s *suiteExternalMongodb) SetupTest() {
 	s.Require().NoError(err)
 
 	s.rw = rw
-	s.repo = NewMongoDB(rw)
+	s.repo = NewBlockRepo(rw)
 }
 
 func (s *suiteExternalMongodb) TearDownTest() {

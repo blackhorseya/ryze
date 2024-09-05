@@ -19,17 +19,17 @@ const (
 	collName       = "blocks"
 )
 
-type mongodb struct {
+type mongodbBlockRepo struct {
 	rw *mongo.Client
 }
 
-// NewMongoDB is used to create an implementation of the block repository.
-func NewMongoDB(rw *mongo.Client) repo.IBlockRepo {
-	return &mongodb{rw: rw}
+// NewBlockRepo is used to create an implementation of the block repository.
+func NewBlockRepo(rw *mongo.Client) repo.IBlockRepo {
+	return &mongodbBlockRepo{rw: rw}
 }
 
-func (i *mongodb) GetByID(ctx contextx.Contextx, id string) (item *model.Block, err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodb.GetByID")
+func (i *mongodbBlockRepo) GetByID(ctx contextx.Contextx, id string) (item *model.Block, err error) {
+	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.GetByID")
 	defer span.End()
 
 	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
@@ -39,15 +39,15 @@ func (i *mongodb) GetByID(ctx contextx.Contextx, id string) (item *model.Block, 
 	filter := bson.M{"metadata._id": id}
 	err = i.rw.Database(dbName).Collection(collName).FindOne(timeout, filter).Decode(&got)
 	if err != nil {
-		ctx.Error("failed to find a block from mongodb", zap.Error(err), zap.Any("id", id))
+		ctx.Error("failed to find a block from mongodbBlockRepo", zap.Error(err), zap.Any("id", id))
 		return nil, err
 	}
 
 	return got.Metadata, nil
 }
 
-func (i *mongodb) Create(ctx contextx.Contextx, item *model.Block) (err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodb.Create")
+func (i *mongodbBlockRepo) Create(ctx contextx.Contextx, item *model.Block) (err error) {
+	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.Create")
 	defer span.End()
 
 	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
@@ -56,18 +56,18 @@ func (i *mongodb) Create(ctx contextx.Contextx, item *model.Block) (err error) {
 	doc := newBlockDocument(item)
 	_, err = i.rw.Database(dbName).Collection(collName).InsertOne(timeout, doc)
 	if err != nil {
-		ctx.Error("failed to insert a block to mongodb", zap.Error(err))
+		ctx.Error("failed to insert a block to mongodbBlockRepo", zap.Error(err))
 		return err
 	}
 
 	return nil
 }
 
-func (i *mongodb) List(
+func (i *mongodbBlockRepo) List(
 	ctx contextx.Contextx,
 	condition repo.ListCondition,
 ) (items []*model.Block, total int, err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodb.List")
+	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.List")
 	defer span.End()
 
 	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
@@ -87,7 +87,7 @@ func (i *mongodb) List(
 
 	cur, err := i.rw.Database(dbName).Collection(collName).Find(timeout, filter, opts)
 	if err != nil {
-		ctx.Error("failed to find blocks from mongodb", zap.Error(err))
+		ctx.Error("failed to find blocks from mongodbBlockRepo", zap.Error(err))
 		return nil, 0, err
 	}
 	defer cur.Close(timeout)
@@ -96,7 +96,7 @@ func (i *mongodb) List(
 		var got blockDocument
 		err = cur.Decode(&got)
 		if err != nil {
-			ctx.Error("failed to decode a block from mongodb", zap.Error(err))
+			ctx.Error("failed to decode a block from mongodbBlockRepo", zap.Error(err))
 			return nil, 0, err
 		}
 
@@ -105,7 +105,7 @@ func (i *mongodb) List(
 
 	count, err := i.rw.Database(dbName).Collection(collName).CountDocuments(timeout, filter)
 	if err != nil {
-		ctx.Error("failed to count blocks from mongodb", zap.Error(err))
+		ctx.Error("failed to count blocks from mongodbBlockRepo", zap.Error(err))
 		return nil, 0, err
 	}
 
