@@ -29,31 +29,28 @@ func (i *txService) ListTransactions(
 	req *txB.ListTransactionsRequest,
 	stream txB.TransactionService_ListTransactionsServer,
 ) error {
-	ctx, err := contextx.FromContext(stream.Context())
-	if err != nil {
-		return err
-	}
-
-	ctx, span := otelx.Span(ctx, "transaction.biz.ListTransactions")
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactions")
 	defer span.End()
+
+	ctx := contextx.WithContext(c)
 
 	var txList []*txM.Transaction
 
 	api := ton.NewAPIClient(i.client).WithRetry()
-
 	{
 		var fetchedIDs []ton.TransactionShortInfo
 		var after *ton.TransactionID3
 		var more = true
 
 		for more {
-			block, err2 := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
+			block, err2 := api.LookupBlock(next, req.Workchain, req.Shard, req.SeqNo)
 			if err2 != nil {
 				ctx.Error("lookup block error", zap.Error(err2), zap.Any("req", &req))
 				return err2
 			}
 
-			fetchedIDs, more, err2 = api.GetBlockTransactionsV2(ctx, block, 100, after)
+			fetchedIDs, more, err2 = api.GetBlockTransactionsV2(next, block, 100, after)
 			if err2 != nil {
 				ctx.Error("get block transactions error", zap.Error(err2), zap.Any("block", &block))
 				return err2
@@ -65,7 +62,7 @@ func (i *txService) ListTransactions(
 
 			for _, id := range fetchedIDs {
 				tx, err3 := api.GetTransaction(
-					ctx,
+					next,
 					block,
 					address.NewAddress(0, byte(block.Workchain), id.Account),
 					id.LT,
@@ -81,7 +78,7 @@ func (i *txService) ListTransactions(
 		}
 	}
 
-	err = stream.SetHeader(metadata.New(map[string]string{
+	err := stream.SetHeader(metadata.New(map[string]string{
 		"total": strconv.Itoa(len(txList)),
 	}))
 	if err != nil {

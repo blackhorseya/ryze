@@ -10,10 +10,10 @@
 package repo
 
 import (
+	context "context"
 	reflect "reflect"
 
 	model "github.com/blackhorseya/ryze/entity/domain/block/model"
-	contextx "github.com/blackhorseya/ryze/pkg/contextx"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -41,38 +41,38 @@ func (m *MockIBlockRepo) EXPECT() *MockIBlockRepoMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockIBlockRepo) Create(ctx contextx.Contextx, item *model.Block) error {
+func (m *MockIBlockRepo) Create(c context.Context, item *model.Block) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", ctx, item)
+	ret := m.ctrl.Call(m, "Create", c, item)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockIBlockRepoMockRecorder) Create(ctx, item any) *gomock.Call {
+func (mr *MockIBlockRepoMockRecorder) Create(c, item any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIBlockRepo)(nil).Create), ctx, item)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIBlockRepo)(nil).Create), c, item)
 }
 
 // GetByID mocks base method.
-func (m *MockIBlockRepo) GetByID(ctx contextx.Contextx, id string) (*model.Block, error) {
+func (m *MockIBlockRepo) GetByID(c context.Context, id string) (*model.Block, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret := m.ctrl.Call(m, "GetByID", c, id)
 	ret0, _ := ret[0].(*model.Block)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID.
-func (mr *MockIBlockRepoMockRecorder) GetByID(ctx, id any) *gomock.Call {
+func (mr *MockIBlockRepoMockRecorder) GetByID(c, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIBlockRepo)(nil).GetByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockIBlockRepo)(nil).GetByID), c, id)
 }
 
 // List mocks base method.
-func (m *MockIBlockRepo) List(ctx contextx.Contextx, condition ListCondition) ([]*model.Block, int, error) {
+func (m *MockIBlockRepo) List(c context.Context, condition ListCondition) ([]*model.Block, int, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, condition)
+	ret := m.ctrl.Call(m, "List", c, condition)
 	ret0, _ := ret[0].([]*model.Block)
 	ret1, _ := ret[1].(int)
 	ret2, _ := ret[2].(error)
@@ -80,7 +80,7 @@ func (m *MockIBlockRepo) List(ctx contextx.Contextx, condition ListCondition) ([
 }
 
 // List indicates an expected call of List.
-func (mr *MockIBlockRepoMockRecorder) List(ctx, condition any) *gomock.Call {
+func (mr *MockIBlockRepoMockRecorder) List(c, condition any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIBlockRepo)(nil).List), ctx, condition)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIBlockRepo)(nil).List), c, condition)
 }

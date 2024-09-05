@@ -19,7 +19,6 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
 )
 
@@ -34,16 +33,23 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	sdk, cleanup, err := otelx.NewSDK(application)
+	if err != nil {
+		return nil, nil, err
+	}
 	injector := &wirex.Injector{
-		C: configuration,
-		A: application,
+		C:     configuration,
+		A:     application,
+		OTelx: sdk,
 	}
 	client, err := initTonx()
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	mongoClient, err := mongodbx.NewClient(application)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
@@ -54,10 +60,12 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	adapterxServer := NewGRPC(injector, server)
 	return adapterxServer, func() {
+		cleanup()
 	}, nil
 }
 
@@ -69,11 +77,6 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 	app, err := config.GetService(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get %s config: %w", serviceName, err)
-	}
-
-	err = otelx.SetupOTelSDK(contextx.Background(), app)
-	if err != nil {
-		return nil, fmt.Errorf("failed to setup OpenTelemetry SDK: %w", err)
 	}
 
 	return app, nil
