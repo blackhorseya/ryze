@@ -8,13 +8,12 @@ package grpc
 
 import (
 	"fmt"
-
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
-	biz4 "github.com/blackhorseya/ryze/app/domain/account"
+	"github.com/blackhorseya/ryze/app/domain/account"
 	block2 "github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
-	biz2 "github.com/blackhorseya/ryze/app/domain/network"
-	biz3 "github.com/blackhorseya/ryze/app/domain/transaction"
+	"github.com/blackhorseya/ryze/app/domain/network"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -27,14 +26,14 @@ import (
 
 // Injectors from wire.go:
 
-func New(v *viper.Viper) (adapterx.Service, error) {
+func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	application, err := initApplication(configuration)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	injector := &wirex.Injector{
 		C: configuration,
@@ -42,24 +41,25 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	}
 	client, err := initTonx()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	mongoClient, err := mongodbx.NewClient(application)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	iBlockRepo := block.NewMongoDB(mongoClient)
 	blockServiceServer := block2.NewBlockService(client, iBlockRepo)
-	networkServiceServer := biz2.NewNetworkService(client)
-	transactionServiceServer := biz3.NewTransactionService(client)
-	accountServiceServer := biz4.NewAccountService(client)
+	networkServiceServer := network.NewNetworkService(client)
+	transactionServiceServer := transaction.NewTransactionService(client)
+	accountServiceServer := account.NewAccountService(client)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	service := NewGRPC(injector, server)
-	return service, nil
+	adapterxServer := NewGRPC(injector, server)
+	return adapterxServer, func() {
+	}, nil
 }
 
 // wire.go:

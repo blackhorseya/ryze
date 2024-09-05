@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
 	"go.uber.org/zap"
 )
 
@@ -34,10 +35,10 @@ func Background() Contextx {
 }
 
 // WithContext returns a copy of parent in which the context is set to ctx.
-func WithContext(ctx context.Context) Contextx {
+func WithContext(c context.Context) Contextx {
 	return Contextx{
-		Context: ctx,
-		Logger:  zap.L(),
+		Context: c,
+		Logger:  ctxzap.Extract(c),
 	}
 }
 

@@ -8,7 +8,6 @@ package scan
 
 import (
 	"fmt"
-
 	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"

@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
@@ -24,14 +25,15 @@ type impl struct {
 }
 
 // NewGRPC creates a new impl service.
-func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Service {
+func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Server {
 	return &impl{
 		injector: injector,
 		server:   server,
 	}
 }
 
-func (i *impl) Start(ctx contextx.Contextx) error {
+func (i *impl) Start(c context.Context) error {
+	ctx := contextx.WithContext(c)
 	err := i.server.Start(ctx)
 	if err != nil {
 		ctx.Error(
@@ -47,7 +49,8 @@ func (i *impl) Start(ctx contextx.Contextx) error {
 	return nil
 }
 
-func (i *impl) AwaitSignal(ctx contextx.Contextx) error {
+func (i *impl) Shutdown(c context.Context) error {
+	ctx := contextx.WithContext(c)
 	ctx.Info("receive signal to stop server")
 
 	if err := i.server.Stop(ctx); err != nil {
