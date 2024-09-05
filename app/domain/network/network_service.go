@@ -25,17 +25,14 @@ func NewNetworkService(client *tonx.Client) biz.NetworkServiceServer {
 }
 
 func (i *networkService) GetNetworkStats(c context.Context, empty *emptypb.Empty) (*model.NetworkStats, error) {
-	ctx, err := contextx.FromContext(c)
-	if err != nil {
-		return nil, err
-	}
-
-	ctx, span := otelx.Span(ctx, "network.biz.GetNetworkStats")
+	next, span := otelx.Tracer.Start(c, "network.biz.GetNetworkStats")
 	defer span.End()
+
+	ctx := contextx.WithContext(c)
 
 	api := ton.NewAPIClient(i.client).WithRetry()
 
-	stats, err := api.CurrentMasterchainInfo(ctx)
+	stats, err := api.CurrentMasterchainInfo(next)
 	if err != nil {
 		ctx.Error("failed to get current masterchain info", zap.Error(err))
 		return nil, err

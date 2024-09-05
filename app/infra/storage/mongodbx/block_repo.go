@@ -1,7 +1,7 @@
 package mongodbx
 
 import (
-	"time"
+	"context"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -13,31 +13,31 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	defaultTimeout = 5 * time.Second
-	dbName         = "ryze"
-	collName       = "blocks"
-)
-
 type mongodbBlockRepo struct {
-	rw *mongo.Client
+	coll *mongo.Collection
 }
 
 // NewBlockRepo is used to create an implementation of the block repository.
 func NewBlockRepo(rw *mongo.Client) repo.IBlockRepo {
-	return &mongodbBlockRepo{rw: rw}
+	coll := rw.Database(dbName).Collection("blocks")
+
+	return &mongodbBlockRepo{
+		coll: coll,
+	}
 }
 
-func (i *mongodbBlockRepo) GetByID(ctx contextx.Contextx, id string) (item *model.Block, err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.GetByID")
+func (i *mongodbBlockRepo) GetByID(c context.Context, id string) (item *model.Block, err error) {
+	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.GetByID")
 	defer span.End()
 
-	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
 	defer cancelFunc()
+
+	ctx := contextx.WithContext(c)
 
 	var got blockDocument
 	filter := bson.M{"metadata._id": id}
-	err = i.rw.Database(dbName).Collection(collName).FindOne(timeout, filter).Decode(&got)
+	err = i.coll.FindOne(timeout, filter).Decode(&got)
 	if err != nil {
 		ctx.Error("failed to find a block from mongodbBlockRepo", zap.Error(err), zap.Any("id", id))
 		return nil, err
@@ -46,15 +46,17 @@ func (i *mongodbBlockRepo) GetByID(ctx contextx.Contextx, id string) (item *mode
 	return got.Metadata, nil
 }
 
-func (i *mongodbBlockRepo) Create(ctx contextx.Contextx, item *model.Block) (err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.Create")
+func (i *mongodbBlockRepo) Create(c context.Context, item *model.Block) (err error) {
+	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.Create")
 	defer span.End()
 
-	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
 	defer cancelFunc()
 
+	ctx := contextx.WithContext(c)
+
 	doc := newBlockDocument(item)
-	_, err = i.rw.Database(dbName).Collection(collName).InsertOne(timeout, doc)
+	_, err = i.coll.InsertOne(timeout, doc)
 	if err != nil {
 		ctx.Error("failed to insert a block to mongodbBlockRepo", zap.Error(err))
 		return err
@@ -64,28 +66,29 @@ func (i *mongodbBlockRepo) Create(ctx contextx.Contextx, item *model.Block) (err
 }
 
 func (i *mongodbBlockRepo) List(
-	ctx contextx.Contextx,
-	condition repo.ListCondition,
+	c context.Context,
+	cond repo.ListCondition,
 ) (items []*model.Block, total int, err error) {
-	ctx, span := otelx.Span(ctx, "block.biz.block.mongodbBlockRepo.List")
+	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.List")
 	defer span.End()
 
-	timeout, cancelFunc := contextx.WithTimeout(ctx, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
 	defer cancelFunc()
+
+	ctx := contextx.WithContext(c)
 
 	filter := bson.M{}
 
-	limit := condition.Limit
-	if limit == 0 {
-		limit = 10
+	limit, skip := defaultLimit, int64(0)
+	if 0 < cond.Limit && cond.Limit <= defaultMaxLimit {
+		limit = cond.Limit
 	}
-	skip := condition.Skip
-	if skip < 0 {
-		skip = 0
+	if cond.Skip > 0 {
+		skip = cond.Skip
 	}
-	opts := options.Find().SetSort(bson.M{"timestamp": -1}).SetLimit(int64(limit)).SetSkip(int64(skip))
+	opts := options.Find().SetSort(bson.M{"timestamp": -1}).SetLimit(limit).SetSkip(skip)
 
-	cur, err := i.rw.Database(dbName).Collection(collName).Find(timeout, filter, opts)
+	cur, err := i.coll.Find(timeout, filter, opts)
 	if err != nil {
 		ctx.Error("failed to find blocks from mongodbBlockRepo", zap.Error(err))
 		return nil, 0, err
@@ -103,7 +106,7 @@ func (i *mongodbBlockRepo) List(
 		items = append(items, got.Metadata)
 	}
 
-	count, err := i.rw.Database(dbName).Collection(collName).CountDocuments(timeout, filter)
+	count, err := i.coll.CountDocuments(timeout, filter)
 	if err != nil {
 		ctx.Error("failed to count blocks from mongodbBlockRepo", zap.Error(err))
 		return nil, 0, err

@@ -55,11 +55,15 @@ func (i *impl) GetBlock(c context.Context, request *blockB.GetBlockRequest) (*mo
 	return ret, nil
 }
 
-func (i *impl) GetBlocks(request *blockB.GetBlocksRequest, stream blockB.BlockService_GetBlocksServer) error {
-	ctx, span := otelx.Span(contextx.Background(), "block.biz.GetBlocks")
+func (i *impl) GetBlocks(req *blockB.GetBlocksRequest, stream blockB.BlockService_GetBlocksServer) error {
+	c := stream.Context()
+
+	next, span := otelx.Tracer.Start(c, "block.biz.GetBlocks")
 	defer span.End()
 
-	items, _, err := i.blocks.List(ctx, repo.ListCondition{
+	ctx := contextx.WithContext(c)
+
+	items, _, err := i.blocks.List(next, repo.ListCondition{
 		Limit: 0,
 		Skip:  0,
 	})
