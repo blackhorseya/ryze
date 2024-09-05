@@ -8,13 +8,11 @@ package grpc
 
 import (
 	"fmt"
-
 	"github.com/blackhorseya/ryze/adapter/platform/wirex"
-	biz4 "github.com/blackhorseya/ryze/app/domain/account"
-	block2 "github.com/blackhorseya/ryze/app/domain/block"
-	"github.com/blackhorseya/ryze/app/domain/block/repo/block"
-	biz2 "github.com/blackhorseya/ryze/app/domain/network"
-	biz3 "github.com/blackhorseya/ryze/app/domain/transaction"
+	"github.com/blackhorseya/ryze/app/domain/account"
+	"github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/network"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -48,11 +46,11 @@ func New(v *viper.Viper) (adapterx.Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	iBlockRepo := block.NewMongoDB(mongoClient)
-	blockServiceServer := block2.NewBlockService(client, iBlockRepo)
-	networkServiceServer := biz2.NewNetworkService(client)
-	transactionServiceServer := biz3.NewTransactionService(client)
-	accountServiceServer := biz4.NewAccountService(client)
+	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
+	blockServiceServer := block.NewBlockService(client, iBlockRepo)
+	networkServiceServer := network.NewNetworkService(client)
+	transactionServiceServer := transaction.NewTransactionService(client)
+	accountServiceServer := account.NewAccountService(client)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
