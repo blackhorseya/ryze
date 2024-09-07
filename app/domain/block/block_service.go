@@ -20,7 +20,7 @@ type impl struct {
 	blocks repo.IBlockRepo
 }
 
-// NewBlockService is used to create a new model.BlockServiceServer
+// NewBlockService is used to create a new block service
 func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) biz.BlockServiceServer {
 	return &impl{
 		client: client,
