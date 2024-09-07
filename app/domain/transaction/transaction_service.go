@@ -37,20 +37,22 @@ func (i *txService) ListTransactions(
 
 	var txList []*txM.Transaction
 
-	api := ton.NewAPIClient(i.client).WithRetry()
+	api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
+	api.SetTrustedBlockFromConfig(i.client.Config)
+	stickyContext := api.Client().StickyContext(next)
 	{
 		var fetchedIDs []ton.TransactionShortInfo
 		var after *ton.TransactionID3
 		var more = true
 
 		for more {
-			block, err2 := api.LookupBlock(next, req.Workchain, req.Shard, req.SeqNo)
+			block, err2 := api.LookupBlock(stickyContext, req.Workchain, req.Shard, req.SeqNo)
 			if err2 != nil {
 				ctx.Error("lookup block error", zap.Error(err2), zap.Any("req", &req))
 				return err2
 			}
 
-			fetchedIDs, more, err2 = api.GetBlockTransactionsV2(next, block, 100, after)
+			fetchedIDs, more, err2 = api.GetBlockTransactionsV2(stickyContext, block, 100, after)
 			if err2 != nil {
 				ctx.Error("get block transactions error", zap.Error(err2), zap.Any("block", &block))
 				return err2
@@ -62,7 +64,7 @@ func (i *txService) ListTransactions(
 
 			for _, id := range fetchedIDs {
 				tx, err3 := api.GetTransaction(
-					next,
+					stickyContext,
 					block,
 					address.NewAddress(0, byte(block.Workchain), id.Account),
 					id.LT,
