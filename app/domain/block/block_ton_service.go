@@ -83,7 +83,7 @@ func (i *impl) GetBlocks(req *biz.GetBlocksRequest, stream biz.BlockService_GetB
 	return nil
 }
 
-func (i *impl) ScanBlock(request *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
+func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
 	api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
 	api.SetTrustedBlockFromConfig(i.client.Config)
 

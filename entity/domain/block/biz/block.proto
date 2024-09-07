@@ -30,22 +30,6 @@ message ScanBlockRequest {
   uint32 end_height = 2;
 }
 
-// Request message for fetching and storing a block.
-message FetchAndStoreBlockRequest {
-  int32 workchain = 1;
-  int64 shard = 2;
-  uint32 seq_no = 3;
-}
-
-// Response message for fetching and storing a block.
-message FetchAndStoreBlockResponse {
-  // Status of the operation.
-  string status = 1;
-
-  // The fetched and stored block.
-  Block block = 2;
-}
-
 // Service definition for handling blocks.
 service BlockService {
   // Retrieves a single block by its ID.
