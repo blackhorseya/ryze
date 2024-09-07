@@ -3,7 +3,7 @@ package account;
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/account/biz";
 
-import "entity/domain/account/model/account.proto";
+import "domain/account/model/account.proto";
 
 // Request message for retrieving account details.
 message GetAccountRequest {

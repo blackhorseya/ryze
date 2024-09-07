@@ -3,7 +3,7 @@ package block;
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/block/biz";
 
-import "entity/domain/block/model/block.proto";
+import "domain/block/model/block.proto";
 
 // Request message for retrieving a single block by its ID.
 message GetBlockRequest {
