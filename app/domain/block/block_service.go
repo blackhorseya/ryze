@@ -129,29 +129,3 @@ func (i *impl) ScanBlock(request *biz.ScanBlockRequest, stream biz.BlockService_
 		}
 	}
 }
-
-func (i *impl) FetchAndStoreBlock(
-	c context.Context,
-	request *biz.FetchAndStoreBlockRequest,
-) (*biz.FetchAndStoreBlockResponse, error) {
-	ctx := contextx.WithContext(c)
-
-	block, err := i.GetBlock(ctx, &biz.GetBlockRequest{
-		Workchain: request.Workchain,
-		Shard:     request.Shard,
-		SeqNo:     request.SeqNo,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	err = i.blocks.Create(ctx, block)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
-
-	return &biz.FetchAndStoreBlockResponse{
-		Block: block,
-	}, nil
-}
