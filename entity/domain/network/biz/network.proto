@@ -1,10 +1,10 @@
 syntax = "proto3";
 package network;
 
-option go_package = "github.com/blackhorseya/ryze/entity/domain/network/biz";
-
-import "google/protobuf/empty.proto";
 import "domain/network/model/network.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/blackhorseya/ryze/entity/domain/network/biz";
 
 // Request message for retrieving the status of a specific node.
 message GetNodeStatusRequest {
