@@ -20,10 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BlockService_GetBlock_FullMethodName           = "/block.BlockService/GetBlock"
-	BlockService_GetBlocks_FullMethodName          = "/block.BlockService/GetBlocks"
-	BlockService_ScanBlock_FullMethodName          = "/block.BlockService/ScanBlock"
-	BlockService_FetchAndStoreBlock_FullMethodName = "/block.BlockService/FetchAndStoreBlock"
+	BlockService_GetBlock_FullMethodName  = "/block.BlockService/GetBlock"
+	BlockService_GetBlocks_FullMethodName = "/block.BlockService/GetBlocks"
+	BlockService_ScanBlock_FullMethodName = "/block.BlockService/ScanBlock"
 )
 
 // BlockServiceClient is the client API for BlockService service.
@@ -38,7 +37,6 @@ type BlockServiceClient interface {
 	GetBlocks(ctx context.Context, in *GetBlocksRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
 	// Scans a range of blocks.
 	ScanBlock(ctx context.Context, in *ScanBlockRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
-	FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest, opts ...grpc.CallOption) (*FetchAndStoreBlockResponse, error)
 }
 
 type blockServiceClient struct {
@@ -97,16 +95,6 @@ func (c *blockServiceClient) ScanBlock(ctx context.Context, in *ScanBlockRequest
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BlockService_ScanBlockClient = grpc.ServerStreamingClient[model.Block]
 
-func (c *blockServiceClient) FetchAndStoreBlock(ctx context.Context, in *FetchAndStoreBlockRequest, opts ...grpc.CallOption) (*FetchAndStoreBlockResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FetchAndStoreBlockResponse)
-	err := c.cc.Invoke(ctx, BlockService_FetchAndStoreBlock_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // BlockServiceServer is the server API for BlockService service.
 // All implementations should embed UnimplementedBlockServiceServer
 // for forward compatibility.
@@ -119,7 +107,6 @@ type BlockServiceServer interface {
 	GetBlocks(*GetBlocksRequest, grpc.ServerStreamingServer[model.Block]) error
 	// Scans a range of blocks.
 	ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error
-	FetchAndStoreBlock(context.Context, *FetchAndStoreBlockRequest) (*FetchAndStoreBlockResponse, error)
 }
 
 // UnimplementedBlockServiceServer should be embedded to have
@@ -137,9 +124,6 @@ func (UnimplementedBlockServiceServer) GetBlocks(*GetBlocksRequest, grpc.ServerS
 }
 func (UnimplementedBlockServiceServer) ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error {
 	return status.Errorf(codes.Unimplemented, "method ScanBlock not implemented")
-}
-func (UnimplementedBlockServiceServer) FetchAndStoreBlock(context.Context, *FetchAndStoreBlockRequest) (*FetchAndStoreBlockResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchAndStoreBlock not implemented")
 }
 func (UnimplementedBlockServiceServer) testEmbeddedByValue() {}
 
@@ -201,24 +185,6 @@ func _BlockService_ScanBlock_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BlockService_ScanBlockServer = grpc.ServerStreamingServer[model.Block]
 
-func _BlockService_FetchAndStoreBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FetchAndStoreBlockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BlockServiceServer).FetchAndStoreBlock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BlockService_FetchAndStoreBlock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockServiceServer).FetchAndStoreBlock(ctx, req.(*FetchAndStoreBlockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // BlockService_ServiceDesc is the grpc.ServiceDesc for BlockService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -229,10 +195,6 @@ var BlockService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetBlock",
 			Handler:    _BlockService_GetBlock_Handler,
-		},
-		{
-			MethodName: "FetchAndStoreBlock",
-			Handler:    _BlockService_FetchAndStoreBlock_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

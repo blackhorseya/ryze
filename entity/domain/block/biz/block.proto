@@ -56,6 +56,4 @@ service BlockService {
 
   // Scans a range of blocks.
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
-
-  rpc FetchAndStoreBlock(FetchAndStoreBlockRequest) returns (FetchAndStoreBlockResponse) {}
 }
