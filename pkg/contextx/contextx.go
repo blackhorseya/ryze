@@ -11,11 +11,6 @@ func init() {
 	zap.ReplaceGlobals(zap.NewExample())
 }
 
-const (
-	// KeyCtx is the key of contextx.
-	KeyCtx = "contextx"
-)
-
 // Contextx extends google's context to support logging methods.
 type Contextx struct {
 	context.Context
