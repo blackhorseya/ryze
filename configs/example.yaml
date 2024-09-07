@@ -4,7 +4,7 @@ log:
 
 services:
   platform-grpc:
-    name: dev-platform-grpc
+    name: dev-ryze-platform-grpc
 
     grpc:
       url: localhost
