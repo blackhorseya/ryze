@@ -24,8 +24,8 @@ type impl struct {
 	server   *grpcx.Server
 }
 
-// NewGRPC creates a new impl service.
-func NewGRPC(injector *wirex.Injector, server *grpcx.Server) adapterx.Server {
+// NewServer creates a new impl service.
+func NewServer(injector *wirex.Injector, server *grpcx.Server) adapterx.Server {
 	return &impl{
 		injector: injector,
 		server:   server,

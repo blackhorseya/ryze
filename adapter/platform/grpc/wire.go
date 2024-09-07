@@ -41,7 +41,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	panic(wire.Build(
 		wire.Struct(new(wirex.Injector), "*"),
 
-		NewGRPC,
+		NewServer,
 		configx.NewConfiguration,
 		initApplication,
 		grpcx.NewServer,

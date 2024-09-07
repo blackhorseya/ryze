@@ -63,7 +63,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	adapterxServer := NewGRPC(injector, server)
+	adapterxServer := NewServer(injector, server)
 	return adapterxServer, func() {
 		cleanup()
 	}, nil
