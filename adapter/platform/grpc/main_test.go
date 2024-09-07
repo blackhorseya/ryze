@@ -3,12 +3,12 @@
 package grpc
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
 	"testing"
 
-	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
 )
 
@@ -19,10 +19,9 @@ func TestRun(t *testing.T) {
 	}
 	defer clean()
 
-	ctx, cancelFunc := contextx.WithCancel(contextx.Background())
-	defer cancelFunc()
+	c := context.Background()
 
-	err = service.Start(ctx)
+	err = service.Start(c)
 	if err != nil {
 		t.Fatalf("Start() error = %v", err)
 	}
@@ -32,7 +31,7 @@ func TestRun(t *testing.T) {
 
 	<-signalChan
 
-	err = service.Shutdown(ctx)
+	err = service.Shutdown(c)
 	if err != nil {
 		t.Fatalf("AwaitSignal() error = %v", err)
 	}
