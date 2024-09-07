@@ -3,19 +3,9 @@ package contextx
 import (
 	"context"
 
-	"github.com/gin-gonic/gin"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 )
-
-// AddContextxMiddleware is used to add contextx middleware.
-func AddContextxMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Set(KeyCtx, WithContext(c.Request.Context()))
-
-		c.Next()
-	}
-}
 
 // UnaryServerInterceptor is used to create a new unary interceptor
 func UnaryServerInterceptor() grpc.UnaryServerInterceptor {

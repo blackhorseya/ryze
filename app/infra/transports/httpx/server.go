@@ -58,7 +58,6 @@ func NewServer(options Options) (*Server, error) {
 	router.Use(AddCorsMiddleware())
 	router.Use(ginzap.Ginzap(ctx.Logger, time.RFC3339, true))
 	router.Use(otelgin.Middleware("http-server"))
-	router.Use(contextx.AddContextxMiddleware())
 	router.Use(responsex.AddErrorHandlingMiddleware())
 	router.Use(ginzap.CustomRecoveryWithZap(ctx.Logger, true, func(c *gin.Context, err any) {
 		responsex.Err(c, fmt.Errorf("%v", err))
