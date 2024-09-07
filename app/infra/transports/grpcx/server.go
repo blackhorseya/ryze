@@ -25,7 +25,7 @@ type Server struct {
 
 // NewServer creates a new grpc server.
 func NewServer(app *configx.Application, init InitServers) (*Server, error) {
-	logger := contextx.Background().Logger
+	logger := zap.L()
 	server := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.StreamInterceptor(grpc_middleware.ChainStreamServer(

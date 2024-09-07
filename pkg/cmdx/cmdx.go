@@ -35,9 +35,9 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 			cobra.CheckErr(err)
 			defer clean()
 
-			c := context.Background()
+			ctx := context.Background()
 
-			err = service.Start(c)
+			err = service.Start(ctx)
 			cobra.CheckErr(err)
 
 			signalChan := make(chan os.Signal, 1)
@@ -45,7 +45,7 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 
 			<-signalChan
 
-			err = service.Shutdown(c)
+			err = service.Shutdown(ctx)
 			cobra.CheckErr(err)
 		},
 	}

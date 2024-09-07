@@ -33,7 +33,7 @@ func NewServer(injector *wirex.Injector, server *grpcx.Server) adapterx.Server {
 }
 
 func (i *impl) Start(c context.Context) error {
-	ctx := contextx.WithContext(c)
+	ctx := contextx.Background()
 	err := i.server.Start(ctx)
 	if err != nil {
 		ctx.Error(
@@ -50,7 +50,7 @@ func (i *impl) Start(c context.Context) error {
 }
 
 func (i *impl) Shutdown(c context.Context) error {
-	ctx := contextx.WithContext(c)
+	ctx := contextx.Background()
 	ctx.Info("receive signal to stop server")
 
 	if err := i.server.Stop(ctx); err != nil {
