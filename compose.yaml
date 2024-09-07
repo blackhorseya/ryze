@@ -16,20 +16,6 @@
 #      - 30000:30000
 
 services:
-  block-grpc:
-    image: ghcr.io/blackhorseya/ryze
-    build:
-      context: .
-      target: final
-    command:
-      - --config=/configs/example.yaml
-      - start
-      - block-grpc
-    ports:
-      - 1993:1993
-    volumes:
-      - ./configs/example.yaml:/configs/example.yaml
-
   mongodb:
     image: mongo:7
     environment:
