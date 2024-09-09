@@ -33,8 +33,13 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		C: configuration,
 		A: application,
 	}
-	server := NewServer(injector)
-	return server, func() {
+	initServers := NewInitServersFn()
+	server, err := grpcx.NewServer(application, initServers)
+	if err != nil {
+		return nil, nil, err
+	}
+	adapterxServer := NewServer(injector, server)
+	return adapterxServer, func() {
 	}, nil
 }
 

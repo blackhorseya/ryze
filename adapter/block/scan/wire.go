@@ -47,5 +47,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		wire.Struct(new(Injector), "*"),
 		configx.NewConfiguration,
 		InitApplication,
+		grpcx.NewServer,
+		NewInitServersFn,
 	))
 }
