@@ -8,8 +8,12 @@ package scanner
 
 import (
 	"fmt"
+	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -33,7 +37,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		C: configuration,
 		A: application,
 	}
-	initServers := NewInitServersFn()
+	client, err := InitTonClient(configuration)
+	if err != nil {
+		return nil, nil, err
+	}
+	mongoClient, err := mongodbx.NewClient(application)
+	if err != nil {
+		return nil, nil, err
+	}
+	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
+	blockServiceServer := block.NewBlockService(client, iBlockRepo)
+	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		return nil, nil, err
@@ -48,12 +62,14 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 const serviceName = "block-scanner"
 
 // NewInitServersFn creates a new grpc server initializer.
-func NewInitServersFn() grpcx.InitServers {
+func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
 	return func(s *grpc.Server) {
+
 		healthServer := health.NewServer()
 		grpc_health_v1.RegisterHealthServer(s, healthServer)
 		healthServer.SetServingStatus(serviceName, grpc_health_v1.HealthCheckResponse_SERVING)
 		reflection.Register(s)
+		biz.RegisterBlockServiceServer(s, blockServer)
 	}
 }
 
@@ -65,4 +81,19 @@ func InitApplication(config *configx.Configuration) (*configx.Application, error
 	}
 
 	return app, nil
+}
+
+// InitTonClient is used to initialize the ton client.
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+	settings, ok := config.Networks["ton"]
+	if !ok {
+		return nil, fmt.Errorf("network [ton] not found")
+	}
+
+	network := "mainnet"
+	if settings.Testnet {
+		network = "testnet"
+	}
+
+	return tonx.NewClient(tonx.Options{Network: network})
 }

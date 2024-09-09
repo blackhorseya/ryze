@@ -7,8 +7,12 @@ package scanner
 import (
 	"fmt"
 
+	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
@@ -21,13 +25,18 @@ import (
 const serviceName = "block-scanner"
 
 // NewInitServersFn creates a new grpc server initializer.
-func NewInitServersFn() grpcx.InitServers {
+func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
 	return func(s *grpc.Server) {
+		// register health check service
 		healthServer := health.NewServer()
 		grpc_health_v1.RegisterHealthServer(s, healthServer)
 		healthServer.SetServingStatus(serviceName, grpc_health_v1.HealthCheckResponse_SERVING)
 
+		// register reflection service
 		reflection.Register(s)
+
+		// register servers
+		biz.RegisterBlockServiceServer(s, blockServer)
 	}
 }
 
@@ -41,6 +50,21 @@ func InitApplication(config *configx.Configuration) (*configx.Application, error
 	return app, nil
 }
 
+// InitTonClient is used to initialize the ton client.
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+	settings, ok := config.Networks["ton"]
+	if !ok {
+		return nil, fmt.Errorf("network [ton] not found")
+	}
+
+	network := "mainnet"
+	if settings.Testnet {
+		network = "testnet"
+	}
+
+	return tonx.NewClient(tonx.Options{Network: network})
+}
+
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	panic(wire.Build(
 		NewServer,
@@ -49,5 +73,10 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		InitApplication,
 		grpcx.NewServer,
 		NewInitServersFn,
+
+		mongodbx.NewClient,
+		InitTonClient,
+
+		block.ProviderSet,
 	))
 }
