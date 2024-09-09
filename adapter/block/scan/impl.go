@@ -8,11 +8,14 @@ import (
 )
 
 type impl struct {
+	injector *Injector
 }
 
 // NewServer is used to create a new scan server
-func NewServer() adapterx.Server {
-	return &impl{}
+func NewServer(injector *Injector) adapterx.Server {
+	return &impl{
+		injector: injector,
+	}
 }
 
 func (i *impl) Start(c context.Context) error {
