@@ -3,18 +3,21 @@ package scan
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 )
 
 type impl struct {
 	injector *Injector
+	server   *grpcx.Server
 }
 
 // NewServer is used to create a new scan server
-func NewServer(injector *Injector) adapterx.Server {
+func NewServer(injector *Injector, server *grpcx.Server) adapterx.Server {
 	return &impl{
 		injector: injector,
+		server:   server,
 	}
 }
 
