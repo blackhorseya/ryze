@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package scan
+package scanner
 
 import (
 	"fmt"

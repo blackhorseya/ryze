@@ -1,4 +1,4 @@
-package scan
+package scanner
 
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"

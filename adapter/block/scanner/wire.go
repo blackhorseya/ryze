@@ -2,7 +2,7 @@
 
 //go:generate wire
 
-package scan
+package scanner
 
 import (
 	"fmt"

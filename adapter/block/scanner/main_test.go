@@ -1,6 +1,6 @@
 //go:build external
 
-package scan
+package scanner
 
 import (
 	"context"
