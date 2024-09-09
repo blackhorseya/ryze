@@ -30,6 +30,25 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
+	// stream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
+	// 	StartHeight: 0,
+	// 	EndHeight:   0,
+	// })
+	// if err != nil {
+	// 	ctx.Error("failed to scan block", zap.Error(err))
+	// 	return err
+	// }
+	//
+	// for {
+	// 	block, err := stream.Recv()
+	// 	if err != nil && errors.Is(err, io.EOF) {
+	// 		ctx.Error("failed to receive block", zap.Error(err))
+	// 		return err
+	// 	}
+	//
+	// 	ctx.Info("received block", zap.Any("block", &block))
+	// }
+
 	return nil
 }
 

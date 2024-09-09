@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
@@ -33,27 +34,47 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	injector := &Injector{
-		C: configuration,
-		A: application,
-	}
-	client, err := InitTonClient(configuration)
+	sdk, cleanup, err := otelx.NewSDK(application)
 	if err != nil {
+		return nil, nil, err
+	}
+	client, err := grpcx.NewClient(configuration)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	blockServiceClient, err := block.NewBlockServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	injector := &Injector{
+		C:           configuration,
+		A:           application,
+		OTel:        sdk,
+		blockClient: blockServiceClient,
+	}
+	tonxClient, err := InitTonClient(configuration)
+	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	mongoClient, err := mongodbx.NewClient(application)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
-	blockServiceServer := block.NewBlockService(client, iBlockRepo)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	adapterxServer := NewServer(injector, server)
 	return adapterxServer, func() {
+		cleanup()
 	}, nil
 }
 

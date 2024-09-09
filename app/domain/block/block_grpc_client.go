@@ -9,7 +9,7 @@ import (
 
 // NewBlockServiceClient is used to create a new block service client
 func NewBlockServiceClient(client *grpcx.Client) (biz.BlockServiceClient, error) {
-	conn, err := client.Dial("block-grpc")
+	conn, err := client.Dial("block-scanner")
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial `block-grpc` error: %w", err)
 	}
