@@ -73,3 +73,8 @@ func (s *Server) Stop(ctx contextx.Contextx) error {
 
 	return nil
 }
+
+// GetAddr returns the server address.
+func (s *Server) GetAddr() string {
+	return s.addr
+}
