@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/blackhorseya/ryze/adapter/block/scanner"
 	platformGRPC "github.com/blackhorseya/ryze/adapter/platform/grpc"
 	"github.com/blackhorseya/ryze/pkg/cmdx"
 	"github.com/spf13/cobra"
@@ -16,6 +17,7 @@ func init() {
 	rootCmd.AddCommand(startCmd)
 
 	startCmd.AddCommand(cmdx.NewServiceCmd("platform", "start platform service", platformGRPC.New))
+	startCmd.AddCommand(cmdx.NewServiceCmd("scanner", "start scanner service", scanner.New))
 
 	// Here you will define your flags and configuration settings.
 
