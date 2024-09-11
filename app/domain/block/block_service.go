@@ -120,7 +120,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err2))
 			return err2
 		}
-		ctx.Info("block sent", zap.String("block_id", newBlock.Id))
+		ctx.Info("block sent", zap.Any("block", &newBlock))
 
 		next := master.SeqNo + 1
 		master, err2 = api.WaitForBlock(next).LookupBlock(stickyContext, master.Workchain, master.Shard, next)
