@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var serviceName = "platform-grpc"
+var serviceName = "platform"
 
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
 	app, err := config.GetService(serviceName)
