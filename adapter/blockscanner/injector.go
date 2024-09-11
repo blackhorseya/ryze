@@ -1,4 +1,4 @@
-package scanner
+package blockscanner
 
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"

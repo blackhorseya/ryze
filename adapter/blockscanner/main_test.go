@@ -1,6 +1,6 @@
 //go:build external
 
-package scanner
+package blockscanner
 
 import (
 	"context"
