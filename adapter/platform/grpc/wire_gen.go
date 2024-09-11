@@ -52,7 +52,11 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
+	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	blockServiceServer := block.NewBlockService(client, iBlockRepo)
 	networkServiceServer := network.NewNetworkService(client)
 	transactionServiceServer := transaction.NewTransactionService(client)

@@ -64,7 +64,11 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	iBlockRepo := mongodbx.NewBlockRepo(mongoClient)
+	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)

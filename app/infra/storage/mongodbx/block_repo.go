@@ -2,6 +2,7 @@ package mongodbx
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -18,12 +19,19 @@ type mongodbBlockRepo struct {
 }
 
 // NewBlockRepo is used to create an implementation of the block repository.
-func NewBlockRepo(rw *mongo.Client) repo.IBlockRepo {
-	coll := rw.Database(dbName).Collection("blocks")
+func NewBlockRepo(rw *mongo.Client) (repo.IBlockRepo, error) {
+	collName := "blocks"
+
+	err := initTimeSeriesByName(rw, dbName, collName)
+	if err != nil {
+		return nil, fmt.Errorf("failed to init collections: %w", err)
+	}
+
+	coll := rw.Database(dbName).Collection(collName)
 
 	return &mongodbBlockRepo{
 		coll: coll,
-	}
+	}, nil
 }
 
 func (i *mongodbBlockRepo) GetByID(c context.Context, id string) (item *model.Block, err error) {
