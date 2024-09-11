@@ -11,6 +11,7 @@ import (
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 	metadata "google.golang.org/grpc/metadata"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // MockBlockService_GetBlocksClient is a mock of BlockService_GetBlocksClient interface.
@@ -520,6 +521,26 @@ func (m *MockBlockServiceClient) EXPECT() *MockBlockServiceClientMockRecorder {
 	return m.recorder
 }
 
+// FoundNewBlock mocks base method.
+func (m *MockBlockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FoundNewBlock", varargs...)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FoundNewBlock indicates an expected call of FoundNewBlock.
+func (mr *MockBlockServiceClientMockRecorder) FoundNewBlock(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).FoundNewBlock), varargs...)
+}
+
 // GetBlock mocks base method.
 func (m *MockBlockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
 	m.ctrl.T.Helper()
@@ -601,6 +622,21 @@ func NewMockBlockServiceServer(ctrl *gomock.Controller) *MockBlockServiceServer 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockBlockServiceServer) EXPECT() *MockBlockServiceServerMockRecorder {
 	return m.recorder
+}
+
+// FoundNewBlock mocks base method.
+func (m *MockBlockServiceServer) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest) (*emptypb.Empty, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FoundNewBlock", ctx, in)
+	ret0, _ := ret[0].(*emptypb.Empty)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FoundNewBlock indicates an expected call of FoundNewBlock.
+func (mr *MockBlockServiceServerMockRecorder) FoundNewBlock(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlock), ctx, in)
 }
 
 // GetBlock mocks base method.

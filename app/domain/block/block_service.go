@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -128,4 +129,9 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 			return err2
 		}
 	}
+}
+
+func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*emptypb.Empty, error) {
+	// TODO: 2024/9/11|sean|implement me
+	panic("implement me")
 }

@@ -2,6 +2,7 @@ syntax = "proto3";
 package block;
 
 import "domain/block/model/block.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/block/biz";
 
@@ -30,6 +31,12 @@ message ScanBlockRequest {
   uint32 end_height = 2;
 }
 
+message FoundNewBlockRequest {
+  int32 workchain = 1;
+  int64 shard = 2;
+  uint32 seq_no = 3;
+}
+
 // Service definition for handling blocks.
 service BlockService {
   // Retrieves a single block by its ID.
@@ -40,4 +47,6 @@ service BlockService {
 
   // Scans a range of blocks.
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
+
+  rpc FoundNewBlock(FoundNewBlockRequest) returns (google.protobuf.Empty) {}
 }
