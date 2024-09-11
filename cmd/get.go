@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/blackhorseya/ryze/adapter/cmd/get"
+	"github.com/blackhorseya/ryze/cmd/get"
 )
 
 func init() {
