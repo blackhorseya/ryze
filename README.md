@@ -70,35 +70,36 @@ Provides real-time status and statistical information about the blockchain netwo
 
 ```go
 type Block struct {
-ID           string
-Height       int64
-Timestamp    time.Time
-Transactions []Transaction
+    ID           string
+    Height       int64
+    Timestamp    time.Time
+    Transactions []Transaction
 }
 
 type BlockRepository interface {
-GetBlockByID(id string) (*Block, error)
-GetLatestBlocks(limit int) ([]Block, error)
-SaveBlock(block *Block) error
+    GetBlockByID(id string) (*Block, error)
+    GetLatestBlocks(limit int) ([]Block, error)
+    SaveBlock(block *Block) error
 }
+
 ```
 
 #### 5.2 TransactionContext
 
 ```go
 type Transaction struct {
-ID        string
-BlockID   string
-From      string
-To        string
-Amount    float64
-Timestamp time.Time
+    ID        string
+    BlockID   string
+    From      string
+    To        string
+    Amount    float64
+    Timestamp time.Time
 }
 
 type TransactionRepository interface {
-GetTransactionByID(id string) (*Transaction, error)
-GetTransactionsByBlockID(blockID string) ([]Transaction, error)
-SaveTransaction(transaction *Transaction) error
+    GetTransactionByID(id string) (*Transaction, error)
+    GetTransactionsByBlockID(blockID string) ([]Transaction, error)
+    SaveTransaction(transaction *Transaction) error
 }
 ```
 
