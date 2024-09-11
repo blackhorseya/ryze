@@ -132,6 +132,27 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 }
 
 func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*emptypb.Empty, error) {
-	// TODO: 2024/9/11|sean|implement me
-	panic("implement me")
+	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	block, err := i.GetBlock(next, &biz.GetBlockRequest{
+		Workchain: req.Workchain,
+		Shard:     req.Shard,
+		SeqNo:     req.SeqNo,
+	})
+	if err != nil {
+		ctx.Error("failed to get block", zap.Error(err))
+		return nil, err
+	}
+	ctx.Debug("get block", zap.Any("block", &block))
+
+	err = i.blocks.Create(next, block)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err))
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
 }
