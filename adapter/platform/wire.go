@@ -2,12 +2,11 @@
 
 //go:generate wire
 
-package grpc
+package platform
 
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/domain/account"
 	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/domain/network"
@@ -39,7 +38,7 @@ func initTonx() (*tonx.Client, error) {
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	panic(wire.Build(
-		wire.Struct(new(wirex.Injector), "*"),
+		wire.Struct(new(Injector), "*"),
 
 		NewServer,
 		configx.NewConfiguration,

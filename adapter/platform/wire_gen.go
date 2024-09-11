@@ -4,11 +4,10 @@
 //go:build !wireinject
 // +build !wireinject
 
-package grpc
+package platform
 
 import (
 	"fmt"
-	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/domain/account"
 	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/domain/network"
@@ -37,7 +36,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	injector := &wirex.Injector{
+	injector := &Injector{
 		C:     configuration,
 		A:     application,
 		OTelx: sdk,

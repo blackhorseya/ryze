@@ -1,10 +1,9 @@
-package grpc
+package platform
 
 import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/adapter/platform/wirex"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	accountB "github.com/blackhorseya/ryze/entity/domain/account/biz"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
@@ -20,12 +19,12 @@ import (
 )
 
 type impl struct {
-	injector *wirex.Injector
+	injector *Injector
 	server   *grpcx.Server
 }
 
 // NewServer creates a new impl service.
-func NewServer(injector *wirex.Injector, server *grpcx.Server) adapterx.Server {
+func NewServer(injector *Injector, server *grpcx.Server) adapterx.Server {
 	return &impl{
 		injector: injector,
 		server:   server,

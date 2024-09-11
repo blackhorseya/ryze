@@ -1,4 +1,4 @@
-package wirex
+package platform
 
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
