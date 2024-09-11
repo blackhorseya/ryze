@@ -10,13 +10,11 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/propagation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,10 +22,7 @@ import (
 
 var (
 	// Tracer is the global tracer.
-	Tracer trace.Tracer
-
-	// Meter is the global meter.
-	Meter metric.Meter
+	Tracer = otel.Tracer("ryze")
 )
 
 // SDK is the OpenTelemetry SDK.
@@ -52,7 +47,6 @@ func NewSDK(app *configx.Application) (*SDK, func(), error) {
 
 	// Set global tracer and meter.
 	Tracer = otel.Tracer(app.Name)
-	Meter = otel.Meter(app.Name)
 
 	return instance, clean, nil
 }
