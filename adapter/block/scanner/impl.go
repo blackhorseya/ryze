@@ -2,8 +2,11 @@ package scanner
 
 import (
 	"context"
+	"errors"
+	"io"
 
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
@@ -30,24 +33,38 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
-	// stream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
-	// 	StartHeight: 0,
-	// 	EndHeight:   0,
-	// })
-	// if err != nil {
-	// 	ctx.Error("failed to scan block", zap.Error(err))
-	// 	return err
-	// }
-	//
-	// for {
-	// 	block, err := stream.Recv()
-	// 	if err != nil && errors.Is(err, io.EOF) {
-	// 		ctx.Error("failed to receive block", zap.Error(err))
-	// 		return err
-	// 	}
-	//
-	// 	ctx.Info("received block", zap.Any("block", &block))
-	// }
+	stream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
+		StartHeight: 0,
+		EndHeight:   0,
+	})
+	if err != nil {
+		ctx.Error("failed to scan block", zap.Error(err))
+		return err
+	}
+
+	go func() {
+		for {
+			block, err2 := stream.Recv()
+			if errors.Is(err2, io.EOF) {
+				break
+			}
+			if err2 != nil {
+				ctx.Error("failed to receive block", zap.Error(err2))
+				return
+			}
+
+			ctx.Info("received block", zap.Any("block", &block))
+			_, err2 = i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
+				Workchain: block.Workchain,
+				Shard:     block.Shard,
+				SeqNo:     block.SeqNo,
+			})
+			if err2 != nil {
+				ctx.Error("failed to found new block", zap.Error(err2))
+				return
+			}
+		}
+	}()
 
 	return nil
 }
