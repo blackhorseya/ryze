@@ -154,5 +154,7 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 		return nil, err
 	}
 
+	// TODO: 2024/9/12|sean|publish new block event
+
 	return &emptypb.Empty{}, nil
 }
