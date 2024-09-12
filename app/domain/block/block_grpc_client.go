@@ -7,7 +7,7 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 )
 
-// NewBlockServiceClient is used to create a new block service client
+// NewBlockServiceClient is used to create a new block service tonClient
 func NewBlockServiceClient(client *grpcx.Client) (biz.BlockServiceClient, error) {
 	conn, err := client.Dial("block-scanner")
 	if err != nil {

@@ -58,7 +58,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	eventBus := eventx.NewEventBus()
-	blockServiceServer := block.NewBlockService(client, iBlockRepo, eventBus)
+	grpcxClient, err := grpcx.NewClient(configuration)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(grpcxClient)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	blockServiceServer := block.NewBlockService(client, iBlockRepo, eventBus, transactionServiceClient)
 	networkServiceServer := network.NewNetworkService(client)
 	transactionServiceServer := transaction.NewTransactionService(client)
 	accountServiceServer := account.NewAccountService(client)
