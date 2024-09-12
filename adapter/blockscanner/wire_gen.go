@@ -16,6 +16,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -69,7 +70,8 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
+	eventBus := eventx.NewEventBus()
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {

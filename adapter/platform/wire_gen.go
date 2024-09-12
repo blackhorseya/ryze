@@ -18,6 +18,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 )
 
@@ -56,7 +57,8 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceServer := block.NewBlockService(client, iBlockRepo)
+	eventBus := eventx.NewEventBus()
+	blockServiceServer := block.NewBlockService(client, iBlockRepo, eventBus)
 	networkServiceServer := network.NewNetworkService(client)
 	transactionServiceServer := transaction.NewTransactionService(client)
 	accountServiceServer := account.NewAccountService(client)

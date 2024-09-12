@@ -10,6 +10,7 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -19,13 +20,15 @@ import (
 type impl struct {
 	client *tonx.Client
 	blocks repo.IBlockRepo
+	bus    *eventx.EventBus
 }
 
 // NewBlockService is used to create a new block service
-func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo) biz.BlockServiceServer {
+func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo, bus *eventx.EventBus) biz.BlockServiceServer {
 	return &impl{
 		client: client,
 		blocks: blocks,
+		bus:    bus,
 	}
 }
 
@@ -147,6 +150,7 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 		return nil, err
 	}
 	ctx.Debug("get block", zap.Any("block", &block))
+	event := block.Born()
 
 	err = i.blocks.Create(next, block)
 	if err != nil {
@@ -154,7 +158,7 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 		return nil, err
 	}
 
-	// TODO: 2024/9/12|sean|publish new block event
+	i.bus.Publish(event)
 
 	return &emptypb.Empty{}, nil
 }

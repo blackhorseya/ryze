@@ -15,6 +15,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -76,6 +77,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		grpcx.NewClient,
 		NewInitServersFn,
 		otelx.NewSDK,
+		eventx.NewEventBus,
 
 		mongodbx.NewClient,
 		InitTonClient,

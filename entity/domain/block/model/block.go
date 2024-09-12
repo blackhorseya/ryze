@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"time"
 )
 
 // NewBlock is used to create a new block.
@@ -13,4 +14,16 @@ func NewBlock(workchain int32, shard int64, seqno uint32) (*Block, error) {
 		SeqNo:     seqno,
 		// TODO: 2024/7/31|sean|add timestamp field
 	}, nil
+}
+
+// Born is used to born a block.
+func (x *Block) Born() *NewBlockEvent {
+	return &NewBlockEvent{
+		BlockID:    x.Id,
+		Workchain:  x.Workchain,
+		Shard:      x.Shard,
+		SeqNo:      x.SeqNo,
+		OccurredAt: time.Now(),
+		Version:    1,
+	}
 }
