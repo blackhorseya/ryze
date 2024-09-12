@@ -14,7 +14,6 @@ import (
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -142,7 +141,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	}
 }
 
-func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*emptypb.Empty, error) {
+func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
 	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
 	defer span.End()
 
@@ -168,5 +167,5 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 
 	i.bus.Publish(event)
 
-	return &emptypb.Empty{}, nil
+	return block, nil
 }

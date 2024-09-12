@@ -12,7 +12,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -39,7 +38,7 @@ type BlockServiceClient interface {
 	GetBlocks(ctx context.Context, in *GetBlocksRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
 	// Scans a range of blocks.
 	ScanBlock(ctx context.Context, in *ScanBlockRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
-	FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error)
 }
 
 type blockServiceClient struct {
@@ -98,9 +97,9 @@ func (c *blockServiceClient) ScanBlock(ctx context.Context, in *ScanBlockRequest
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BlockService_ScanBlockClient = grpc.ServerStreamingClient[model.Block]
 
-func (c *blockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *blockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(model.Block)
 	err := c.cc.Invoke(ctx, BlockService_FoundNewBlock_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -120,7 +119,7 @@ type BlockServiceServer interface {
 	GetBlocks(*GetBlocksRequest, grpc.ServerStreamingServer[model.Block]) error
 	// Scans a range of blocks.
 	ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error
-	FoundNewBlock(context.Context, *FoundNewBlockRequest) (*emptypb.Empty, error)
+	FoundNewBlock(context.Context, *FoundNewBlockRequest) (*model.Block, error)
 }
 
 // UnimplementedBlockServiceServer should be embedded to have
@@ -139,7 +138,7 @@ func (UnimplementedBlockServiceServer) GetBlocks(*GetBlocksRequest, grpc.ServerS
 func (UnimplementedBlockServiceServer) ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error {
 	return status.Errorf(codes.Unimplemented, "method ScanBlock not implemented")
 }
-func (UnimplementedBlockServiceServer) FoundNewBlock(context.Context, *FoundNewBlockRequest) (*emptypb.Empty, error) {
+func (UnimplementedBlockServiceServer) FoundNewBlock(context.Context, *FoundNewBlockRequest) (*model.Block, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FoundNewBlock not implemented")
 }
 func (UnimplementedBlockServiceServer) testEmbeddedByValue() {}

@@ -2,7 +2,6 @@ syntax = "proto3";
 package block;
 
 import "domain/block/model/block.proto";
-import "google/protobuf/empty.proto";
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/block/biz";
 
@@ -48,5 +47,5 @@ service BlockService {
   // Scans a range of blocks.
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
 
-  rpc FoundNewBlock(FoundNewBlockRequest) returns (google.protobuf.Empty) {}
+  rpc FoundNewBlock(FoundNewBlockRequest) returns (Block) {}
 }

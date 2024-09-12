@@ -11,7 +11,6 @@ import (
 	gomock "go.uber.org/mock/gomock"
 	grpc "google.golang.org/grpc"
 	metadata "google.golang.org/grpc/metadata"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // MockBlockService_GetBlocksClient is a mock of BlockService_GetBlocksClient interface.
@@ -522,14 +521,14 @@ func (m *MockBlockServiceClient) EXPECT() *MockBlockServiceClientMockRecorder {
 }
 
 // FoundNewBlock mocks base method.
-func (m *MockBlockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (m *MockBlockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "FoundNewBlock", varargs...)
-	ret0, _ := ret[0].(*emptypb.Empty)
+	ret0, _ := ret[0].(*model.Block)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -625,10 +624,10 @@ func (m *MockBlockServiceServer) EXPECT() *MockBlockServiceServerMockRecorder {
 }
 
 // FoundNewBlock mocks base method.
-func (m *MockBlockServiceServer) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest) (*emptypb.Empty, error) {
+func (m *MockBlockServiceServer) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest) (*model.Block, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FoundNewBlock", ctx, in)
-	ret0, _ := ret[0].(*emptypb.Empty)
+	ret0, _ := ret[0].(*model.Block)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
