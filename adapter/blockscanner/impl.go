@@ -43,6 +43,7 @@ func (i *impl) Start(c context.Context) error {
 	}
 
 	go func() {
+		ctx.Info("start to receive block")
 		for {
 			block, err2 := stream.Recv()
 			if errors.Is(err2, io.EOF) {

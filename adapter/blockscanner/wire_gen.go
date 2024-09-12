@@ -40,6 +40,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	eventBus := eventx.NewEventBus()
 	client, err := grpcx.NewClient(configuration)
 	if err != nil {
 		cleanup()
@@ -59,6 +60,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		C:           configuration,
 		A:           application,
 		OTel:        sdk,
+		Bus:         eventBus,
 		blockClient: blockServiceClient,
 		txClient:    transactionServiceClient,
 	}
@@ -77,7 +79,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	eventBus := eventx.NewEventBus()
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
