@@ -32,12 +32,10 @@ func NewBlockService(
 	tonClient *tonx.Client,
 	blocks repo.IBlockRepo,
 	bus *eventx.EventBus,
-	txClient txB.TransactionServiceClient,
 ) biz.BlockServiceServer {
 	return &impl{
 		tonClient: tonClient,
 		bus:       bus,
-		txClient:  txClient,
 		blocks:    blocks,
 	}
 }

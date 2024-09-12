@@ -3,7 +3,8 @@ package blockscanner
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/entity/domain/block/biz"
+	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
+	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 )
 
 // Injector is used to inject the dependencies.
@@ -13,5 +14,6 @@ type Injector struct {
 	OTel *otelx.SDK
 
 	// Add more dependencies here
-	blockClient biz.BlockServiceClient
+	blockClient blockB.BlockServiceClient
+	txClient    txB.TransactionServiceClient
 }

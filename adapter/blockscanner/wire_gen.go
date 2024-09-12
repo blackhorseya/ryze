@@ -50,11 +50,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	injector := &Injector{
 		C:           configuration,
 		A:           application,
 		OTel:        sdk,
 		blockClient: blockServiceClient,
+		txClient:    transactionServiceClient,
 	}
 	tonxClient, err := InitTonClient(configuration)
 	if err != nil {
@@ -72,12 +78,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	eventBus := eventx.NewEventBus()
-	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus, transactionServiceClient)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {

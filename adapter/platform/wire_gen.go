@@ -37,12 +37,23 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	injector := &Injector{
-		C:     configuration,
-		A:     application,
-		OTelx: sdk,
+	client, err := grpcx.NewClient(configuration)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
 	}
-	client, err := initTonx()
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	injector := &Injector{
+		C:        configuration,
+		A:        application,
+		OTelx:    sdk,
+		txClient: transactionServiceClient,
+	}
+	tonxClient, err := initTonx()
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -58,20 +69,10 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	eventBus := eventx.NewEventBus()
-	grpcxClient, err := grpcx.NewClient(configuration)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	transactionServiceClient, err := transaction.NewTransactionServiceClient(grpcxClient)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	blockServiceServer := block.NewBlockService(client, iBlockRepo, eventBus, transactionServiceClient)
-	networkServiceServer := network.NewNetworkService(client)
-	transactionServiceServer := transaction.NewTransactionService(client)
-	accountServiceServer := account.NewAccountService(client)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
+	networkServiceServer := network.NewNetworkService(tonxClient)
+	transactionServiceServer := transaction.NewTransactionService(tonxClient)
+	accountServiceServer := account.NewAccountService(tonxClient)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
