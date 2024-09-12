@@ -54,7 +54,7 @@ func (i *impl) Start(c context.Context) error {
 			}
 
 			ctx.Info("received block", zap.Any("block", &block))
-			_, err2 = i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
+			block, err2 = i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
 				Workchain: block.Workchain,
 				Shard:     block.Shard,
 				SeqNo:     block.SeqNo,
@@ -63,6 +63,7 @@ func (i *impl) Start(c context.Context) error {
 				ctx.Error("failed to found new block", zap.Error(err2))
 				return
 			}
+			ctx.Info("found new block", zap.Any("block", &block))
 		}
 	}()
 
