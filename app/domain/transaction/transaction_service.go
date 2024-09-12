@@ -5,12 +5,14 @@ import (
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
+	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	txM "github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -96,4 +98,9 @@ func (i *txService) ListTransactions(
 	}
 
 	return nil
+}
+
+func (i *txService) ProcessBlockTransactions(g grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
+	// TODO: 2024/9/12|sean|implement me
+	panic("implement me")
 }

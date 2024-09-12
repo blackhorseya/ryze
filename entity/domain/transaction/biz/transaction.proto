@@ -1,6 +1,7 @@
 syntax = "proto3";
 package transaction;
 
+import "domain/block/model/block.proto";
 import "domain/transaction/model/transaction.proto";
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/transaction/biz";
@@ -19,4 +20,6 @@ message ListTransactionsRequest {
 service TransactionService {
   // Retrieves all transactions within a specific block.
   rpc ListTransactions(ListTransactionsRequest) returns (stream Transaction) {}
+
+  rpc ProcessBlockTransactions(stream block.Block) returns (stream Transaction) {}
 }
