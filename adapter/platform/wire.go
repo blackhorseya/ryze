@@ -48,11 +48,13 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		NewInitServersFn,
 		otelx.NewSDK,
 		eventx.NewEventBus,
+		grpcx.NewClient,
 
 		account.ProviderSet,
 		block.ProviderSet,
 		network.ProviderSet,
 		transaction.ProviderSet,
+		transaction.NewTransactionServiceClient,
 
 		initTonx,
 		mongodbx.NewClient,

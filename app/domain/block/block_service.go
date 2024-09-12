@@ -9,6 +9,7 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
+	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
@@ -18,24 +19,33 @@ import (
 )
 
 type impl struct {
-	client *tonx.Client
+	tonClient *tonx.Client
+	bus       *eventx.EventBus
+
+	txClient txB.TransactionServiceClient
+
 	blocks repo.IBlockRepo
-	bus    *eventx.EventBus
 }
 
 // NewBlockService is used to create a new block service
-func NewBlockService(client *tonx.Client, blocks repo.IBlockRepo, bus *eventx.EventBus) biz.BlockServiceServer {
+func NewBlockService(
+	tonClient *tonx.Client,
+	blocks repo.IBlockRepo,
+	bus *eventx.EventBus,
+	txClient txB.TransactionServiceClient,
+) biz.BlockServiceServer {
 	return &impl{
-		client: client,
-		blocks: blocks,
-		bus:    bus,
+		tonClient: tonClient,
+		bus:       bus,
+		txClient:  txClient,
+		blocks:    blocks,
 	}
 }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
 	ctx := contextx.WithContext(c)
 
-	api := ton.NewAPIClient(i.client).WithRetry()
+	api := ton.NewAPIClient(i.tonClient).WithRetry()
 	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
 	if err != nil {
 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
@@ -88,8 +98,8 @@ func (i *impl) GetBlocks(req *biz.GetBlocksRequest, stream biz.BlockService_GetB
 }
 
 func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
-	api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
-	api.SetTrustedBlockFromConfig(i.client.Config)
+	api := ton.NewAPIClient(i.tonClient, ton.ProofCheckPolicyFast).WithRetry()
+	api.SetTrustedBlockFromConfig(i.tonClient.Config)
 
 	ctx := contextx.WithContext(stream.Context())
 	master, err := api.GetMasterchainInfo(ctx)

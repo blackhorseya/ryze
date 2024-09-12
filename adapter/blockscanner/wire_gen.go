@@ -9,6 +9,7 @@ package blockscanner
 import (
 	"fmt"
 	"github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
@@ -71,7 +72,12 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	eventBus := eventx.NewEventBus()
-	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus, transactionServiceClient)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
