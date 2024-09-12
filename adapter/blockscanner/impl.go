@@ -33,7 +33,7 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
-	stream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
+	blockStream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
 		StartHeight: 0,
 		EndHeight:   0,
 	})
@@ -42,10 +42,16 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
+	txStream, err := i.injector.txClient.ProcessBlockTransactions(ctx)
+	if err != nil {
+		ctx.Error("failed to process block transactions", zap.Error(err))
+		return err
+	}
+
 	go func() {
 		ctx.Info("start to receive block")
 		for {
-			block, err2 := stream.Recv()
+			block, err2 := blockStream.Recv()
 			if errors.Is(err2, io.EOF) {
 				break
 			}
@@ -65,6 +71,26 @@ func (i *impl) Start(c context.Context) error {
 				return
 			}
 			ctx.Info("found new block", zap.Any("block", &block))
+
+			err2 = txStream.Send(block)
+			if err2 != nil {
+				ctx.Error("failed to send block", zap.Error(err2))
+				return
+			}
+		}
+	}()
+
+	go func() {
+		for {
+			tx, err2 := txStream.Recv()
+			if errors.Is(err2, io.EOF) {
+				break
+			}
+			if err2 != nil {
+				ctx.Error("failed to receive transaction", zap.Error(err2))
+				return
+			}
+			ctx.Info("received transaction", zap.Any("transaction", &tx))
 		}
 	}()
 

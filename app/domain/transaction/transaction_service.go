@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"errors"
+	"io"
 	"strconv"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
@@ -100,7 +102,37 @@ func (i *txService) ListTransactions(
 	return nil
 }
 
-func (i *txService) ProcessBlockTransactions(g grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
-	// TODO: 2024/9/12|sean|implement me
-	panic("implement me")
+func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
+	c := stream.Context()
+	_, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	for {
+		block, err := stream.Recv()
+		if errors.Is(err, io.EOF) {
+			return nil
+		}
+		if err != nil {
+			ctx.Error("receive block error", zap.Error(err))
+			return err
+		}
+		ctx.Debug("receive block", zap.Any("block", &block))
+
+		for _, txID := range block.TransactionIds {
+			err = stream.Send(&txM.Transaction{
+				Id:        txID,
+				BlockId:   block.Id,
+				From:      nil,
+				To:        nil,
+				Amount:    0,
+				Timestamp: nil,
+			})
+			if err != nil {
+				ctx.Error("send transaction error", zap.Error(err))
+				return err
+			}
+		}
+	}
 }

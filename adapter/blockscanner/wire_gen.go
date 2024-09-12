@@ -16,6 +16,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
+	biz2 "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
@@ -80,7 +81,8 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
-	initServers := NewInitServersFn(blockServiceServer)
+	transactionServiceServer := transaction.NewTransactionService(tonxClient)
+	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		cleanup()
@@ -97,7 +99,10 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 const serviceName = "block-scanner"
 
 // NewInitServersFn creates a new grpc server initializer.
-func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
+func NewInitServersFn(
+	blockServer biz.BlockServiceServer,
+	txServer biz2.TransactionServiceServer,
+) grpcx.InitServers {
 	return func(s *grpc.Server) {
 
 		healthServer := health.NewServer()
@@ -105,6 +110,7 @@ func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
 		healthServer.SetServingStatus(serviceName, grpc_health_v1.HealthCheckResponse_SERVING)
 		reflection.Register(s)
 		biz.RegisterBlockServiceServer(s, blockServer)
+		biz2.RegisterTransactionServiceServer(s, txServer)
 	}
 }
 
