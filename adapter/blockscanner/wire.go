@@ -15,6 +15,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
+	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
@@ -28,7 +29,10 @@ import (
 const serviceName = "block-scanner"
 
 // NewInitServersFn creates a new grpc server initializer.
-func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
+func NewInitServersFn(
+	blockServer biz.BlockServiceServer,
+	txServer txB.TransactionServiceServer,
+) grpcx.InitServers {
 	return func(s *grpc.Server) {
 		// register health check service
 		healthServer := health.NewServer()
@@ -40,6 +44,7 @@ func NewInitServersFn(blockServer biz.BlockServiceServer) grpcx.InitServers {
 
 		// register servers
 		biz.RegisterBlockServiceServer(s, blockServer)
+		txB.RegisterTransactionServiceServer(s, txServer)
 	}
 }
 
@@ -79,12 +84,14 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		NewInitServersFn,
 		otelx.NewSDK,
 		eventx.NewEventBus,
-		transaction.NewTransactionServiceClient,
 
 		mongodbx.NewClient,
 		InitTonClient,
 
 		block.ProviderSet,
 		block.NewBlockServiceClient,
+
+		transaction.ProviderSet,
+		transaction.NewTransactionServiceClient,
 	))
 }

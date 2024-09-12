@@ -11,7 +11,7 @@ message Transaction {
   bytes id = 1;
 
   // Identifier of the block that includes this transaction.
-  bytes block_id = 2;
+  string block_id = 2;
 
   // Address of the sender.
   bytes from = 3;
