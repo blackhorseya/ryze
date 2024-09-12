@@ -81,6 +81,7 @@ func (i *impl) Start(c context.Context) error {
 	}()
 
 	go func() {
+		ctx.Info("start to receive transaction")
 		for {
 			tx, err2 := txStream.Recv()
 			if errors.Is(err2, io.EOF) {
