@@ -25,7 +25,6 @@ func NewServer(injector *Injector, server *grpcx.Server) adapterx.Server {
 	}
 }
 
-//nolint:gocognit // it's okay
 func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 
@@ -60,24 +59,13 @@ func (i *impl) Start(c context.Context) error {
 				ctx.Error("failed to receive block", zap.Error(err2))
 				continue
 			}
+			ctx.Info("received block", zap.String("block_id", block.Id))
 
-			ctx.Info("received block", zap.Any("block", &block))
-			block, err2 = i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
-				Workchain: block.Workchain,
-				Shard:     block.Shard,
-				SeqNo:     block.SeqNo,
-			})
-			if err2 != nil {
-				ctx.Error("failed to found new block", zap.Error(err2))
-				continue
-			}
-			ctx.Info("found new block", zap.Any("block", &block))
-
-			err2 = txStream.Send(block)
-			if err2 != nil {
-				ctx.Error("failed to send block", zap.Error(err2))
-				continue
-			}
+			// err2 = txStream.Send(block)
+			// if err2 != nil {
+			// 	ctx.Error("failed to send block", zap.Error(err2))
+			// 	continue
+			// }
 		}
 	}()
 
