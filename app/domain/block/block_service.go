@@ -91,7 +91,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 
 		for _, shard := range currentShards {
 			// 只監聽指定的 workchain
-			if req.Workchain != nil && shard.Workchain != *req.Workchain {
+			if req.Workchain != nil && shard.Workchain != req.GetWorkchain() {
 				continue
 			}
 
