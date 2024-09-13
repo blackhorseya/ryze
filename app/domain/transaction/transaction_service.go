@@ -16,18 +16,18 @@ import (
 	"google.golang.org/grpc"
 )
 
-type txServiceOnchain struct {
+type txService struct {
 	client *tonx.Client
 }
 
-// NewTransactionServiceOnchain is used to create a new transaction service onchain
-func NewTransactionServiceOnchain(client *tonx.Client) txB.TransactionServiceServer {
-	return &txServiceOnchain{
+// NewTransactionService is used to create a new transaction service onchain
+func NewTransactionService(client *tonx.Client) txB.TransactionServiceServer {
+	return &txService{
 		client: client,
 	}
 }
 
-func (i *txServiceOnchain) ListTransactions(
+func (i *txService) ListTransactions(
 	req *txB.ListTransactionsRequest,
 	stream txB.TransactionService_ListTransactionsServer,
 ) error {
@@ -58,7 +58,7 @@ func (i *txServiceOnchain) ListTransactions(
 	return nil
 }
 
-func (i *txServiceOnchain) ProcessBlockTransactions(
+func (i *txService) ProcessBlockTransactions(
 	stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
 	c := stream.Context()
 	_, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
@@ -92,7 +92,7 @@ func (i *txServiceOnchain) ProcessBlockTransactions(
 }
 
 // ListTransactionsByBlock is used to list transactions by block
-func (i *txServiceOnchain) ListTransactionsByBlock(
+func (i *txService) ListTransactionsByBlock(
 	ctx contextx.Contextx,
 	block *model.Block,
 ) (chan *txM.Transaction, error) {

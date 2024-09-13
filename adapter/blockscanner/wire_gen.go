@@ -81,7 +81,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
-	transactionServiceServer := transaction.NewTransactionServiceOnchain(tonxClient)
+	transactionServiceServer := transaction.NewTransactionService(tonxClient)
 	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
