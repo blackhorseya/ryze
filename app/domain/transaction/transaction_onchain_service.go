@@ -58,7 +58,8 @@ func (i *txServiceOnchain) ListTransactions(
 	return nil
 }
 
-func (i *txServiceOnchain) ProcessBlockTransactions(stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
+func (i *txServiceOnchain) ProcessBlockTransactions(
+	stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
 	c := stream.Context()
 	_, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
 	defer span.End()
