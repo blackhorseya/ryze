@@ -147,7 +147,6 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 		ctx.Error("failed to get block data", zap.Error(err))
 		return nil, err
 	}
-	ctx.Debug("get block data from ton", zap.Any("block_data", &blockData))
 
 	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
 	if err != nil {
@@ -156,7 +155,6 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 	}
 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
 
-	ctx.Debug("get block", zap.Any("block", &block))
 	event := block.Born()
 
 	err = i.blocks.Create(next, block)
