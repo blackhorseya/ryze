@@ -9,6 +9,7 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	txM "github.com/blackhorseya/ryze/entity/domain/transaction/model"
+	"github.com/blackhorseya/ryze/entity/domain/transaction/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/ton"
@@ -18,12 +19,15 @@ import (
 
 type txService struct {
 	client *tonx.Client
+
+	transactions repo.ITransactionRepo
 }
 
 // NewTransactionService is used to create a new transaction service onchain
-func NewTransactionService(client *tonx.Client) txB.TransactionServiceServer {
+func NewTransactionService(client *tonx.Client, transactions repo.ITransactionRepo) txB.TransactionServiceServer {
 	return &txService{
-		client: client,
+		client:       client,
+		transactions: transactions,
 	}
 }
 

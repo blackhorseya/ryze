@@ -15,6 +15,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -71,7 +72,13 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	eventBus := eventx.NewEventBus()
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
 	networkServiceServer := network.NewNetworkService(tonxClient)
-	transactionServiceServer := transaction.NewTransactionService(tonxClient)
+	db, err := pgx.NewClient(application)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	iTransactionRepo := pgx.NewTransactionRepo(db)
+	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
 	accountServiceServer := account.NewAccountService(tonxClient)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
