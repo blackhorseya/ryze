@@ -20,8 +20,8 @@ type txServiceOnchain struct {
 	client *tonx.Client
 }
 
-// NewTransactionService is used to create a new transaction service
-func NewTransactionService(client *tonx.Client) txB.TransactionServiceServer {
+// NewTransactionServiceOnchain is used to create a new transaction service onchain
+func NewTransactionServiceOnchain(client *tonx.Client) txB.TransactionServiceServer {
 	return &txServiceOnchain{
 		client: client,
 	}

@@ -6,5 +6,5 @@ import (
 
 // ProviderSet will create a new transaction service.
 var ProviderSet = wire.NewSet(
-	NewTransactionService,
+	NewTransactionServiceOnchain,
 )
