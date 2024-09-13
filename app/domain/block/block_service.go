@@ -39,61 +39,6 @@ func NewBlockService(
 	}
 }
 
-func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
-	ctx := contextx.WithContext(c)
-
-	api := ton.NewAPIClient(i.tonClient).WithRetry()
-	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
-	if err != nil {
-		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
-		return nil, err
-	}
-
-	blockData, err := api.GetBlockData(ctx, blockID)
-	if err != nil {
-		ctx.Error("failed to get block data", zap.Error(err))
-		return nil, err
-	}
-	ctx.Debug("get block data from ton", zap.Any("block_data", &blockData))
-
-	ret, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
-	ret.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
-
-	return ret, nil
-}
-
-func (i *impl) GetBlocks(req *biz.GetBlocksRequest, stream biz.BlockService_GetBlocksServer) error {
-	c := stream.Context()
-
-	next, span := otelx.Tracer.Start(c, "block.biz.GetBlocks")
-	defer span.End()
-
-	ctx := contextx.WithContext(c)
-
-	items, _, err := i.blocks.List(next, repo.ListCondition{
-		Limit: 0,
-		Skip:  0,
-	})
-	if err != nil {
-		ctx.Error("failed to list blocks", zap.Error(err))
-		return err
-	}
-
-	for _, item := range items {
-		err = stream.Send(item)
-		if err != nil {
-			ctx.Error("failed to send block", zap.Error(err))
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
 	api := ton.NewAPIClient(i.tonClient, ton.ProofCheckPolicyFast).WithRetry()
 	api.SetTrustedBlockFromConfig(i.tonClient.Config)
@@ -147,15 +92,27 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 
 	ctx := contextx.WithContext(c)
 
-	block, err := i.GetBlock(next, &biz.GetBlockRequest{
-		Workchain: req.Workchain,
-		Shard:     req.Shard,
-		SeqNo:     req.SeqNo,
-	})
+	api := ton.NewAPIClient(i.tonClient).WithRetry()
+	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
 	if err != nil {
-		ctx.Error("failed to get block", zap.Error(err))
+		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
 		return nil, err
 	}
+
+	blockData, err := api.GetBlockData(ctx, blockID)
+	if err != nil {
+		ctx.Error("failed to get block data", zap.Error(err))
+		return nil, err
+	}
+	ctx.Debug("get block data from ton", zap.Any("block_data", &blockData))
+
+	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err))
+		return nil, err
+	}
+	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+
 	ctx.Debug("get block", zap.Any("block", &block))
 	event := block.Born()
 
