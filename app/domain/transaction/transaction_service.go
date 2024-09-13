@@ -50,7 +50,7 @@ func (i *txService) ProcessBlockTransactions(
 		}
 		ctx.Debug("receive block", zap.Any("block", &block))
 
-		list, err := i.ListTransactionsByBlock(ctx, block)
+		list, err := i.FetchTransactionsByBlock(ctx, block)
 		if err != nil {
 			ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
 			return err
@@ -61,17 +61,16 @@ func (i *txService) ProcessBlockTransactions(
 				return err
 			}
 
-			// TODO: 2024/9/13|sean|save transaction to database
-			// if err = i.transactions.Create(ctx, tx); err != nil {
-			// 	ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
-			// 	return err
-			// }
+			if err = i.transactions.Create(ctx, tx); err != nil {
+				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
+				return err
+			}
 		}
 	}
 }
 
-// ListTransactionsByBlock is used to list transactions by block
-func (i *txService) ListTransactionsByBlock(
+// FetchTransactionsByBlock is used to fetch transactions by block
+func (i *txService) FetchTransactionsByBlock(
 	ctx contextx.Contextx,
 	block *model.Block,
 ) (chan *txM.Transaction, error) {
