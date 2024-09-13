@@ -32,7 +32,7 @@ const (
 // Service definition for handling transactions.
 type TransactionServiceClient interface {
 	ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model1.Transaction], error)
-	ListTransactions(ctx context.Context, in *TransactionListRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error)
+	ListTransactions(ctx context.Context, in *ListTransactionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error)
 }
 
 type transactionServiceClient struct {
@@ -56,13 +56,13 @@ func (c *transactionServiceClient) ProcessBlockTransactions(ctx context.Context,
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type TransactionService_ProcessBlockTransactionsClient = grpc.BidiStreamingClient[model.Block, model1.Transaction]
 
-func (c *transactionServiceClient) ListTransactions(ctx context.Context, in *TransactionListRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error) {
+func (c *transactionServiceClient) ListTransactions(ctx context.Context, in *ListTransactionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	stream, err := c.cc.NewStream(ctx, &TransactionService_ServiceDesc.Streams[1], TransactionService_ListTransactions_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[TransactionListRequest, model1.Transaction]{ClientStream: stream}
+	x := &grpc.GenericClientStream[ListTransactionRequest, model1.Transaction]{ClientStream: stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ type TransactionService_ListTransactionsClient = grpc.ServerStreamingClient[mode
 // Service definition for handling transactions.
 type TransactionServiceServer interface {
 	ProcessBlockTransactions(grpc.BidiStreamingServer[model.Block, model1.Transaction]) error
-	ListTransactions(*TransactionListRequest, grpc.ServerStreamingServer[model1.Transaction]) error
+	ListTransactions(*ListTransactionRequest, grpc.ServerStreamingServer[model1.Transaction]) error
 }
 
 // UnimplementedTransactionServiceServer should be embedded to have
@@ -95,7 +95,7 @@ type UnimplementedTransactionServiceServer struct{}
 func (UnimplementedTransactionServiceServer) ProcessBlockTransactions(grpc.BidiStreamingServer[model.Block, model1.Transaction]) error {
 	return status.Errorf(codes.Unimplemented, "method ProcessBlockTransactions not implemented")
 }
-func (UnimplementedTransactionServiceServer) ListTransactions(*TransactionListRequest, grpc.ServerStreamingServer[model1.Transaction]) error {
+func (UnimplementedTransactionServiceServer) ListTransactions(*ListTransactionRequest, grpc.ServerStreamingServer[model1.Transaction]) error {
 	return status.Errorf(codes.Unimplemented, "method ListTransactions not implemented")
 }
 func (UnimplementedTransactionServiceServer) testEmbeddedByValue() {}
@@ -126,11 +126,11 @@ func _TransactionService_ProcessBlockTransactions_Handler(srv interface{}, strea
 type TransactionService_ProcessBlockTransactionsServer = grpc.BidiStreamingServer[model.Block, model1.Transaction]
 
 func _TransactionService_ListTransactions_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(TransactionListRequest)
+	m := new(ListTransactionRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(TransactionServiceServer).ListTransactions(m, &grpc.GenericServerStream[TransactionListRequest, model1.Transaction]{ServerStream: stream})
+	return srv.(TransactionServiceServer).ListTransactions(m, &grpc.GenericServerStream[ListTransactionRequest, model1.Transaction]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.

@@ -551,7 +551,7 @@ func (m *MockTransactionServiceClient) EXPECT() *MockTransactionServiceClientMoc
 }
 
 // ListTransactions mocks base method.
-func (m *MockTransactionServiceClient) ListTransactions(ctx context.Context, in *TransactionListRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsClient, error) {
+func (m *MockTransactionServiceClient) ListTransactions(ctx context.Context, in *ListTransactionRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsClient, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
@@ -614,7 +614,7 @@ func (m *MockTransactionServiceServer) EXPECT() *MockTransactionServiceServerMoc
 }
 
 // ListTransactions mocks base method.
-func (m *MockTransactionServiceServer) ListTransactions(blob *TransactionListRequest, server TransactionService_ListTransactionsServer) error {
+func (m *MockTransactionServiceServer) ListTransactions(blob *ListTransactionRequest, server TransactionService_ListTransactionsServer) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListTransactions", blob, server)
 	ret0, _ := ret[0].(error)

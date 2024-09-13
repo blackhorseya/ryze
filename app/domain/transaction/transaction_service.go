@@ -131,7 +131,7 @@ func (i *txService) FetchTransactionsByBlock(
 }
 
 func (i *txService) ListTransactions(
-	req *txB.TransactionListRequest,
+	req *txB.ListTransactionRequest,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
 	c := stream.Context()
