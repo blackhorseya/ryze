@@ -155,14 +155,13 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 	}
 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
 
-	event := block.Born()
-
 	err = i.blocks.Create(next, block)
 	if err != nil {
 		ctx.Error("failed to create block", zap.Error(err))
 		return nil, err
 	}
 
+	event := block.Born()
 	i.bus.Publish(event)
 
 	return block, nil
