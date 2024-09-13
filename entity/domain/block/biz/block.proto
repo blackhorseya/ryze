@@ -20,8 +20,21 @@ message FoundNewBlockRequest {
   uint32 seq_no = 3;
 }
 
+message GetBlockRequest {
+  // Block ID of the block to get. example: -1:8000000000000000:40337845
+  string block_id = 1;
+}
+
+message ListBlocksRequest {
+  int64 page = 1;
+  int64 page_size = 2;
+}
+
 // Service definition for handling blocks.
 service BlockService {
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
   rpc FoundNewBlock(FoundNewBlockRequest) returns (Block) {}
+
+  rpc GetBlock(GetBlockRequest) returns (Block) {}
+  rpc ListBlocks(ListBlocksRequest) returns (stream Block) {}
 }
