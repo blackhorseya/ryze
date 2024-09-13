@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/blackhorseya/ryze/adapter/blockscanner"
+	"github.com/blackhorseya/ryze/adapter/platform"
 	"github.com/blackhorseya/ryze/pkg/cmdx"
 	"github.com/spf13/cobra"
 )
@@ -15,6 +16,7 @@ var startCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(startCmd)
 
+	startCmd.AddCommand(cmdx.NewServiceCmd("platform", "start platform service", platform.New))
 	startCmd.AddCommand(cmdx.NewServiceCmd("scanner", "start scanner service", blockscanner.New))
 
 	// Here you will define your flags and configuration settings.
