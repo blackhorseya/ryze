@@ -195,44 +195,6 @@ func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error)
 	return nil
 }
 
-// func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
-// 	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
-// 	defer span.End()
-//
-// 	ctx := contextx.WithContext(c)
-//
-// 	api := ton.NewAPIClient(i.tonClient).WithRetry()
-// 	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
-// 	if err != nil {
-// 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
-// 		return nil, err
-// 	}
-//
-// 	blockData, err := api.GetBlockData(ctx, blockID)
-// 	if err != nil {
-// 		ctx.Error("failed to get block data", zap.Error(err))
-// 		return nil, err
-// 	}
-//
-// 	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
-// 	if err != nil {
-// 		ctx.Error("failed to create block", zap.Error(err))
-// 		return nil, err
-// 	}
-// 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
-//
-// 	err = i.blocks.Create(next, block)
-// 	if err != nil {
-// 		ctx.Error("failed to create block", zap.Error(err))
-// 		return nil, err
-// 	}
-//
-// 	event := block.Born()
-// 	i.bus.Publish(event)
-//
-// 	return block, nil
-// }
-
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
 	next, span := otelx.Tracer.Start(c, "block.biz.GetBlock")
 	defer span.End()
