@@ -58,7 +58,7 @@ func (i *impl) Start(c context.Context) error {
 			}
 			if err2 != nil {
 				ctx.Error("failed to receive block", zap.Error(err2))
-				return
+				continue
 			}
 
 			ctx.Info("received block", zap.Any("block", &block))
@@ -69,14 +69,14 @@ func (i *impl) Start(c context.Context) error {
 			})
 			if err2 != nil {
 				ctx.Error("failed to found new block", zap.Error(err2))
-				return
+				continue
 			}
 			ctx.Info("found new block", zap.Any("block", &block))
 
 			err2 = txStream.Send(block)
 			if err2 != nil {
 				ctx.Error("failed to send block", zap.Error(err2))
-				return
+				continue
 			}
 		}
 	}()
@@ -90,7 +90,7 @@ func (i *impl) Start(c context.Context) error {
 			}
 			if err2 != nil {
 				ctx.Error("failed to receive transaction", zap.Error(err2))
-				return
+				continue
 			}
 			ctx.Info("received transaction", zap.Any("transaction", &tx))
 		}
