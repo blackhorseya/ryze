@@ -2,6 +2,7 @@ package block
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
@@ -15,6 +16,7 @@ import (
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -129,11 +131,46 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
+	next, span := otelx.Tracer.Start(c, "block.biz.GetBlock")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	block, err := i.blocks.GetByID(next, req.BlockId)
+	if err != nil {
+		ctx.Error("failed to get block", zap.Error(err))
+		return nil, err
+	}
+
+	return block, nil
 }
 
 func (i *impl) ListBlocks(req *biz.ListBlocksRequest, stream grpc.ServerStreamingServer[model.Block]) error {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "block.biz.ListBlocks")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	items, total, err := i.blocks.List(next, repo.ListCondition{
+		Limit: req.PageSize,
+		Skip:  (req.Page - 1) * req.PageSize,
+	})
+	if err != nil {
+		ctx.Error("failed to list blocks", zap.Error(err))
+		return err
+	}
+
+	for _, item := range items {
+		err = stream.Send(item)
+		if err != nil {
+			ctx.Error("failed to send block", zap.Error(err))
+			return err
+		}
+	}
+	stream.SetTrailer(metadata.New(map[string]string{"total": strconv.Itoa(total)}))
+
+	ctx.Debug("list blocks", zap.Any("items", items), zap.Int("total", total))
+
+	return nil
 }
