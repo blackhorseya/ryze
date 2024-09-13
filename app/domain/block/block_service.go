@@ -129,43 +129,109 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	}
 }
 
-func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
+func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.Block]) error {
+	c := stream.Context()
 	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
 	defer span.End()
 
 	ctx := contextx.WithContext(c)
 
+	for {
+		newBlock, err := stream.Recv()
+		if err != nil {
+			ctx.Error("failed to receive new block", zap.Error(err))
+			continue
+		}
+
+		err = i.FetchBlockInfo(next, newBlock)
+		if err != nil {
+			ctx.Error("failed to fetch block info", zap.Error(err))
+			continue
+		}
+
+		err = i.blocks.Create(next, newBlock)
+		if err != nil {
+			ctx.Error("failed to create block", zap.Error(err))
+			continue
+		}
+
+		err = stream.Send(newBlock)
+		if err != nil {
+			ctx.Error("failed to send new block", zap.Error(err))
+			continue
+		}
+	}
+}
+
+// FetchBlockInfo is used to fetch block info
+func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error) {
+	next, span := otelx.Tracer.Start(c, "block.biz.FetchBlockInfo")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	// 初始化 TON API 客戶端
 	api := ton.NewAPIClient(i.tonClient).WithRetry()
-	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
+
+	// 查找區塊
+	blockID, err := api.LookupBlock(next, block.Workchain, block.Shard, block.SeqNo)
 	if err != nil {
-		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
-		return nil, err
+		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
+		span.RecordError(err)
+		return err
 	}
 
-	blockData, err := api.GetBlockData(ctx, blockID)
+	// 獲取區塊資訊
+	blockData, err := api.GetBlockData(next, blockID)
 	if err != nil {
 		ctx.Error("failed to get block data", zap.Error(err))
-		return nil, err
+		span.RecordError(err)
+		return err
 	}
 
-	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
+	// fill block info
 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
 
-	err = i.blocks.Create(next, block)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
-
-	event := block.Born()
-	i.bus.Publish(event)
-
-	return block, nil
+	return nil
 }
+
+// func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
+// 	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
+// 	defer span.End()
+//
+// 	ctx := contextx.WithContext(c)
+//
+// 	api := ton.NewAPIClient(i.tonClient).WithRetry()
+// 	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
+// 	if err != nil {
+// 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
+// 		return nil, err
+// 	}
+//
+// 	blockData, err := api.GetBlockData(ctx, blockID)
+// 	if err != nil {
+// 		ctx.Error("failed to get block data", zap.Error(err))
+// 		return nil, err
+// 	}
+//
+// 	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
+// 	if err != nil {
+// 		ctx.Error("failed to create block", zap.Error(err))
+// 		return nil, err
+// 	}
+// 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+//
+// 	err = i.blocks.Create(next, block)
+// 	if err != nil {
+// 		ctx.Error("failed to create block", zap.Error(err))
+// 		return nil, err
+// 	}
+//
+// 	event := block.Born()
+// 	i.bus.Publish(event)
+//
+// 	return block, nil
+// }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
 	next, span := otelx.Tracer.Start(c, "block.biz.GetBlock")

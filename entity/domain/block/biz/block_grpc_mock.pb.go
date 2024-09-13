@@ -255,6 +255,277 @@ func (mr *MockBlockService_ScanBlockServerMockRecorder) SetTrailer(arg0 interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockBlockService_ScanBlockServer)(nil).SetTrailer), arg0)
 }
 
+// MockBlockService_FoundNewBlockClient is a mock of BlockService_FoundNewBlockClient interface.
+type MockBlockService_FoundNewBlockClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockBlockService_FoundNewBlockClientMockRecorder
+}
+
+// MockBlockService_FoundNewBlockClientMockRecorder is the mock recorder for MockBlockService_FoundNewBlockClient.
+type MockBlockService_FoundNewBlockClientMockRecorder struct {
+	mock *MockBlockService_FoundNewBlockClient
+}
+
+// NewMockBlockService_FoundNewBlockClient creates a new mock instance.
+func NewMockBlockService_FoundNewBlockClient(ctrl *gomock.Controller) *MockBlockService_FoundNewBlockClient {
+	mock := &MockBlockService_FoundNewBlockClient{ctrl: ctrl}
+	mock.recorder = &MockBlockService_FoundNewBlockClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBlockService_FoundNewBlockClient) EXPECT() *MockBlockService_FoundNewBlockClientMockRecorder {
+	return m.recorder
+}
+
+// CloseSend mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) CloseSend() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CloseSend")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CloseSend indicates an expected call of CloseSend.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) CloseSend() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseSend", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).CloseSend))
+}
+
+// Context mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).Context))
+}
+
+// Header mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) Header() (metadata.MD, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Header")
+	ret0, _ := ret[0].(metadata.MD)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Header indicates an expected call of Header.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) Header() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Header", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).Header))
+}
+
+// Recv mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) Recv() (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Recv")
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Recv indicates an expected call of Recv.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) Recv() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Recv", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).Recv))
+}
+
+// RecvMsg mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).RecvMsg), arg0)
+}
+
+// Send mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) Send(arg0 *model.Block) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Send", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Send indicates an expected call of Send.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) Send(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).Send), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).SendMsg), arg0)
+}
+
+// Trailer mocks base method.
+func (m *MockBlockService_FoundNewBlockClient) Trailer() metadata.MD {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Trailer")
+	ret0, _ := ret[0].(metadata.MD)
+	return ret0
+}
+
+// Trailer indicates an expected call of Trailer.
+func (mr *MockBlockService_FoundNewBlockClientMockRecorder) Trailer() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Trailer", reflect.TypeOf((*MockBlockService_FoundNewBlockClient)(nil).Trailer))
+}
+
+// MockBlockService_FoundNewBlockServer is a mock of BlockService_FoundNewBlockServer interface.
+type MockBlockService_FoundNewBlockServer struct {
+	ctrl     *gomock.Controller
+	recorder *MockBlockService_FoundNewBlockServerMockRecorder
+}
+
+// MockBlockService_FoundNewBlockServerMockRecorder is the mock recorder for MockBlockService_FoundNewBlockServer.
+type MockBlockService_FoundNewBlockServerMockRecorder struct {
+	mock *MockBlockService_FoundNewBlockServer
+}
+
+// NewMockBlockService_FoundNewBlockServer creates a new mock instance.
+func NewMockBlockService_FoundNewBlockServer(ctrl *gomock.Controller) *MockBlockService_FoundNewBlockServer {
+	mock := &MockBlockService_FoundNewBlockServer{ctrl: ctrl}
+	mock.recorder = &MockBlockService_FoundNewBlockServerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBlockService_FoundNewBlockServer) EXPECT() *MockBlockService_FoundNewBlockServerMockRecorder {
+	return m.recorder
+}
+
+// Context mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).Context))
+}
+
+// Recv mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) Recv() (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Recv")
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Recv indicates an expected call of Recv.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) Recv() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Recv", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).Recv))
+}
+
+// RecvMsg mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).RecvMsg), arg0)
+}
+
+// Send mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) Send(arg0 *model.Block) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Send", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Send indicates an expected call of Send.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) Send(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).Send), arg0)
+}
+
+// SendHeader mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) SendHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendHeader indicates an expected call of SendHeader.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) SendHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendHeader", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).SendHeader), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).SendMsg), arg0)
+}
+
+// SetHeader mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) SetHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetHeader indicates an expected call of SetHeader.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) SetHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetHeader", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).SetHeader), arg0)
+}
+
+// SetTrailer mocks base method.
+func (m *MockBlockService_FoundNewBlockServer) SetTrailer(arg0 metadata.MD) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetTrailer", arg0)
+}
+
+// SetTrailer indicates an expected call of SetTrailer.
+func (mr *MockBlockService_FoundNewBlockServerMockRecorder) SetTrailer(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockBlockService_FoundNewBlockServer)(nil).SetTrailer), arg0)
+}
+
 // MockBlockService_ListBlocksClient is a mock of BlockService_ListBlocksClient interface.
 type MockBlockService_ListBlocksClient struct {
 	ctrl     *gomock.Controller
@@ -521,22 +792,22 @@ func (m *MockBlockServiceClient) EXPECT() *MockBlockServiceClientMockRecorder {
 }
 
 // FoundNewBlock mocks base method.
-func (m *MockBlockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
+func (m *MockBlockServiceClient) FoundNewBlock(ctx context.Context, opts ...grpc.CallOption) (BlockService_FoundNewBlockClient, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
+	varargs := []interface{}{ctx}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "FoundNewBlock", varargs...)
-	ret0, _ := ret[0].(*model.Block)
+	ret0, _ := ret[0].(BlockService_FoundNewBlockClient)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FoundNewBlock indicates an expected call of FoundNewBlock.
-func (mr *MockBlockServiceClientMockRecorder) FoundNewBlock(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+func (mr *MockBlockServiceClientMockRecorder) FoundNewBlock(ctx interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
+	varargs := append([]interface{}{ctx}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).FoundNewBlock), varargs...)
 }
 
@@ -624,18 +895,17 @@ func (m *MockBlockServiceServer) EXPECT() *MockBlockServiceServerMockRecorder {
 }
 
 // FoundNewBlock mocks base method.
-func (m *MockBlockServiceServer) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest) (*model.Block, error) {
+func (m *MockBlockServiceServer) FoundNewBlock(server BlockService_FoundNewBlockServer) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FoundNewBlock", ctx, in)
-	ret0, _ := ret[0].(*model.Block)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "FoundNewBlock", server)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // FoundNewBlock indicates an expected call of FoundNewBlock.
-func (mr *MockBlockServiceServerMockRecorder) FoundNewBlock(ctx, in interface{}) *gomock.Call {
+func (mr *MockBlockServiceServerMockRecorder) FoundNewBlock(server interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlock), ctx, in)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlock), server)
 }
 
 // GetBlock mocks base method.
