@@ -50,7 +50,7 @@ func (i *txService) ProcessBlockTransactions(
 			ctx.Error("receive block error", zap.Error(err))
 			return err
 		}
-		ctx.Debug("receive block", zap.Any("block", &block))
+		ctx.Debug("receive block", zap.Any("block_id", block.Id))
 
 		list, err := i.FetchTransactionsByBlock(ctx, block)
 		if err != nil {
