@@ -13,7 +13,7 @@ message ScanBlockRequest {
   // Ending height of the range of blocks to scan.
   uint32 end_height = 2;
 
-  int32 workchain = 3;
+  optional int32 workchain = 3;
 }
 
 message FoundNewBlockRequest {
