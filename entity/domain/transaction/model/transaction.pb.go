@@ -28,17 +28,23 @@ type Transaction struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Unique identifier of the transaction.
-	Id []byte `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// @gotags: gorm:"primaryKey"
+	Id []byte `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty" gorm:"primaryKey"`
 	// Identifier of the block that includes this transaction.
-	BlockId string `protobuf:"bytes,2,opt,name=block_id,json=blockId,proto3" json:"block_id,omitempty"`
+	// @gotags: gorm:"index"
+	BlockId string `protobuf:"bytes,2,opt,name=block_id,json=blockId,proto3" json:"block_id,omitempty" gorm:"index"`
 	// Address of the sender.
-	From []byte `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty"`
+	// @gotags: gorm:"not null"
+	From []byte `protobuf:"bytes,3,opt,name=from,proto3" json:"from,omitempty" gorm:"not null"`
 	// Address of the recipient.
-	To []byte `protobuf:"bytes,4,opt,name=to,proto3" json:"to,omitempty"`
+	// @gotags: gorm:"not null"
+	To []byte `protobuf:"bytes,4,opt,name=to,proto3" json:"to,omitempty" gorm:"not null"`
 	// Amount of currency transferred in the transaction.
-	Amount float64 `protobuf:"fixed64,5,opt,name=amount,proto3" json:"amount,omitempty"`
+	// @gotags: gorm:"not null"
+	Amount float64 `protobuf:"fixed64,5,opt,name=amount,proto3" json:"amount,omitempty" gorm:"not null"`
 	// Timestamp of when the transaction was created.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	// @gotags: gorm:"serializer:timestamppb;type:time"`
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=timestamp,proto3" json:"timestamp,omitempty" gorm:"serializer:timestamppb;type:time"`
 }
 
 func (x *Transaction) Reset() {

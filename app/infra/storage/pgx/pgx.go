@@ -7,6 +7,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 const (
@@ -36,6 +37,9 @@ func NewClient(app *configx.Application) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(defaultMaxLifetime)
 	sqlDB.SetMaxOpenConns(defaultConns)
 	sqlDB.SetMaxIdleConns(defaultConns)
+
+	// register custom data type
+	schema.RegisterSerializer("timestamppb", TimestampSerializer{})
 
 	return db, nil
 }
