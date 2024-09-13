@@ -25,7 +25,7 @@ func NewServer(injector *Injector, server *grpcx.Server) adapterx.Server {
 	}
 }
 
-//nolint:funlen // ignore this
+//nolint:funlen,gocognit // it's ok
 func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 
