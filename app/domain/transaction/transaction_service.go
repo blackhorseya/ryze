@@ -63,10 +63,11 @@ func (i *txService) ProcessBlockTransactions(
 				return err
 			}
 
-			if err = i.transactions.Create(ctx, tx); err != nil {
-				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
-				return err
-			}
+			// TODO: 2024/9/13|sean|save transaction to db
+			// if err = i.transactions.Create(ctx, tx); err != nil {
+			// 	ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
+			// 	return err
+			// }
 		}
 	}
 }
@@ -117,7 +118,7 @@ func (i *txService) FetchTransactionsByBlock(
 					ctx.Error("get transaction error", zap.Error(err2), zap.Any("id", id))
 					return
 				}
-				ctx.Debug("get transaction", zap.Any("tx", &tx), zap.String("tx_string", tx.String()))
+				ctx.Debug("get transaction", zap.String("tx_string", tx.String()))
 
 				got := txM.NewTransactionFromTon(tx)
 				got.BlockId = block.Id

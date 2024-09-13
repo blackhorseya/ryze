@@ -33,7 +33,7 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
-	blockStream, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
+	blockScanner, err := i.injector.blockClient.ScanBlock(ctx, &biz.ScanBlockRequest{
 		StartHeight: 0,
 		EndHeight:   0,
 	})
@@ -42,7 +42,7 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
-	txStream, err := i.injector.txClient.ProcessBlockTransactions(ctx)
+	processBlock, err := i.injector.txClient.ProcessBlockTransactions(ctx)
 	if err != nil {
 		ctx.Error("failed to process block transactions", zap.Error(err))
 		return err
@@ -51,7 +51,7 @@ func (i *impl) Start(c context.Context) error {
 	go func() {
 		ctx.Info("start to receive block")
 		for {
-			block, err2 := blockStream.Recv()
+			newBlockEvent, err2 := blockScanner.Recv()
 			if errors.Is(err2, io.EOF) {
 				break
 			}
@@ -59,20 +59,20 @@ func (i *impl) Start(c context.Context) error {
 				ctx.Error("failed to receive block", zap.Error(err2))
 				continue
 			}
-			ctx.Info("received block", zap.String("block_id", block.Id))
+			ctx.Info("received block", zap.String("block_id", newBlockEvent.Id))
 
-			// err2 = txStream.Send(block)
-			// if err2 != nil {
-			// 	ctx.Error("failed to send block", zap.Error(err2))
-			// 	continue
-			// }
+			err2 = processBlock.Send(newBlockEvent)
+			if err2 != nil {
+				ctx.Error("failed to send block", zap.Error(err2))
+				continue
+			}
 		}
 	}()
 
 	go func() {
 		ctx.Info("start to receive transaction")
 		for {
-			tx, err2 := txStream.Recv()
+			tx, err2 := processBlock.Recv()
 			if errors.Is(err2, io.EOF) {
 				break
 			}
