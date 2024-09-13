@@ -8,10 +8,6 @@ import (
 func NewTransactionFromTon(value *tlb.Transaction) *Transaction {
 	// TODO: 2024/8/12|sean|fill more fields
 	return &Transaction{
-		Id:        value.Hash,
-		From:      nil,
-		To:        nil,
-		Amount:    0,
-		Timestamp: nil,
+		Id: value.Hash,
 	}
 }

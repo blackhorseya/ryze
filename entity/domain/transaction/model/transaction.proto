@@ -8,19 +8,19 @@ option go_package = "github.com/blackhorseya/ryze/entity/domain/transaction/mode
 // Represents a transaction on the blockchain.
 message Transaction {
   // Unique identifier of the transaction.
-  // @gotags: gorm:"primaryKey"
+  // @gotags: gorm:"primaryKey;not null"
   bytes id = 1;
 
   // Identifier of the block that includes this transaction.
-  // @gotags: gorm:"index"
+  // @gotags: gorm:"index;not null"
   string block_id = 2;
 
   // Address of the sender.
-  // @gotags: gorm:"not null"
+  // @gotags: gorm:"null"
   bytes from = 3;
 
   // Address of the recipient.
-  // @gotags: gorm:"not null"
+  // @gotags: gorm:"null"
   bytes to = 4;
 
   // Amount of currency transferred in the transaction.
@@ -28,6 +28,6 @@ message Transaction {
   double amount = 5;
 
   // Timestamp of when the transaction was created.
-  // @gotags: gorm:"serializer:timestamppb;type:time"`
+  // @gotags: gorm:"serializer:timestamppb;type:time;not null"`
   google.protobuf.Timestamp timestamp = 6;
 }

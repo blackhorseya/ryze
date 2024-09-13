@@ -118,10 +118,20 @@ func (i *txService) FetchTransactionsByBlock(
 				ctx.Debug("get transaction", zap.Any("tx", &tx), zap.String("tx_string", tx.String()))
 
 				got := txM.NewTransactionFromTon(tx)
+				got.BlockId = block.Id
+				got.Timestamp = block.Timestamp
 				txChan <- got
 			}
 		}
 	}()
 
 	return txChan, nil
+}
+
+func (i *txService) ListTransactions(
+	req *txB.TransactionListRequest,
+	stream grpc.ServerStreamingServer[txM.Transaction],
+) error {
+	// TODO: 2024/9/13|sean|implement me
+	panic("implement me")
 }
