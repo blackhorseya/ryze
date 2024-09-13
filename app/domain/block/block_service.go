@@ -42,48 +42,88 @@ func NewBlockService(
 	}
 }
 
+//nolint:gocognit // ignore cognitive complexity
 func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "block.biz.ScanBlock")
+	defer span.End()
+
+	// 初始化 TON API 客戶端
 	api := ton.NewAPIClient(i.tonClient, ton.ProofCheckPolicyFast).WithRetry()
 	api.SetTrustedBlockFromConfig(i.tonClient.Config)
 
-	ctx := contextx.WithContext(stream.Context())
-	master, err := api.GetMasterchainInfo(ctx)
+	ctx := contextx.WithContext(c)
+
+	// 獲取主鏈資訊
+	master, err := api.GetMasterchainInfo(next)
 	if err != nil {
-		ctx.Error("failed to get masterchain info", zap.Error(err))
+		ctx.Error("failed to get master-chain info", zap.Error(err))
 		return err
 	}
 	ctx.Info("master proofs chain successfully verified, all data is now safe and trusted!")
 
-	stickyContext := api.Client().StickyContext(ctx)
+	// 綁定單一伺服器的上下文以保持一致性
+	stickyContext := api.Client().StickyContext(next)
+
+	// 儲存分片的最後序列號，防止重複處理
 	shardLastSeqno := map[string]uint32{}
+
+	// 從主鏈獲取所有的分片資訊
 	firstShards, err := api.GetBlockShardsInfo(stickyContext, master)
 	if err != nil {
 		ctx.Error("failed to get block shards info", zap.Error(err))
 		return err
 	}
 
+	// 初始化分片序號的記錄
 	for _, shard := range firstShards {
 		shardLastSeqno[tonx.GetShardID(shard)] = shard.SeqNo
 	}
 
+	// 持續監聽所有分片上的新區塊
 	for {
-		newBlock, err2 := model.NewBlock(master.Workchain, master.Shard, master.SeqNo)
+		// 獲取每個 workchain 和 shard 上的新區塊
+		currentShards, err2 := api.GetBlockShardsInfo(stickyContext, master)
 		if err2 != nil {
-			ctx.Error("failed to create block", zap.Error(err2))
+			ctx.Error("failed to get block shards info", zap.Error(err2))
 			return err2
 		}
 
-		err2 = stream.Send(newBlock)
-		if err2 != nil {
-			ctx.Error("failed to send block", zap.Uint32("seq_no", master.SeqNo), zap.Error(err2))
-			return err2
-		}
-		ctx.Info("block sent", zap.Any("block", &newBlock))
+		for _, shard := range currentShards {
+			// 只監聽指定的 workchain
+			if shard.Workchain != req.Workchain {
+				continue
+			}
 
-		next := master.SeqNo + 1
-		master, err2 = api.WaitForBlock(next).LookupBlock(stickyContext, master.Workchain, master.Shard, next)
+			// 檢查是否有新的區塊
+			if lastSeqno, ok := shardLastSeqno[tonx.GetShardID(shard)]; ok && shard.SeqNo <= lastSeqno {
+				continue
+			}
+
+			// 更新分片序號
+			shardLastSeqno[tonx.GetShardID(shard)] = shard.SeqNo
+
+			// 創建一個新的區塊事件並發送
+			newBlock, err3 := model.NewBlock(shard.Workchain, shard.Shard, shard.SeqNo)
+			if err3 != nil {
+				ctx.Error("failed to create block", zap.Error(err3))
+				return err3
+			}
+
+			err3 = stream.Send(newBlock)
+			if err3 != nil {
+				ctx.Error("failed to send block event", zap.Error(err3))
+				return err3
+			}
+
+			ctx.Info("block event sent", zap.Any("block", &newBlock))
+		}
+
+		// 更新主鏈區塊以繼續監控新地分片區塊
+		nextSeqNo := master.SeqNo + 1
+		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(stickyContext, master.Workchain, master.Shard, nextSeqNo)
 		if err2 != nil {
-			ctx.Error("failed to lookup block", zap.Uint32("seq_no", next), zap.Error(err2))
+			ctx.Error("failed to lookup next block", zap.Uint32("seq_no", nextSeqNo), zap.Error(err2))
 			return err2
 		}
 	}
