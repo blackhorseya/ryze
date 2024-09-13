@@ -42,6 +42,12 @@ func (i *impl) Start(c context.Context) error {
 		return err
 	}
 
+	foundNewBlock, err := i.injector.blockClient.FoundNewBlock(ctx)
+	if err != nil {
+		ctx.Error("failed to found new block", zap.Error(err))
+		return err
+	}
+
 	processBlock, err := i.injector.txClient.ProcessBlockTransactions(ctx)
 	if err != nil {
 		ctx.Error("failed to process block transactions", zap.Error(err))
@@ -61,26 +67,32 @@ func (i *impl) Start(c context.Context) error {
 			}
 			ctx.Info("received block", zap.String("block_id", newBlockEvent.Id))
 
-			// newBlock, err2 := i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
-			// 	Workchain: newBlockEvent.Workchain,
-			// 	Shard:     newBlockEvent.Shard,
-			// 	SeqNo:     newBlockEvent.SeqNo,
-			// })
-			// if err2 != nil {
-			// 	ctx.Error("failed to found new block", zap.Error(err2))
-			// 	continue
-			// }
-			// ctx.Info(
-			// 	"found new block",
-			// 	zap.String("block_id", newBlock.Id),
-			// 	zap.Time("timestamp", newBlock.Timestamp.AsTime()),
-			// )
-			//
-			// err2 = processBlock.Send(newBlock)
-			// if err2 != nil {
-			// 	ctx.Error("failed to send block", zap.Error(err2))
-			// 	continue
-			// }
+			err2 = foundNewBlock.Send(newBlockEvent)
+			if err2 != nil {
+				ctx.Error("failed to send block", zap.Error(err2))
+				continue
+			}
+		}
+	}()
+
+	go func() {
+		ctx.Info("start to receive new block")
+		for {
+			newBlock, err2 := foundNewBlock.Recv()
+			if errors.Is(err2, io.EOF) {
+				break
+			}
+			if err2 != nil {
+				ctx.Error("failed to receive new block", zap.Error(err2))
+				continue
+			}
+			ctx.Info("received new block", zap.String("block_id", newBlock.Id))
+
+			err2 = processBlock.Send(newBlock)
+			if err2 != nil {
+				ctx.Error("failed to send new block", zap.Error(err2))
+				continue
+			}
 		}
 	}()
 

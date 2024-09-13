@@ -63,11 +63,10 @@ func (i *txService) ProcessBlockTransactions(
 				return err
 			}
 
-			// TODO: 2024/9/13|sean|save transaction to db
-			// if err = i.transactions.Create(ctx, tx); err != nil {
-			// 	ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
-			// 	return err
-			// }
+			if err = i.transactions.Create(ctx, tx); err != nil {
+				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
+				return err
+			}
 		}
 	}
 }
