@@ -14,6 +14,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -49,6 +50,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		otelx.NewSDK,
 		eventx.NewEventBus,
 		grpcx.NewClient,
+		pgx.NewClient,
 
 		account.ProviderSet,
 		block.ProviderSet,
