@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"context"
 	"errors"
 	"io"
 	"strconv"
@@ -36,7 +37,7 @@ func NewTransactionService(client *tonx.Client, transactions repo.ITransactionRe
 func (i *txService) ProcessBlockTransactions(
 	stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
 	c := stream.Context()
-	_, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
+	next, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
 	defer span.End()
 
 	ctx := contextx.WithContext(c)
@@ -52,19 +53,19 @@ func (i *txService) ProcessBlockTransactions(
 		}
 		ctx.Debug("receive block", zap.Any("block_id", block.Id))
 
-		list, err := i.FetchTransactionsByBlock(ctx, block)
+		list, err := i.FetchTransactionsByBlock(next, block)
 		if err != nil {
 			ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
 			return err
 		}
 		for tx := range list {
-			if err = stream.Send(tx); err != nil {
-				ctx.Error("send transaction error", zap.Error(err), zap.Any("tx", &tx))
+			if err = i.transactions.Create(next, tx); err != nil {
+				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
 				return err
 			}
 
-			if err = i.transactions.Create(ctx, tx); err != nil {
-				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
+			if err = stream.Send(tx); err != nil {
+				ctx.Error("send transaction error", zap.Error(err), zap.Any("tx", &tx))
 				return err
 			}
 		}
@@ -73,7 +74,7 @@ func (i *txService) ProcessBlockTransactions(
 
 // FetchTransactionsByBlock is used to fetch transactions by block
 func (i *txService) FetchTransactionsByBlock(
-	ctx contextx.Contextx,
+	c context.Context,
 	block *model.Block,
 ) (chan *txM.Transaction, error) {
 	txChan := make(chan *txM.Transaction)
@@ -81,9 +82,14 @@ func (i *txService) FetchTransactionsByBlock(
 	go func() {
 		defer close(txChan)
 
+		next, span := otelx.Tracer.Start(c, "transaction.biz.FetchTransactionsByBlock")
+		defer span.End()
+
+		ctx := contextx.WithContext(c)
+
 		api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
 		api.SetTrustedBlockFromConfig(i.client.Config)
-		stickyContext := api.Client().StickyContext(ctx)
+		stickyContext := api.Client().StickyContext(next)
 
 		var fetchedIDs []ton.TransactionShortInfo
 		var after *ton.TransactionID3
