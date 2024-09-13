@@ -255,6 +255,248 @@ func (mr *MockBlockService_ScanBlockServerMockRecorder) SetTrailer(arg0 interfac
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockBlockService_ScanBlockServer)(nil).SetTrailer), arg0)
 }
 
+// MockBlockService_ListBlocksClient is a mock of BlockService_ListBlocksClient interface.
+type MockBlockService_ListBlocksClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockBlockService_ListBlocksClientMockRecorder
+}
+
+// MockBlockService_ListBlocksClientMockRecorder is the mock recorder for MockBlockService_ListBlocksClient.
+type MockBlockService_ListBlocksClientMockRecorder struct {
+	mock *MockBlockService_ListBlocksClient
+}
+
+// NewMockBlockService_ListBlocksClient creates a new mock instance.
+func NewMockBlockService_ListBlocksClient(ctrl *gomock.Controller) *MockBlockService_ListBlocksClient {
+	mock := &MockBlockService_ListBlocksClient{ctrl: ctrl}
+	mock.recorder = &MockBlockService_ListBlocksClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBlockService_ListBlocksClient) EXPECT() *MockBlockService_ListBlocksClientMockRecorder {
+	return m.recorder
+}
+
+// CloseSend mocks base method.
+func (m *MockBlockService_ListBlocksClient) CloseSend() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CloseSend")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CloseSend indicates an expected call of CloseSend.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) CloseSend() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseSend", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).CloseSend))
+}
+
+// Context mocks base method.
+func (m *MockBlockService_ListBlocksClient) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).Context))
+}
+
+// Header mocks base method.
+func (m *MockBlockService_ListBlocksClient) Header() (metadata.MD, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Header")
+	ret0, _ := ret[0].(metadata.MD)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Header indicates an expected call of Header.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) Header() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Header", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).Header))
+}
+
+// Recv mocks base method.
+func (m *MockBlockService_ListBlocksClient) Recv() (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Recv")
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Recv indicates an expected call of Recv.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) Recv() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Recv", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).Recv))
+}
+
+// RecvMsg mocks base method.
+func (m *MockBlockService_ListBlocksClient) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).RecvMsg), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockBlockService_ListBlocksClient) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).SendMsg), arg0)
+}
+
+// Trailer mocks base method.
+func (m *MockBlockService_ListBlocksClient) Trailer() metadata.MD {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Trailer")
+	ret0, _ := ret[0].(metadata.MD)
+	return ret0
+}
+
+// Trailer indicates an expected call of Trailer.
+func (mr *MockBlockService_ListBlocksClientMockRecorder) Trailer() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Trailer", reflect.TypeOf((*MockBlockService_ListBlocksClient)(nil).Trailer))
+}
+
+// MockBlockService_ListBlocksServer is a mock of BlockService_ListBlocksServer interface.
+type MockBlockService_ListBlocksServer struct {
+	ctrl     *gomock.Controller
+	recorder *MockBlockService_ListBlocksServerMockRecorder
+}
+
+// MockBlockService_ListBlocksServerMockRecorder is the mock recorder for MockBlockService_ListBlocksServer.
+type MockBlockService_ListBlocksServerMockRecorder struct {
+	mock *MockBlockService_ListBlocksServer
+}
+
+// NewMockBlockService_ListBlocksServer creates a new mock instance.
+func NewMockBlockService_ListBlocksServer(ctrl *gomock.Controller) *MockBlockService_ListBlocksServer {
+	mock := &MockBlockService_ListBlocksServer{ctrl: ctrl}
+	mock.recorder = &MockBlockService_ListBlocksServerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBlockService_ListBlocksServer) EXPECT() *MockBlockService_ListBlocksServerMockRecorder {
+	return m.recorder
+}
+
+// Context mocks base method.
+func (m *MockBlockService_ListBlocksServer) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).Context))
+}
+
+// RecvMsg mocks base method.
+func (m *MockBlockService_ListBlocksServer) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).RecvMsg), arg0)
+}
+
+// Send mocks base method.
+func (m *MockBlockService_ListBlocksServer) Send(arg0 *model.Block) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Send", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Send indicates an expected call of Send.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) Send(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).Send), arg0)
+}
+
+// SendHeader mocks base method.
+func (m *MockBlockService_ListBlocksServer) SendHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendHeader indicates an expected call of SendHeader.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) SendHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendHeader", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).SendHeader), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockBlockService_ListBlocksServer) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).SendMsg), arg0)
+}
+
+// SetHeader mocks base method.
+func (m *MockBlockService_ListBlocksServer) SetHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetHeader indicates an expected call of SetHeader.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) SetHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetHeader", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).SetHeader), arg0)
+}
+
+// SetTrailer mocks base method.
+func (m *MockBlockService_ListBlocksServer) SetTrailer(arg0 metadata.MD) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetTrailer", arg0)
+}
+
+// SetTrailer indicates an expected call of SetTrailer.
+func (mr *MockBlockService_ListBlocksServerMockRecorder) SetTrailer(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockBlockService_ListBlocksServer)(nil).SetTrailer), arg0)
+}
+
 // MockBlockServiceClient is a mock of BlockServiceClient interface.
 type MockBlockServiceClient struct {
 	ctrl     *gomock.Controller
@@ -296,6 +538,46 @@ func (mr *MockBlockServiceClientMockRecorder) FoundNewBlock(ctx, in interface{},
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).FoundNewBlock), varargs...)
+}
+
+// GetBlock mocks base method.
+func (m *MockBlockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetBlock", varargs...)
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBlock indicates an expected call of GetBlock.
+func (mr *MockBlockServiceClientMockRecorder) GetBlock(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).GetBlock), varargs...)
+}
+
+// ListBlocks mocks base method.
+func (m *MockBlockServiceClient) ListBlocks(ctx context.Context, in *ListBlocksRequest, opts ...grpc.CallOption) (BlockService_ListBlocksClient, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListBlocks", varargs...)
+	ret0, _ := ret[0].(BlockService_ListBlocksClient)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListBlocks indicates an expected call of ListBlocks.
+func (mr *MockBlockServiceClientMockRecorder) ListBlocks(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBlocks", reflect.TypeOf((*MockBlockServiceClient)(nil).ListBlocks), varargs...)
 }
 
 // ScanBlock mocks base method.
@@ -354,6 +636,35 @@ func (m *MockBlockServiceServer) FoundNewBlock(ctx context.Context, in *FoundNew
 func (mr *MockBlockServiceServerMockRecorder) FoundNewBlock(ctx, in interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlock), ctx, in)
+}
+
+// GetBlock mocks base method.
+func (m *MockBlockServiceServer) GetBlock(ctx context.Context, in *GetBlockRequest) (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetBlock", ctx, in)
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetBlock indicates an expected call of GetBlock.
+func (mr *MockBlockServiceServerMockRecorder) GetBlock(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).GetBlock), ctx, in)
+}
+
+// ListBlocks mocks base method.
+func (m *MockBlockServiceServer) ListBlocks(blob *ListBlocksRequest, server BlockService_ListBlocksServer) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListBlocks", blob, server)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListBlocks indicates an expected call of ListBlocks.
+func (mr *MockBlockServiceServerMockRecorder) ListBlocks(blob, server interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListBlocks", reflect.TypeOf((*MockBlockServiceServer)(nil).ListBlocks), blob, server)
 }
 
 // ScanBlock mocks base method.

@@ -14,6 +14,7 @@ import (
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -125,4 +126,14 @@ func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (
 	i.bus.Publish(event)
 
 	return block, nil
+}
+
+func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
+	// TODO: 2024/9/13|sean|implement me
+	panic("implement me")
+}
+
+func (i *impl) ListBlocks(req *biz.ListBlocksRequest, stream grpc.ServerStreamingServer[model.Block]) error {
+	// TODO: 2024/9/13|sean|implement me
+	panic("implement me")
 }
