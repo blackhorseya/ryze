@@ -33,7 +33,7 @@ const (
 // Service definition for handling blocks.
 type BlockServiceClient interface {
 	ScanBlock(ctx context.Context, in *ScanBlockRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
-	FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error)
+	FoundNewBlock(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model.Block], error)
 	GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error)
 	ListBlocks(ctx context.Context, in *ListBlocksRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error)
 }
@@ -65,15 +65,18 @@ func (c *blockServiceClient) ScanBlock(ctx context.Context, in *ScanBlockRequest
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BlockService_ScanBlockClient = grpc.ServerStreamingClient[model.Block]
 
-func (c *blockServiceClient) FoundNewBlock(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
+func (c *blockServiceClient) FoundNewBlock(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model.Block], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(model.Block)
-	err := c.cc.Invoke(ctx, BlockService_FoundNewBlock_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &BlockService_ServiceDesc.Streams[1], BlockService_FoundNewBlock_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[model.Block, model.Block]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type BlockService_FoundNewBlockClient = grpc.BidiStreamingClient[model.Block, model.Block]
 
 func (c *blockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -87,7 +90,7 @@ func (c *blockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, 
 
 func (c *blockServiceClient) ListBlocks(ctx context.Context, in *ListBlocksRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Block], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &BlockService_ServiceDesc.Streams[1], BlockService_ListBlocks_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &BlockService_ServiceDesc.Streams[2], BlockService_ListBlocks_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +114,7 @@ type BlockService_ListBlocksClient = grpc.ServerStreamingClient[model.Block]
 // Service definition for handling blocks.
 type BlockServiceServer interface {
 	ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error
-	FoundNewBlock(context.Context, *FoundNewBlockRequest) (*model.Block, error)
+	FoundNewBlock(grpc.BidiStreamingServer[model.Block, model.Block]) error
 	GetBlock(context.Context, *GetBlockRequest) (*model.Block, error)
 	ListBlocks(*ListBlocksRequest, grpc.ServerStreamingServer[model.Block]) error
 }
@@ -126,8 +129,8 @@ type UnimplementedBlockServiceServer struct{}
 func (UnimplementedBlockServiceServer) ScanBlock(*ScanBlockRequest, grpc.ServerStreamingServer[model.Block]) error {
 	return status.Errorf(codes.Unimplemented, "method ScanBlock not implemented")
 }
-func (UnimplementedBlockServiceServer) FoundNewBlock(context.Context, *FoundNewBlockRequest) (*model.Block, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FoundNewBlock not implemented")
+func (UnimplementedBlockServiceServer) FoundNewBlock(grpc.BidiStreamingServer[model.Block, model.Block]) error {
+	return status.Errorf(codes.Unimplemented, "method FoundNewBlock not implemented")
 }
 func (UnimplementedBlockServiceServer) GetBlock(context.Context, *GetBlockRequest) (*model.Block, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBlock not implemented")
@@ -166,23 +169,12 @@ func _BlockService_ScanBlock_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type BlockService_ScanBlockServer = grpc.ServerStreamingServer[model.Block]
 
-func _BlockService_FoundNewBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FoundNewBlockRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BlockServiceServer).FoundNewBlock(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: BlockService_FoundNewBlock_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockServiceServer).FoundNewBlock(ctx, req.(*FoundNewBlockRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _BlockService_FoundNewBlock_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(BlockServiceServer).FoundNewBlock(&grpc.GenericServerStream[model.Block, model.Block]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type BlockService_FoundNewBlockServer = grpc.BidiStreamingServer[model.Block, model.Block]
 
 func _BlockService_GetBlock_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetBlockRequest)
@@ -221,10 +213,6 @@ var BlockService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*BlockServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "FoundNewBlock",
-			Handler:    _BlockService_FoundNewBlock_Handler,
-		},
-		{
 			MethodName: "GetBlock",
 			Handler:    _BlockService_GetBlock_Handler,
 		},
@@ -234,6 +222,12 @@ var BlockService_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "ScanBlock",
 			Handler:       _BlockService_ScanBlock_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "FoundNewBlock",
+			Handler:       _BlockService_FoundNewBlock_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 		{
 			StreamName:    "ListBlocks",

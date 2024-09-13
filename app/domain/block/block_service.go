@@ -3,7 +3,6 @@ package block
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
@@ -17,7 +16,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type impl struct {
@@ -129,43 +127,48 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	}
 }
 
-func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
-	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
-	defer span.End()
-
-	ctx := contextx.WithContext(c)
-
-	api := ton.NewAPIClient(i.tonClient).WithRetry()
-	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
-	if err != nil {
-		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
-		return nil, err
-	}
-
-	blockData, err := api.GetBlockData(ctx, blockID)
-	if err != nil {
-		ctx.Error("failed to get block data", zap.Error(err))
-		return nil, err
-	}
-
-	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
-	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
-
-	err = i.blocks.Create(next, block)
-	if err != nil {
-		ctx.Error("failed to create block", zap.Error(err))
-		return nil, err
-	}
-
-	event := block.Born()
-	i.bus.Publish(event)
-
-	return block, nil
+func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.Block]) error {
+	// TODO: 2024/9/13|sean|implement me
+	panic("implement me")
 }
+
+// func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
+// 	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
+// 	defer span.End()
+//
+// 	ctx := contextx.WithContext(c)
+//
+// 	api := ton.NewAPIClient(i.tonClient).WithRetry()
+// 	blockID, err := api.LookupBlock(ctx, req.Workchain, req.Shard, req.SeqNo)
+// 	if err != nil {
+// 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("req", &req))
+// 		return nil, err
+// 	}
+//
+// 	blockData, err := api.GetBlockData(ctx, blockID)
+// 	if err != nil {
+// 		ctx.Error("failed to get block data", zap.Error(err))
+// 		return nil, err
+// 	}
+//
+// 	block, err := model.NewBlock(blockID.Workchain, blockID.Shard, blockID.SeqNo)
+// 	if err != nil {
+// 		ctx.Error("failed to create block", zap.Error(err))
+// 		return nil, err
+// 	}
+// 	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+//
+// 	err = i.blocks.Create(next, block)
+// 	if err != nil {
+// 		ctx.Error("failed to create block", zap.Error(err))
+// 		return nil, err
+// 	}
+//
+// 	event := block.Born()
+// 	i.bus.Publish(event)
+//
+// 	return block, nil
+// }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
 	next, span := otelx.Tracer.Start(c, "block.biz.GetBlock")

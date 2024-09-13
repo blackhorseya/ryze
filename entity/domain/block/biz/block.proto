@@ -35,7 +35,7 @@ message ListBlocksRequest {
 // Service definition for handling blocks.
 service BlockService {
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
-  rpc FoundNewBlock(FoundNewBlockRequest) returns (Block) {}
+  rpc FoundNewBlock(stream Block) returns (stream Block) {}
 
   rpc GetBlock(GetBlockRequest) returns (Block) {}
   rpc ListBlocks(ListBlocksRequest) returns (stream Block) {}

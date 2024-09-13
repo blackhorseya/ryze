@@ -61,26 +61,26 @@ func (i *impl) Start(c context.Context) error {
 			}
 			ctx.Info("received block", zap.String("block_id", newBlockEvent.Id))
 
-			newBlock, err2 := i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
-				Workchain: newBlockEvent.Workchain,
-				Shard:     newBlockEvent.Shard,
-				SeqNo:     newBlockEvent.SeqNo,
-			})
-			if err2 != nil {
-				ctx.Error("failed to found new block", zap.Error(err2))
-				continue
-			}
-			ctx.Info(
-				"found new block",
-				zap.String("block_id", newBlock.Id),
-				zap.Time("timestamp", newBlock.Timestamp.AsTime()),
-			)
-
-			err2 = processBlock.Send(newBlock)
-			if err2 != nil {
-				ctx.Error("failed to send block", zap.Error(err2))
-				continue
-			}
+			// newBlock, err2 := i.injector.blockClient.FoundNewBlock(ctx, &biz.FoundNewBlockRequest{
+			// 	Workchain: newBlockEvent.Workchain,
+			// 	Shard:     newBlockEvent.Shard,
+			// 	SeqNo:     newBlockEvent.SeqNo,
+			// })
+			// if err2 != nil {
+			// 	ctx.Error("failed to found new block", zap.Error(err2))
+			// 	continue
+			// }
+			// ctx.Info(
+			// 	"found new block",
+			// 	zap.String("block_id", newBlock.Id),
+			// 	zap.Time("timestamp", newBlock.Timestamp.AsTime()),
+			// )
+			//
+			// err2 = processBlock.Send(newBlock)
+			// if err2 != nil {
+			// 	ctx.Error("failed to send block", zap.Error(err2))
+			// 	continue
+			// }
 		}
 	}()
 
