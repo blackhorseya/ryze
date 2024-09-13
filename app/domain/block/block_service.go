@@ -3,6 +3,7 @@ package block
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
@@ -16,6 +17,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type impl struct {
@@ -128,8 +130,69 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 }
 
 func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.Block]) error {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	for {
+		newBlock, err := stream.Recv()
+		if err != nil {
+			ctx.Error("failed to receive new block", zap.Error(err))
+			continue
+		}
+
+		err = i.FetchBlockInfo(next, newBlock)
+		if err != nil {
+			ctx.Error("failed to fetch block info", zap.Error(err))
+			continue
+		}
+
+		err = i.blocks.Create(next, newBlock)
+		if err != nil {
+			ctx.Error("failed to create block", zap.Error(err))
+			continue
+		}
+
+		err = stream.Send(newBlock)
+		if err != nil {
+			ctx.Error("failed to send new block", zap.Error(err))
+			continue
+		}
+	}
+}
+
+// FetchBlockInfo is used to fetch block info
+func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error) {
+	next, span := otelx.Tracer.Start(c, "block.biz.FetchBlockInfo")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	// 初始化 TON API 客戶端
+	api := ton.NewAPIClient(i.tonClient).WithRetry()
+
+	// 查找區塊
+	blockID, err := api.LookupBlock(next, block.Workchain, block.Shard, block.SeqNo)
+	if err != nil {
+		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
+		span.RecordError(err)
+		return err
+	}
+
+	// 獲取區塊資訊
+	blockData, err := api.GetBlockData(next, blockID)
+	if err != nil {
+		ctx.Error("failed to get block data", zap.Error(err))
+		span.RecordError(err)
+		return err
+	}
+
+	// fill block info
+	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+
+	return nil
 }
 
 // func (i *impl) FoundNewBlock(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
