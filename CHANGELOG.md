@@ -1,3 +1,148 @@
+## 0.4.0 (2024-09-13)
+
+### Feat
+
+- improve handling of new block functionality
+- refactor block service functionality
+- enhance logging across multiple files
+- enhance block scanning functionality (#60)
+- implement new platform service command
+- enhance block scanning functionality
+- implement new platform service command
+- refactor transaction handling and metadata management
+- refactor transaction handling and RPC methods
+- enhance transaction management functionalities (#59)
+- enhance transaction management functionalities
+- refactor timestamp serialization operations
+- implement `pgx` storage option across modules (#58)
+- implement `pgx` storage option across modules
+- refactor database interactions for transactions
+- update default constants and limits for better performance
+- refactor transaction handling with new interfaces (#57)
+- refactor transaction handling with new interfaces
+- refactor block service functionality (#56)
+- refactor block service functionality
+- enhance BlockService functionality (#55)
+- enhance BlockService functionality
+- refactor transaction handling in `TransactionService` (#54)
+- refactor transaction handling in `TransactionService`
+- consolidate transaction service functions into new file (#53)
+- consolidate transaction service functions into new file
+- refactor server creation and code comments
+- improve error handling and logging functionality
+- refactor RPC methods for handling block transactions (#51)
+- refactor RPC methods for handling block transactions
+- refactor blockscanner to use EventBus dependency
+- refactor block handling and logging operations (#50)
+- refactor block handling and logging operations
+- revamp transaction handling across multiple packages (#49)
+- revamp transaction handling across multiple packages
+- integrate `eventx` package across directories
+- implement event bus with subscription and publishing capabilities
+- implement the DomainEvent interface in NewBlockEvent (#48)
+- implement the DomainEvent interface in NewBlockEvent
+- consolidate changes in file structure for new feature
+- refactor error handling for improved scalability
+- refactor transaction handling logic
+- consolidate scanner service commands and options
+- enhance logging functionality for newBlock object
+- refactor codebase to improve logging and collection handling (#47)
+- refactor codebase to improve logging and collection handling
+- implement logging and tracing for block operations (#46)
+- implement logging and tracing for block operations
+- refactor protobuf definitions and RPC methods
+- refactor block scanning logic and logging initialization
+- refactor server handling in scan package (#45)
+- improve error handling and logging in server implementation
+- refactor server handling in scan package
+- refactor block scanning service initialization (#44)
+- refactor block scanning service initialization
+- consolidate new files and modify `contextx.go` in `scan` and `pkg/contextx` packages
+- update API initialization and usage for improved performance
+- update service names in configuration files
+- update database configurations and services
+- configure Buf build settings for v2 modules (#43)
+- configure buf.build code generation plugins
+- configure Buf build settings for v2 modules
+- refactor interfaces and imports
+- refactor persistence package with MongoDB repository
+- refactor account balance handling and data types (#38)
+- refactor account balance handling and data types
+- update gRPC metadata handling in transaction processing
+
+### Fix
+
+- refactor error handling in transaction repository
+- update OpenTelemetry dependencies to v1.28.0
+- refactor configuration files and improve code consistency
+
+### Refactor
+
+- refactor context handling and error management in transactions
+- refactor block service functions and improve readability
+- refactor code for `FoundNewBlock` implementation (#61)
+- refactor code for `FoundNewBlock` implementation
+- refactor data processing logic
+- refactor transaction handling and logging across files
+- refactor comparison logic and conditions
+- refactor logging and block handling in various files
+- refactor `ScanBlockRequest` struct and related functions
+- refactor transaction request naming conventions
+- refactor codebase to remove unnecessary files and functionality
+- refactor code logic for improved efficiency
+- refactor transaction handling in process functions
+- refactor BlockServiceServer and block.proto
+- refactor transaction services across files
+- refactor transaction service initialization and naming
+- refactor function signatures for consistency
+- refactor block streaming functionality across files (#52)
+- refactor block streaming functionality across files
+- update service clients and injector initialization across files
+- refactor package structure and file naming conventions
+- refactor file paths and update imports for better organization
+- refactor project structure for `cmd` package
+- refactor package names and imports across files
+- refactor package names and import paths across project
+- refactor initialization and error handling in block repository
+- refactor global tracer initialization and usage
+- refactor service initialization logic in wire files
+- refactor package names for `scanner` consistency
+- clarify function purpose and update comments
+- refactor function and variable names across project
+- refactor error handling across multiple modules
+- refactor initialization and context handling
+- refactor file naming conventions across project
+- refactor server dependencies and imports
+- refactor HTTP server setup and middleware handling
+- refactor context handling and imports in various files
+- refactor block service API integration
+- refactor function names and references across files
+- refactor code to remove `FetchAndStoreBlock` references
+- refactor protobuf generation in build process
+- refactor codebase to use `biz` instead of `blockB` types
+- refactor method signatures and imports in MongoDB storage (#42)
+- refactor method signatures and imports in MongoDB storage
+- refactor directory structure for cleaner organization (#41)
+- refactor package structure and imports for block repository
+- update import paths and package names to use `mongodbx` (#40)
+- refactor import paths and naming conventions
+- refactor package import paths in gRPC files
+- update import paths and package names to use `mongodbx`
+- refactor service server initializations to use packages
+- refactor Restful interface and related changes
+- refactor directory structure for cleaner organization
+- refactor import paths and function names across files
+- refactor package structure and wire files
+- update address handling in account service (#39)
+- refactor error handling and address parsing in `GetAccount` method
+- update address handling in account service
+- refactor account-related protobuf and gRPC methods
+- refactor transaction service interface and messages
+
+### Perf
+
+- improve performance with asynchronous block scanning
+
 ## 0.3.0 (2024-08-13)
 
 ### Feat
