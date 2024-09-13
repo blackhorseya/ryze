@@ -3,6 +3,7 @@ package transaction
 import (
 	"errors"
 	"io"
+	"strconv"
 
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
@@ -15,6 +16,7 @@ import (
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 type txService struct {
@@ -132,6 +134,29 @@ func (i *txService) ListTransactions(
 	req *txB.TransactionListRequest,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactions")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	cond := repo.ListTransactionsCondition{
+		Limit:  int(req.PageSize),
+		Offset: int((req.Page - 1) * req.PageSize),
+	}
+	items, total, err := i.transactions.List(next, cond)
+	if err != nil {
+		ctx.Error("list transactions error", zap.Error(err), zap.Any("cond", &cond))
+		return err
+	}
+
+	for _, item := range items {
+		if err = stream.Send(item); err != nil {
+			ctx.Error("send transaction error", zap.Error(err), zap.Any("item", &item))
+			return err
+		}
+	}
+	stream.SetTrailer(metadata.New(map[string]string{"total": strconv.Itoa(total)}))
+
+	return nil
 }
