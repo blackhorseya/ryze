@@ -10,7 +10,6 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
-	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
@@ -23,8 +22,6 @@ import (
 type impl struct {
 	tonClient *tonx.Client
 	bus       *eventx.EventBus
-
-	txClient txB.TransactionServiceClient
 
 	blocks repo.IBlockRepo
 }
