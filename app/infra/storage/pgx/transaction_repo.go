@@ -2,6 +2,7 @@ package pgx
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/repo"
@@ -13,10 +14,15 @@ type transactionRepo struct {
 }
 
 // NewTransactionRepo create and return a new transactionRepo.
-func NewTransactionRepo(rw *gorm.DB) repo.ITransactionRepo {
+func NewTransactionRepo(rw *gorm.DB) (repo.ITransactionRepo, error) {
+	err := rw.AutoMigrate(&model.Transaction{})
+	if err != nil {
+		return nil, fmt.Errorf("auto migrate transaction error: %w", err)
+	}
+
 	return &transactionRepo{
 		rw: rw,
-	}
+	}, nil
 }
 
 func (i *transactionRepo) Create(c context.Context, item *model.Transaction) (err error) {

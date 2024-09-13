@@ -87,7 +87,11 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	iTransactionRepo := pgx.NewTransactionRepo(db)
+	iTransactionRepo, err := pgx.NewTransactionRepo(db)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
 	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
