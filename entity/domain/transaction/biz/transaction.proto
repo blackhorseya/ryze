@@ -6,20 +6,7 @@ import "domain/transaction/model/transaction.proto";
 
 option go_package = "github.com/blackhorseya/ryze/entity/domain/transaction/biz";
 
-// Request message for retrieving all transactions within a specific block.
-message ListTransactionsRequest {
-  int32 workchain = 1;
-  int64 shard = 2;
-  uint32 seq_no = 3;
-
-  int64 page = 4;
-  int64 page_size = 5;
-}
-
 // Service definition for handling transactions.
 service TransactionService {
-  // Retrieves all transactions within a specific block.
-  rpc ListTransactions(ListTransactionsRequest) returns (stream Transaction) {}
-
   rpc ProcessBlockTransactions(stream block.Block) returns (stream Transaction) {}
 }

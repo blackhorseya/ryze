@@ -27,37 +27,6 @@ func NewTransactionService(client *tonx.Client) txB.TransactionServiceServer {
 	}
 }
 
-func (i *txService) ListTransactions(
-	req *txB.ListTransactionsRequest,
-	stream txB.TransactionService_ListTransactionsServer,
-) error {
-	c := stream.Context()
-	_, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactions")
-	defer span.End()
-
-	ctx := contextx.WithContext(c)
-
-	block, err := model.NewBlock(req.Workchain, req.Shard, req.SeqNo)
-	if err != nil {
-		ctx.Error("new block error", zap.Error(err))
-		return err
-	}
-
-	list, err := i.ListTransactionsByBlock(ctx, block)
-	if err != nil {
-		ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
-		return err
-	}
-	for tx := range list {
-		if err = stream.Send(tx); err != nil {
-			ctx.Error("send transaction error", zap.Error(err), zap.Any("tx", &tx))
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (i *txService) ProcessBlockTransactions(
 	stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
 	c := stream.Context()

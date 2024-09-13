@@ -8,8 +8,8 @@ package biz
 
 import (
 	context "context"
-	model1 "github.com/blackhorseya/ryze/entity/domain/block/model"
-	model "github.com/blackhorseya/ryze/entity/domain/transaction/model"
+	model "github.com/blackhorseya/ryze/entity/domain/block/model"
+	model1 "github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,7 +21,6 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TransactionService_ListTransactions_FullMethodName         = "/transaction.TransactionService/ListTransactions"
 	TransactionService_ProcessBlockTransactions_FullMethodName = "/transaction.TransactionService/ProcessBlockTransactions"
 )
 
@@ -31,9 +30,7 @@ const (
 //
 // Service definition for handling transactions.
 type TransactionServiceClient interface {
-	// Retrieves all transactions within a specific block.
-	ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Transaction], error)
-	ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model1.Block, model.Transaction], error)
+	ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model1.Transaction], error)
 }
 
 type transactionServiceClient struct {
@@ -44,37 +41,18 @@ func NewTransactionServiceClient(cc grpc.ClientConnInterface) TransactionService
 	return &transactionServiceClient{cc}
 }
 
-func (c *transactionServiceClient) ListTransactions(ctx context.Context, in *ListTransactionsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model.Transaction], error) {
+func (c *transactionServiceClient) ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model1.Transaction], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &TransactionService_ServiceDesc.Streams[0], TransactionService_ListTransactions_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &TransactionService_ServiceDesc.Streams[0], TransactionService_ProcessBlockTransactions_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &grpc.GenericClientStream[ListTransactionsRequest, model.Transaction]{ClientStream: stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
+	x := &grpc.GenericClientStream[model.Block, model1.Transaction]{ClientStream: stream}
 	return x, nil
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type TransactionService_ListTransactionsClient = grpc.ServerStreamingClient[model.Transaction]
-
-func (c *transactionServiceClient) ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model1.Block, model.Transaction], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &TransactionService_ServiceDesc.Streams[1], TransactionService_ProcessBlockTransactions_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[model1.Block, model.Transaction]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type TransactionService_ProcessBlockTransactionsClient = grpc.BidiStreamingClient[model1.Block, model.Transaction]
+type TransactionService_ProcessBlockTransactionsClient = grpc.BidiStreamingClient[model.Block, model1.Transaction]
 
 // TransactionServiceServer is the server API for TransactionService service.
 // All implementations should embed UnimplementedTransactionServiceServer
@@ -82,9 +60,7 @@ type TransactionService_ProcessBlockTransactionsClient = grpc.BidiStreamingClien
 //
 // Service definition for handling transactions.
 type TransactionServiceServer interface {
-	// Retrieves all transactions within a specific block.
-	ListTransactions(*ListTransactionsRequest, grpc.ServerStreamingServer[model.Transaction]) error
-	ProcessBlockTransactions(grpc.BidiStreamingServer[model1.Block, model.Transaction]) error
+	ProcessBlockTransactions(grpc.BidiStreamingServer[model.Block, model1.Transaction]) error
 }
 
 // UnimplementedTransactionServiceServer should be embedded to have
@@ -94,10 +70,7 @@ type TransactionServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTransactionServiceServer struct{}
 
-func (UnimplementedTransactionServiceServer) ListTransactions(*ListTransactionsRequest, grpc.ServerStreamingServer[model.Transaction]) error {
-	return status.Errorf(codes.Unimplemented, "method ListTransactions not implemented")
-}
-func (UnimplementedTransactionServiceServer) ProcessBlockTransactions(grpc.BidiStreamingServer[model1.Block, model.Transaction]) error {
+func (UnimplementedTransactionServiceServer) ProcessBlockTransactions(grpc.BidiStreamingServer[model.Block, model1.Transaction]) error {
 	return status.Errorf(codes.Unimplemented, "method ProcessBlockTransactions not implemented")
 }
 func (UnimplementedTransactionServiceServer) testEmbeddedByValue() {}
@@ -120,23 +93,12 @@ func RegisterTransactionServiceServer(s grpc.ServiceRegistrar, srv TransactionSe
 	s.RegisterService(&TransactionService_ServiceDesc, srv)
 }
 
-func _TransactionService_ListTransactions_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ListTransactionsRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(TransactionServiceServer).ListTransactions(m, &grpc.GenericServerStream[ListTransactionsRequest, model.Transaction]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type TransactionService_ListTransactionsServer = grpc.ServerStreamingServer[model.Transaction]
-
 func _TransactionService_ProcessBlockTransactions_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(TransactionServiceServer).ProcessBlockTransactions(&grpc.GenericServerStream[model1.Block, model.Transaction]{ServerStream: stream})
+	return srv.(TransactionServiceServer).ProcessBlockTransactions(&grpc.GenericServerStream[model.Block, model1.Transaction]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type TransactionService_ProcessBlockTransactionsServer = grpc.BidiStreamingServer[model1.Block, model.Transaction]
+type TransactionService_ProcessBlockTransactionsServer = grpc.BidiStreamingServer[model.Block, model1.Transaction]
 
 // TransactionService_ServiceDesc is the grpc.ServiceDesc for TransactionService service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -146,11 +108,6 @@ var TransactionService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TransactionServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "ListTransactions",
-			Handler:       _TransactionService_ListTransactions_Handler,
-			ServerStreams: true,
-		},
 		{
 			StreamName:    "ProcessBlockTransactions",
 			Handler:       _TransactionService_ProcessBlockTransactions_Handler,
