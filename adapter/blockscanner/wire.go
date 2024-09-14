@@ -18,7 +18,6 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -84,7 +83,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		grpcx.NewClient,
 		NewInitServersFn,
 		otelx.SetupSDK,
-		eventx.NewEventBus,
 		pgx.NewClient,
 
 		mongodbx.NewClient,

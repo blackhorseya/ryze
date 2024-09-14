@@ -19,7 +19,6 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	biz2 "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -42,7 +41,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	eventBus := eventx.NewEventBus()
 	client, err := grpcx.NewClient(configuration)
 	if err != nil {
 		cleanup()
@@ -62,7 +60,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		C:           configuration,
 		A:           application,
 		OTel:        sdk,
-		Bus:         eventBus,
 		blockClient: blockServiceClient,
 		txClient:    transactionServiceClient,
 	}
@@ -81,7 +78,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo, eventBus)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
 	db, err := pgx.NewClient(application)
 	if err != nil {
 		cleanup()

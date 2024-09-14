@@ -12,7 +12,6 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 )
 
@@ -36,8 +35,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		A:     application,
 		OTelx: sdk,
 	}
-	eventBus := eventx.NewEventBus()
-	server, cleanup2, err := NewServer(injector, eventBus)
+	server, cleanup2, err := NewServer(injector)
 	if err != nil {
 		cleanup()
 		return nil, nil, err

@@ -11,7 +11,6 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -21,7 +20,6 @@ import (
 
 type impl struct {
 	tonClient *tonx.Client
-	bus       *eventx.EventBus
 
 	blocks repo.IBlockRepo
 }
@@ -30,11 +28,9 @@ type impl struct {
 func NewBlockService(
 	tonClient *tonx.Client,
 	blocks repo.IBlockRepo,
-	bus *eventx.EventBus,
 ) biz.BlockServiceServer {
 	return &impl{
 		tonClient: tonClient,
-		bus:       bus,
 		blocks:    blocks,
 	}
 }
