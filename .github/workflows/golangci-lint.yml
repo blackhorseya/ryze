@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - '**.go'
+      - '.github/workflows/golangci-lint.yml'
   pull_request:
     branches:
       - main
     paths:
       - '**.go'
+      - '.github/workflows/golangci-lint.yml'
   workflow_dispatch: { }
 
 permissions:
