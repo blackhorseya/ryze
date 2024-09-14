@@ -7,6 +7,8 @@
 package daemon
 
 import (
+	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 )
@@ -14,11 +16,39 @@ import (
 // Injectors from wire.go:
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
-	server, cleanup, err := NewServer()
+	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
 		return nil, nil, err
 	}
+	application, err := InitApplication(configuration)
+	if err != nil {
+		return nil, nil, err
+	}
+	sdk, cleanup, err := otelx.SetupSDK(application)
+	if err != nil {
+		return nil, nil, err
+	}
+	injector := &Injector{
+		C:     configuration,
+		A:     application,
+		OTelx: sdk,
+	}
+	server, cleanup2, err := NewServer(injector)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	return server, func() {
+		cleanup2()
 		cleanup()
 	}, nil
+}
+
+// wire.go:
+
+const serviceName = "daemon"
+
+// InitApplication is a function to initialize application.
+func InitApplication(config *configx.Configuration) (*configx.Application, error) {
+	return config.GetService(serviceName)
 }

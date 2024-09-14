@@ -38,7 +38,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	sdk, cleanup, err := otelx.NewSDK(application)
+	sdk, cleanup, err := otelx.SetupSDK(application)
 	if err != nil {
 		return nil, nil, err
 	}

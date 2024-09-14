@@ -31,8 +31,8 @@ type SDK struct {
 	serviceName string
 }
 
-// NewSDK creates a new OpenTelemetry SDK.
-func NewSDK(app *configx.Application) (*SDK, func(), error) {
+// SetupSDK creates a new OpenTelemetry SDK.
+func SetupSDK(app *configx.Application) (*SDK, func(), error) {
 	ctx := contextx.Background()
 
 	instance := &SDK{
