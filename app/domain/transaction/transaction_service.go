@@ -171,6 +171,29 @@ func (i *txService) ListTransactionsByAccount(
 	req *txB.ListTransactionsByAccountRequest,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
-	// TODO: 2024/9/14|sean|implement me
-	panic("implement me")
+	c := stream.Context()
+	next, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactionsByAccount")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	cond := repo.ListTransactionsCondition{
+		Limit:  int(req.PageSize),
+		Offset: int((req.Page - 1) * req.PageSize),
+	}
+	items, total, err := i.transactions.ListByAccount(next, req.AccountId, cond)
+	if err != nil {
+		ctx.Error("list transactions by account error", zap.Error(err), zap.String("account_id", req.AccountId))
+		return err
+	}
+
+	for _, item := range items {
+		if err = stream.Send(item); err != nil {
+			ctx.Error("send transaction error", zap.Error(err), zap.Any("item", &item))
+			return err
+		}
+	}
+	stream.SetTrailer(metadata.New(map[string]string{"total": strconv.Itoa(total)}))
+
+	return nil
 }
