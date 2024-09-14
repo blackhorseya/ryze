@@ -8,11 +8,14 @@ import (
 )
 
 type impl struct {
+	injector *Injector
 }
 
 // NewServer is a function to create a new server.
-func NewServer() (adapterx.Server, func(), error) {
-	return &impl{}, func() {}, nil
+func NewServer(injector *Injector) (adapterx.Server, func(), error) {
+	return &impl{
+		injector: injector,
+	}, func() {}, nil
 }
 
 func (i *impl) Start(c context.Context) error {
