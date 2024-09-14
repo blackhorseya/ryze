@@ -7,18 +7,10 @@ package daemon
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/domain/account"
-	"github.com/blackhorseya/ryze/app/domain/block"
-	"github.com/blackhorseya/ryze/app/domain/network"
-	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
@@ -52,18 +44,5 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		configx.NewConfiguration,
 		InitApplication,
 		otelx.SetupSDK,
-		grpcx.NewServer,
-		NewInitServersFn,
-
-		// infra clients
-		InitTonClient,
-		mongodbx.NewClientWithClean,
-		pgx.NewClient,
-		eventx.NewEventBus,
-
-		account.ProviderSet,
-		block.ProviderSet,
-		network.ProviderSet,
-		transaction.ProviderSet,
 	))
 }

@@ -8,18 +8,10 @@ package daemon
 
 import (
 	"fmt"
-	"github.com/blackhorseya/ryze/app/domain/account"
-	"github.com/blackhorseya/ryze/app/domain/block"
-	"github.com/blackhorseya/ryze/app/domain/network"
-	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 )
 
@@ -43,54 +35,12 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		A:     application,
 		OTelx: sdk,
 	}
-	client, err := InitTonClient(configuration)
+	server, cleanup2, err := NewServer(injector)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	mongoClient, cleanup2, err := mongodbx.NewClientWithClean(application)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	eventBus := eventx.NewEventBus()
-	blockServiceServer := block.NewBlockService(client, iBlockRepo, eventBus)
-	networkServiceServer := network.NewNetworkService(client)
-	db, err := pgx.NewClient(application)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	iTransactionRepo, err := pgx.NewTransactionRepo(db)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	transactionServiceServer := transaction.NewTransactionService(client, iTransactionRepo)
-	accountServiceServer := account.NewAccountService(client)
-	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
-	server, err := grpcx.NewServer(application, initServers)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	adapterxServer, cleanup3, err := NewServer(injector, server)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	return adapterxServer, func() {
-		cleanup3()
+	return server, func() {
 		cleanup2()
 		cleanup()
 	}, nil
