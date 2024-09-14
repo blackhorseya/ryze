@@ -6,10 +6,10 @@ import (
 	"github.com/blackhorseya/ryze/pkg/eventx"
 )
 
-var _ eventx.DomainEvent = (*NewBlockEvent)(nil)
+var _ eventx.DomainEvent = (*FoundBlockEvent)(nil)
 
-// NewBlockEvent is used to create a new block event.
-type NewBlockEvent struct {
+// FoundBlockEvent is used to create a new block event.
+type FoundBlockEvent struct {
 	BlockID   string
 	Workchain int32
 	Shard     int64
@@ -19,14 +19,14 @@ type NewBlockEvent struct {
 	Version    int
 }
 
-func (x *NewBlockEvent) GetOccurredAt() time.Time {
+func (x *FoundBlockEvent) GetOccurredAt() time.Time {
 	return x.OccurredAt
 }
 
-func (x *NewBlockEvent) GetName() string {
-	return "NewBlockEvent"
+func (x *FoundBlockEvent) GetName() string {
+	return "FoundBlockEvent"
 }
 
-func (x *NewBlockEvent) GetVersion() int {
+func (x *FoundBlockEvent) GetVersion() int {
 	return x.Version
 }

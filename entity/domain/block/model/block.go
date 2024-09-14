@@ -17,8 +17,8 @@ func NewBlock(workchain int32, shard int64, seqno uint32) (*Block, error) {
 }
 
 // Born is used to born a block.
-func (x *Block) Born() *NewBlockEvent {
-	return &NewBlockEvent{
+func (x *Block) Born() *FoundBlockEvent {
+	return &FoundBlockEvent{
 		BlockID:    x.Id,
 		Workchain:  x.Workchain,
 		Shard:      x.Shard,
