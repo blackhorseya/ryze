@@ -12,31 +12,49 @@ type DomainEvent interface {
 	GetVersion() int
 }
 
-// EventBus is the interface for event bus.
+// EventBus is the structure that handles event subscriptions and publishing.
 type EventBus struct {
 	subscribers []chan DomainEvent
+	handlers    []EventHandler
 	mu          sync.Mutex
 }
 
-// NewEventBus is used to create a new event bus.
+// NewEventBus creates a new event bus.
 func NewEventBus() *EventBus {
-	return &EventBus{}
+	return &EventBus{
+		subscribers: make([]chan DomainEvent, 0),
+		handlers:    make([]EventHandler, 0),
+	}
 }
 
-// Subscribe is used to subscribe to the event bus.
-func (eb *EventBus) Subscribe(ch chan DomainEvent) {
+// SubscribeChannel allows channels to subscribe to the event bus.
+func (eb *EventBus) SubscribeChannel(ch chan DomainEvent) {
 	eb.mu.Lock()
 	defer eb.mu.Unlock()
 	eb.subscribers = append(eb.subscribers, ch)
 }
 
-// Publish is used to publish an event to the event bus.
+// SubscribeHandler allows event handlers to subscribe to the event bus.
+func (eb *EventBus) SubscribeHandler(handler EventHandler) {
+	eb.mu.Lock()
+	defer eb.mu.Unlock()
+	eb.handlers = append(eb.handlers, handler)
+}
+
+// Publish publishes an event to all subscribed channels and handlers.
 func (eb *EventBus) Publish(event DomainEvent) {
 	eb.mu.Lock()
 	defer eb.mu.Unlock()
-	for _, subscriber := range eb.subscribers {
-		go func(sub chan DomainEvent) {
-			sub <- event
-		}(subscriber)
+
+	// Send to all channels asynchronously
+	for _, sub := range eb.subscribers {
+		go func(ch chan DomainEvent) {
+			ch <- event
+		}(sub)
+	}
+
+	// Send to all handlers
+	for _, handler := range eb.handlers {
+		go handler.Handle(event)
 	}
 }

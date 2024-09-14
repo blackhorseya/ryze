@@ -1,4 +1,4 @@
-package daemon
+package platform
 
 import (
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
