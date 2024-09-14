@@ -54,20 +54,6 @@ func (mr *MockITransactionRepoMockRecorder) Create(c, item any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockITransactionRepo)(nil).Create), c, item)
 }
 
-// Delete mocks base method.
-func (m *MockITransactionRepo) Delete(c context.Context, id string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", c, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Delete indicates an expected call of Delete.
-func (mr *MockITransactionRepoMockRecorder) Delete(c, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockITransactionRepo)(nil).Delete), c, id)
-}
-
 // GetByID mocks base method.
 func (m *MockITransactionRepo) GetByID(c context.Context, id string) (*model.Transaction, error) {
 	m.ctrl.T.Helper()
@@ -113,18 +99,4 @@ func (m *MockITransactionRepo) ListByAccount(c context.Context, accountID string
 func (mr *MockITransactionRepoMockRecorder) ListByAccount(c, accountID, cond any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByAccount", reflect.TypeOf((*MockITransactionRepo)(nil).ListByAccount), c, accountID, cond)
-}
-
-// Update mocks base method.
-func (m *MockITransactionRepo) Update(c context.Context, item *model.Transaction) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Update", c, item)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Update indicates an expected call of Update.
-func (mr *MockITransactionRepoMockRecorder) Update(c, item any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockITransactionRepo)(nil).Update), c, item)
 }

@@ -104,16 +104,6 @@ func (i *transactionRepo) List(
 	return items, int(count), nil
 }
 
-func (i *transactionRepo) Update(c context.Context, item *model.Transaction) (err error) {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
-}
-
-func (i *transactionRepo) Delete(c context.Context, id string) (err error) {
-	// TODO: 2024/9/13|sean|implement me
-	panic("implement me")
-}
-
 func (i *transactionRepo) ListByAccount(
 	c context.Context,
 	accountID string,
