@@ -33,8 +33,19 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 	return app, nil
 }
 
-func initTonx() (*tonx.Client, error) {
-	return tonx.NewClient(tonx.Options{Network: "mainnet"})
+// InitTonClient is used to initialize the ton client.
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+	settings, ok := config.Networks["ton"]
+	if !ok {
+		return nil, fmt.Errorf("network [ton] not found")
+	}
+
+	n := "mainnet"
+	if settings.Testnet {
+		n = "testnet"
+	}
+
+	return tonx.NewClient(tonx.Options{Network: n})
 }
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
@@ -56,7 +67,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		transaction.ProviderSet,
 		transaction.NewTransactionServiceClient,
 
-		initTonx,
+		InitTonClient,
 		mongodbx.NewClient,
 	))
 }
