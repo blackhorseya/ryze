@@ -10,6 +10,10 @@ func NewTransactionFromTon(value *tlb.Transaction) *Transaction {
 
 	if value.IO.In != nil {
 		tx.From = value.IO.In.Msg.SenderAddr().Data()
+
+		if value.IO.In.MsgType == tlb.MsgTypeInternal {
+			tx.Amount = value.IO.In.AsInternal().Amount.Nano().Int64()
+		}
 	}
 
 	// TODO: 2024/8/12|sean|fill more fields

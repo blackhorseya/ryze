@@ -25,7 +25,7 @@ message Transaction {
 
   // Amount of currency transferred in the transaction.
   // @gotags: gorm:"not null"
-  double amount = 5;
+  int64 amount = 5;
 
   // Timestamp of when the transaction was created.
   // @gotags: gorm:"serializer:timestamppb;type:time;not null"`
