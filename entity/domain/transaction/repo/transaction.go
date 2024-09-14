@@ -21,4 +21,10 @@ type ITransactionRepo interface {
 	List(c context.Context, cond ListTransactionsCondition) (items []*model.Transaction, total int, err error)
 	Update(c context.Context, item *model.Transaction) (err error)
 	Delete(c context.Context, id string) (err error)
+
+	ListByAccount(
+		c context.Context,
+		accountID string,
+		cond ListTransactionsCondition,
+	) (items []*model.Transaction, total int, err error)
 }

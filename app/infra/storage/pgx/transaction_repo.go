@@ -113,3 +113,12 @@ func (i *transactionRepo) Delete(c context.Context, id string) (err error) {
 	// TODO: 2024/9/13|sean|implement me
 	panic("implement me")
 }
+
+func (i *transactionRepo) ListByAccount(
+	c context.Context,
+	accountID string,
+	cond repo.ListTransactionsCondition,
+) (items []*model.Transaction, total int, err error) {
+	// TODO: 2024/9/14|sean|implement me
+	panic("implement me")
+}
