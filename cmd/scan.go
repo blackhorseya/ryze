@@ -14,11 +14,6 @@ import (
 	"github.com/xssnick/tonutils-go/ton"
 )
 
-var (
-	startFlag uint32
-	endFlag   uint32
-)
-
 var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "Scan the blockchain",
@@ -126,8 +121,6 @@ var scanCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
-	scanCmd.Flags().Uint32Var(&startFlag, "start", 0, "The start block number")
-	scanCmd.Flags().Uint32Var(&endFlag, "end", 0, "The end block number")
 }
 
 func getNotSeenShards(
