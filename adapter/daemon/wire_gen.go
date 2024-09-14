@@ -9,6 +9,7 @@ package daemon
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 )
@@ -33,12 +34,18 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		A:     application,
 		OTelx: sdk,
 	}
-	server, cleanup2, err := NewServer(injector)
+	initServers := NewInitServersFn()
+	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	return server, func() {
+	adapterxServer, cleanup2, err := NewServer(injector, server)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	return adapterxServer, func() {
 		cleanup2()
 		cleanup()
 	}, nil
