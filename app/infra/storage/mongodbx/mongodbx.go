@@ -41,8 +41,23 @@ func NewClientWithDSN(dsn string) (*mongo.Client, error) {
 }
 
 // NewClient returns a new mongo client.
+// Deprecated: use NewClientWithClean instead.
 func NewClient(app *configx.Application) (*mongo.Client, error) {
 	return NewClientWithDSN(app.Storage.Mongodb.DSN)
+}
+
+// NewClientWithClean returns a new mongo client with clean function.
+func NewClientWithClean(app *configx.Application) (*mongo.Client, func(), error) {
+	client, err := NewClientWithDSN(app.Storage.Mongodb.DSN)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return client, func() {
+		ctx := contextx.Background()
+		ctx.Info("disconnecting mongodb client")
+		_ = client.Disconnect(ctx)
+	}, nil
 }
 
 // Container is used to represent a mongodb container.
