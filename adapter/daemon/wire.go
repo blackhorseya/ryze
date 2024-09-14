@@ -11,6 +11,7 @@ import (
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
@@ -44,5 +45,8 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		configx.NewConfiguration,
 		InitApplication,
 		otelx.SetupSDK,
+
+		// infra clients
+		eventx.NewEventBus,
 	))
 }
