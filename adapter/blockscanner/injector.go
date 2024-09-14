@@ -1,10 +1,10 @@
 package blockscanner
 
 import (
-	"github.com/blackhorseya/ryze/app/infra/configx"
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
+	"github.com/blackhorseya/ryze/internal/infra/configx"
+	"github.com/blackhorseya/ryze/internal/infra/otelx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 )
 

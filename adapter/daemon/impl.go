@@ -3,7 +3,7 @@ package daemon
 import (
 	"context"
 
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"

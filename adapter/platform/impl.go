@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	accountB "github.com/blackhorseya/ryze/entity/domain/account/biz"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
