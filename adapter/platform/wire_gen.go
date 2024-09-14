@@ -98,7 +98,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 // wire.go:
 
-var serviceName = "platform"
+const serviceName = "platform"
 
 func initApplication(config *configx.Configuration) (*configx.Application, error) {
 	app, err := config.GetService(serviceName)
