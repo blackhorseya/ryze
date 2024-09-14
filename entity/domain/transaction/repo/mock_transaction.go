@@ -99,6 +99,22 @@ func (mr *MockITransactionRepoMockRecorder) List(c, cond any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockITransactionRepo)(nil).List), c, cond)
 }
 
+// ListByAccount mocks base method.
+func (m *MockITransactionRepo) ListByAccount(c context.Context, accountID string, cond ListTransactionsCondition) ([]*model.Transaction, int, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByAccount", c, accountID, cond)
+	ret0, _ := ret[0].([]*model.Transaction)
+	ret1, _ := ret[1].(int)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListByAccount indicates an expected call of ListByAccount.
+func (mr *MockITransactionRepoMockRecorder) ListByAccount(c, accountID, cond any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByAccount", reflect.TypeOf((*MockITransactionRepo)(nil).ListByAccount), c, accountID, cond)
+}
+
 // Update mocks base method.
 func (m *MockITransactionRepo) Update(c context.Context, item *model.Transaction) error {
 	m.ctrl.T.Helper()

@@ -113,3 +113,42 @@ func (i *transactionRepo) Delete(c context.Context, id string) (err error) {
 	// TODO: 2024/9/13|sean|implement me
 	panic("implement me")
 }
+
+func (i *transactionRepo) ListByAccount(
+	c context.Context,
+	accountID string,
+	cond repo.ListTransactionsCondition,
+) (items []*model.Transaction, total int, err error) {
+	next, span := otelx.Tracer.Start(c, "pgx.repo.transaction.ListByAccount")
+	defer span.End()
+
+	ctx := contextx.WithContext(c)
+
+	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
+	defer cancelFunc()
+
+	query := i.rw.WithContext(timeout).Model(&model.Transaction{}).Where("from = ? OR to = ?", accountID, accountID)
+
+	// limit and offset
+	limit, offset := defaultLimit, 0
+	if 0 < cond.Limit && cond.Limit <= defaultMaxLimit {
+		limit = cond.Limit
+	}
+	if 0 < cond.Offset {
+		offset = cond.Offset
+	}
+	query = query.Limit(limit).Offset(offset)
+
+	// order by
+	query = query.Order("timestamp desc")
+
+	var count int64
+	err = query.Count(&count).Find(&items).Error
+	if err != nil {
+		ctx.Error("list transactions by account from gormDB failed", zap.Error(err), zap.String("account_id", accountID))
+		span.RecordError(err)
+		return nil, 0, err
+	}
+
+	return items, int(count), nil
+}
