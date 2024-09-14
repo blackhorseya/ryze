@@ -127,7 +127,7 @@ func (i *transactionRepo) ListByAccount(
 	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
 	defer cancelFunc()
 
-	query := i.rw.WithContext(timeout).Model(&model.Transaction{}).Where("from = ? OR to = ?", accountID, accountID)
+	query := i.rw.WithContext(timeout).Model(&model.Transaction{}).Where(`"from" = ? OR "to" = ?`, accountID, accountID)
 
 	// limit and offset
 	limit, offset := defaultLimit, 0

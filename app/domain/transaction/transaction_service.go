@@ -183,7 +183,7 @@ func (i *txService) ListTransactionsByAccount(
 	}
 	items, total, err := i.transactions.ListByAccount(next, req.AccountId, cond)
 	if err != nil {
-		ctx.Error("list transactions by account error", zap.Error(err), zap.String("account_id", req.AccountId))
+		ctx.Error("list transactions by account error", zap.Error(err))
 		return err
 	}
 
