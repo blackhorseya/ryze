@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap/ctxzap"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

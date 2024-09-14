@@ -1,9 +1,9 @@
 package platform
 
 import (
+	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/biz"
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
 )
 
 // Injector is the injector for wirex

@@ -1,8 +1,8 @@
 package daemon
 
 import (
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/app/infra/otelx"
 )
 
 // Injector is a struct that contains the necessary fields to inject the daemon.
