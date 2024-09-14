@@ -25,6 +25,8 @@ func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server start")
 
+	// i.bus.SubscribeHandler(event.NewFoundBlockHandler())
+
 	return nil
 }
 
