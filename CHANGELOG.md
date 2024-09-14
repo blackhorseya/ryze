@@ -1,3 +1,14 @@
+## 0.4.1 (2024-09-14)
+
+### Feat
+
+- refactor transaction amount handling
+
+### Refactor
+
+- refactor transaction creation and field handling
+- refactor codebase to remove unused imports and fields
+
 ## 0.4.0 (2024-09-13)
 
 ### Feat
