@@ -166,3 +166,11 @@ func (i *txService) ListTransactions(
 
 	return nil
 }
+
+func (i *txService) ListTransactionsByAccount(
+	req *txB.ListTransactionsByAccountRequest,
+	stream grpc.ServerStreamingServer[txM.Transaction],
+) error {
+	// TODO: 2024/9/14|sean|implement me
+	panic("implement me")
+}

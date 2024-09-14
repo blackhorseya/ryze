@@ -21,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TransactionService_ProcessBlockTransactions_FullMethodName = "/transaction.TransactionService/ProcessBlockTransactions"
-	TransactionService_ListTransactions_FullMethodName         = "/transaction.TransactionService/ListTransactions"
+	TransactionService_ProcessBlockTransactions_FullMethodName  = "/transaction.TransactionService/ProcessBlockTransactions"
+	TransactionService_ListTransactions_FullMethodName          = "/transaction.TransactionService/ListTransactions"
+	TransactionService_ListTransactionsByAccount_FullMethodName = "/transaction.TransactionService/ListTransactionsByAccount"
 )
 
 // TransactionServiceClient is the client API for TransactionService service.
@@ -33,6 +34,7 @@ const (
 type TransactionServiceClient interface {
 	ProcessBlockTransactions(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[model.Block, model1.Transaction], error)
 	ListTransactions(ctx context.Context, in *ListTransactionRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error)
+	ListTransactionsByAccount(ctx context.Context, in *ListTransactionsByAccountRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error)
 }
 
 type transactionServiceClient struct {
@@ -75,6 +77,25 @@ func (c *transactionServiceClient) ListTransactions(ctx context.Context, in *Lis
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type TransactionService_ListTransactionsClient = grpc.ServerStreamingClient[model1.Transaction]
 
+func (c *transactionServiceClient) ListTransactionsByAccount(ctx context.Context, in *ListTransactionsByAccountRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[model1.Transaction], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &TransactionService_ServiceDesc.Streams[2], TransactionService_ListTransactionsByAccount_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ListTransactionsByAccountRequest, model1.Transaction]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type TransactionService_ListTransactionsByAccountClient = grpc.ServerStreamingClient[model1.Transaction]
+
 // TransactionServiceServer is the server API for TransactionService service.
 // All implementations should embed UnimplementedTransactionServiceServer
 // for forward compatibility.
@@ -83,6 +104,7 @@ type TransactionService_ListTransactionsClient = grpc.ServerStreamingClient[mode
 type TransactionServiceServer interface {
 	ProcessBlockTransactions(grpc.BidiStreamingServer[model.Block, model1.Transaction]) error
 	ListTransactions(*ListTransactionRequest, grpc.ServerStreamingServer[model1.Transaction]) error
+	ListTransactionsByAccount(*ListTransactionsByAccountRequest, grpc.ServerStreamingServer[model1.Transaction]) error
 }
 
 // UnimplementedTransactionServiceServer should be embedded to have
@@ -97,6 +119,9 @@ func (UnimplementedTransactionServiceServer) ProcessBlockTransactions(grpc.BidiS
 }
 func (UnimplementedTransactionServiceServer) ListTransactions(*ListTransactionRequest, grpc.ServerStreamingServer[model1.Transaction]) error {
 	return status.Errorf(codes.Unimplemented, "method ListTransactions not implemented")
+}
+func (UnimplementedTransactionServiceServer) ListTransactionsByAccount(*ListTransactionsByAccountRequest, grpc.ServerStreamingServer[model1.Transaction]) error {
+	return status.Errorf(codes.Unimplemented, "method ListTransactionsByAccount not implemented")
 }
 func (UnimplementedTransactionServiceServer) testEmbeddedByValue() {}
 
@@ -136,6 +161,17 @@ func _TransactionService_ListTransactions_Handler(srv interface{}, stream grpc.S
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type TransactionService_ListTransactionsServer = grpc.ServerStreamingServer[model1.Transaction]
 
+func _TransactionService_ListTransactionsByAccount_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ListTransactionsByAccountRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(TransactionServiceServer).ListTransactionsByAccount(m, &grpc.GenericServerStream[ListTransactionsByAccountRequest, model1.Transaction]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type TransactionService_ListTransactionsByAccountServer = grpc.ServerStreamingServer[model1.Transaction]
+
 // TransactionService_ServiceDesc is the grpc.ServiceDesc for TransactionService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -153,6 +189,11 @@ var TransactionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "ListTransactions",
 			Handler:       _TransactionService_ListTransactions_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "ListTransactionsByAccount",
+			Handler:       _TransactionService_ListTransactionsByAccount_Handler,
 			ServerStreams: true,
 		},
 	},

@@ -11,9 +11,17 @@ message ListTransactionRequest {
   int64 page_size = 2;
 }
 
+message ListTransactionsByAccountRequest {
+  string account = 1;
+  int64 page = 2;
+  int64 page_size = 3;
+}
+
 // Service definition for handling transactions.
 service TransactionService {
   rpc ProcessBlockTransactions(stream block.Block) returns (stream Transaction) {}
 
   rpc ListTransactions(ListTransactionRequest) returns (stream Transaction) {}
+
+  rpc ListTransactionsByAccount(ListTransactionsByAccountRequest) returns (stream Transaction) {}
 }

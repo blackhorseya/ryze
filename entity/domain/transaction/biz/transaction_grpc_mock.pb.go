@@ -527,6 +527,248 @@ func (mr *MockTransactionService_ListTransactionsServerMockRecorder) SetTrailer(
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockTransactionService_ListTransactionsServer)(nil).SetTrailer), arg0)
 }
 
+// MockTransactionService_ListTransactionsByAccountClient is a mock of TransactionService_ListTransactionsByAccountClient interface.
+type MockTransactionService_ListTransactionsByAccountClient struct {
+	ctrl     *gomock.Controller
+	recorder *MockTransactionService_ListTransactionsByAccountClientMockRecorder
+}
+
+// MockTransactionService_ListTransactionsByAccountClientMockRecorder is the mock recorder for MockTransactionService_ListTransactionsByAccountClient.
+type MockTransactionService_ListTransactionsByAccountClientMockRecorder struct {
+	mock *MockTransactionService_ListTransactionsByAccountClient
+}
+
+// NewMockTransactionService_ListTransactionsByAccountClient creates a new mock instance.
+func NewMockTransactionService_ListTransactionsByAccountClient(ctrl *gomock.Controller) *MockTransactionService_ListTransactionsByAccountClient {
+	mock := &MockTransactionService_ListTransactionsByAccountClient{ctrl: ctrl}
+	mock.recorder = &MockTransactionService_ListTransactionsByAccountClientMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTransactionService_ListTransactionsByAccountClient) EXPECT() *MockTransactionService_ListTransactionsByAccountClientMockRecorder {
+	return m.recorder
+}
+
+// CloseSend mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) CloseSend() error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CloseSend")
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CloseSend indicates an expected call of CloseSend.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) CloseSend() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CloseSend", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).CloseSend))
+}
+
+// Context mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).Context))
+}
+
+// Header mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) Header() (metadata.MD, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Header")
+	ret0, _ := ret[0].(metadata.MD)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Header indicates an expected call of Header.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) Header() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Header", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).Header))
+}
+
+// Recv mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) Recv() (*model0.Transaction, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Recv")
+	ret0, _ := ret[0].(*model0.Transaction)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Recv indicates an expected call of Recv.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) Recv() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Recv", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).Recv))
+}
+
+// RecvMsg mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).RecvMsg), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).SendMsg), arg0)
+}
+
+// Trailer mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountClient) Trailer() metadata.MD {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Trailer")
+	ret0, _ := ret[0].(metadata.MD)
+	return ret0
+}
+
+// Trailer indicates an expected call of Trailer.
+func (mr *MockTransactionService_ListTransactionsByAccountClientMockRecorder) Trailer() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Trailer", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountClient)(nil).Trailer))
+}
+
+// MockTransactionService_ListTransactionsByAccountServer is a mock of TransactionService_ListTransactionsByAccountServer interface.
+type MockTransactionService_ListTransactionsByAccountServer struct {
+	ctrl     *gomock.Controller
+	recorder *MockTransactionService_ListTransactionsByAccountServerMockRecorder
+}
+
+// MockTransactionService_ListTransactionsByAccountServerMockRecorder is the mock recorder for MockTransactionService_ListTransactionsByAccountServer.
+type MockTransactionService_ListTransactionsByAccountServerMockRecorder struct {
+	mock *MockTransactionService_ListTransactionsByAccountServer
+}
+
+// NewMockTransactionService_ListTransactionsByAccountServer creates a new mock instance.
+func NewMockTransactionService_ListTransactionsByAccountServer(ctrl *gomock.Controller) *MockTransactionService_ListTransactionsByAccountServer {
+	mock := &MockTransactionService_ListTransactionsByAccountServer{ctrl: ctrl}
+	mock.recorder = &MockTransactionService_ListTransactionsByAccountServerMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTransactionService_ListTransactionsByAccountServer) EXPECT() *MockTransactionService_ListTransactionsByAccountServerMockRecorder {
+	return m.recorder
+}
+
+// Context mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) Context() context.Context {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) Context() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).Context))
+}
+
+// RecvMsg mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) RecvMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RecvMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RecvMsg indicates an expected call of RecvMsg.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) RecvMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RecvMsg", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).RecvMsg), arg0)
+}
+
+// Send mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) Send(arg0 *model0.Transaction) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Send", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Send indicates an expected call of Send.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) Send(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).Send), arg0)
+}
+
+// SendHeader mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) SendHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendHeader indicates an expected call of SendHeader.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) SendHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendHeader", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).SendHeader), arg0)
+}
+
+// SendMsg mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) SendMsg(arg0 interface{}) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendMsg", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendMsg indicates an expected call of SendMsg.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) SendMsg(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMsg", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).SendMsg), arg0)
+}
+
+// SetHeader mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) SetHeader(arg0 metadata.MD) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetHeader", arg0)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetHeader indicates an expected call of SetHeader.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) SetHeader(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetHeader", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).SetHeader), arg0)
+}
+
+// SetTrailer mocks base method.
+func (m *MockTransactionService_ListTransactionsByAccountServer) SetTrailer(arg0 metadata.MD) {
+	m.ctrl.T.Helper()
+	m.ctrl.Call(m, "SetTrailer", arg0)
+}
+
+// SetTrailer indicates an expected call of SetTrailer.
+func (mr *MockTransactionService_ListTransactionsByAccountServerMockRecorder) SetTrailer(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetTrailer", reflect.TypeOf((*MockTransactionService_ListTransactionsByAccountServer)(nil).SetTrailer), arg0)
+}
+
 // MockTransactionServiceClient is a mock of TransactionServiceClient interface.
 type MockTransactionServiceClient struct {
 	ctrl     *gomock.Controller
@@ -568,6 +810,26 @@ func (mr *MockTransactionServiceClientMockRecorder) ListTransactions(ctx, in int
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransactions", reflect.TypeOf((*MockTransactionServiceClient)(nil).ListTransactions), varargs...)
+}
+
+// ListTransactionsByAccount mocks base method.
+func (m *MockTransactionServiceClient) ListTransactionsByAccount(ctx context.Context, in *ListTransactionsByAccountRequest, opts ...grpc.CallOption) (TransactionService_ListTransactionsByAccountClient, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListTransactionsByAccount", varargs...)
+	ret0, _ := ret[0].(TransactionService_ListTransactionsByAccountClient)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListTransactionsByAccount indicates an expected call of ListTransactionsByAccount.
+func (mr *MockTransactionServiceClientMockRecorder) ListTransactionsByAccount(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransactionsByAccount", reflect.TypeOf((*MockTransactionServiceClient)(nil).ListTransactionsByAccount), varargs...)
 }
 
 // ProcessBlockTransactions mocks base method.
@@ -625,6 +887,20 @@ func (m *MockTransactionServiceServer) ListTransactions(blob *ListTransactionReq
 func (mr *MockTransactionServiceServerMockRecorder) ListTransactions(blob, server interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransactions", reflect.TypeOf((*MockTransactionServiceServer)(nil).ListTransactions), blob, server)
+}
+
+// ListTransactionsByAccount mocks base method.
+func (m *MockTransactionServiceServer) ListTransactionsByAccount(blob *ListTransactionsByAccountRequest, server TransactionService_ListTransactionsByAccountServer) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTransactionsByAccount", blob, server)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ListTransactionsByAccount indicates an expected call of ListTransactionsByAccount.
+func (mr *MockTransactionServiceServerMockRecorder) ListTransactionsByAccount(blob, server interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTransactionsByAccount", reflect.TypeOf((*MockTransactionServiceServer)(nil).ListTransactionsByAccount), blob, server)
 }
 
 // ProcessBlockTransactions mocks base method.
