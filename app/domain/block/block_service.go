@@ -2,6 +2,7 @@ package block
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"time"
 
@@ -76,7 +77,11 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	// 持續監聽所有分片上的新區塊
 	for {
 		// 獲取每個 workchain 和 shard 上的新區塊
-		currentShards, err2 := api.GetBlockShardsInfo(stickyContext, master)
+		currentShards, err2 := api.GetBlockShardsInfo(next, master)
+		if errors.Is(err2, context.Canceled) {
+			ctx.Info("scan block canceled")
+			return nil
+		}
 		if err2 != nil {
 			ctx.Error("failed to get block shards info", zap.Error(err2))
 			return err2
@@ -115,7 +120,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 		// 更新主鏈區塊以繼續監控新地分片區塊
 		nextSeqNo := master.SeqNo + 1
 		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(stickyContext, master.Workchain, master.Shard, nextSeqNo)
-		if err2 != nil {
+		if err2 != nil && !errors.Is(err2, context.Canceled) {
 			ctx.Error("failed to lookup next block", zap.Uint32("seq_no", nextSeqNo), zap.Error(err2))
 			return err2
 		}

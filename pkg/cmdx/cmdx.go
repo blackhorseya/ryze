@@ -35,7 +35,7 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 			cobra.CheckErr(err)
 			defer clean()
 
-			ctx := context.Background()
+			ctx, cancel := context.WithCancel(context.Background())
 
 			err = service.Start(ctx)
 			cobra.CheckErr(err)
@@ -44,6 +44,7 @@ func (c *ServiceCmd) NewCmd() *cobra.Command {
 			signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGINT)
 
 			<-signalChan
+			cancel()
 
 			err = service.Shutdown(ctx)
 			cobra.CheckErr(err)

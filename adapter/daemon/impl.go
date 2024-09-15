@@ -14,6 +14,8 @@ import (
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type impl struct {
@@ -83,17 +85,28 @@ func (i *impl) listenForBlockEvents(ctx contextx.Contextx, stream grpc.ServerStr
 	ctx.Info("start to receive block")
 
 	for {
-		newBlock, err := stream.Recv()
-		if errors.Is(err, io.EOF) {
-			break
-		}
-		if err != nil {
-			ctx.Error("failed to receive block", zap.Error(err))
-			continue
-		}
+		select {
+		case <-ctx.Done():
+			_ = stream.CloseSend()
+			ctx.Info("context done, stopping block event listener")
+			return
+		default:
+			newBlock, err := stream.Recv()
+			if errors.Is(err, io.EOF) {
+				return
+			}
+			st, ok := status.FromError(err)
+			if ok && st.Code() == codes.Canceled {
+				return
+			}
+			if err != nil {
+				ctx.Error("failed to receive block", zap.Error(err))
+				continue
+			}
 
-		ctx.Info("received block", zap.String("block_id", newBlock.Id))
+			ctx.Info("received block", zap.String("block_id", newBlock.Id))
 
-		_ = i.bus.Publish(newBlock.Born())
+			_ = i.bus.Publish(newBlock.Born())
+		}
 	}
 }
