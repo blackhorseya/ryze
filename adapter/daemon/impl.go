@@ -30,6 +30,13 @@ func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server start")
 
+	if i.grpcserver != nil {
+		if err := i.grpcserver.Start(ctx); err != nil {
+			ctx.Error("start grpc server", zap.Error(err))
+			return err
+		}
+	}
+
 	err := i.bus.Subscribe(event.NewFoundBlockHandler())
 	if err != nil {
 		ctx.Error("subscribe found block handler", zap.Error(err))
@@ -43,6 +50,12 @@ func (i *impl) Start(c context.Context) error {
 func (i *impl) Shutdown(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server shutdown")
+
+	if i.grpcserver != nil {
+		if err := i.grpcserver.Stop(ctx); err != nil {
+			ctx.Error("shutdown grpc server", zap.Error(err))
+		}
+	}
 
 	// TODO: 2024/9/15|sean|unsubscribe found block handler
 
