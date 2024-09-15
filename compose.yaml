@@ -16,6 +16,36 @@
 #      - 30000:30000
 
 services:
+  platform:
+    build:
+      context: .
+      target: final
+    command:
+      - --config=/app/configs/example.yaml
+      - start
+      - platform
+    ports:
+      - 50051:50051
+    volumes:
+      - ./configs/example.yaml:/app/configs/example.yaml
+    depends_on:
+      - mongodb
+      - postgresql
+
+  daemon:
+    build:
+      context: .
+      target: final
+    command:
+      - --config=/app/configs/example.yaml
+      - start
+      - daemon
+    volumes:
+      - ./configs/example.yaml:/app/configs/example.yaml
+    depends_on:
+      - mongodb
+      - postgresql
+
   mongodb:
     image: mongo:7
     environment:

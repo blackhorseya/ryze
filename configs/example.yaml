@@ -3,8 +3,22 @@ log:
   format: console
 
 services:
-  platform-grpc:
-    name: dev-ryze-platform-grpc
+  daemon:
+    name: dev-ryze-daemon
+
+    grpc:
+      url: localhost
+      port: 50051
+
+    storage:
+      mongodb:
+        dsn: mongodb://root:changeme@mongodb/?retryWrites=true&w=majority
+
+      postgresql:
+        dsn: "user=root password=changeme dbname=ryze host=postgresql port=5432 sslmode=disable"
+
+  platform:
+    name: dev-ryze-platform
 
     grpc:
       url: localhost
