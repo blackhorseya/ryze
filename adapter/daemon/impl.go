@@ -3,9 +3,11 @@ package daemon
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/usecase/event"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
+	"go.uber.org/zap"
 )
 
 type impl struct {
@@ -25,7 +27,12 @@ func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server start")
 
-	// i.bus.SubscribeHandler(event.NewFoundBlockHandler())
+	err := i.bus.Subscribe(event.NewFoundBlockHandler())
+	if err != nil {
+		ctx.Error("subscribe found block handler", zap.Error(err))
+		return err
+	}
+	ctx.Info("subscribed to block events")
 
 	return nil
 }
@@ -33,6 +40,8 @@ func (i *impl) Start(c context.Context) error {
 func (i *impl) Shutdown(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server shutdown")
+
+	// TODO: 2024/9/15|sean|unsubscribe found block handler
 
 	return nil
 }
