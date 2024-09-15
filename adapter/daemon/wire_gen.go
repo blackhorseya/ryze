@@ -7,8 +7,13 @@
 package daemon
 
 import (
+	"fmt"
+	"github.com/blackhorseya/ryze/app/domain/block"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
+	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/tonx"
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
@@ -29,18 +34,55 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	injector := &Injector{
-		C:     configuration,
-		A:     application,
-		OTelx: sdk,
-	}
-	eventBus := eventx.NewInMemoryEventBus()
-	server, cleanup2, err := NewServer(injector, eventBus)
+	client, err := grpcx.NewClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	return server, func() {
+	blockServiceClient, err := block.NewBlockServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	injector := &Injector{
+		C:           configuration,
+		A:           application,
+		OTelx:       sdk,
+		blockClient: blockServiceClient,
+	}
+	tonxClient, err := InitTonClient(configuration)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	mongoClient, cleanup2, err := mongodbx.NewClientWithClean(application)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
+	initServers := NewInitServersFn(blockServiceServer)
+	server, err := grpcx.NewServer(application, initServers)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	eventBus := eventx.NewInMemoryEventBus()
+	adapterxServer, cleanup3, err := NewServer(injector, server, eventBus)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	return adapterxServer, func() {
+		cleanup3()
 		cleanup2()
 		cleanup()
 	}, nil
@@ -53,4 +95,19 @@ const serviceName = "daemon"
 // InitApplication is a function to initialize application.
 func InitApplication(config *configx.Configuration) (*configx.Application, error) {
 	return config.GetService(serviceName)
+}
+
+// InitTonClient is used to initialize the ton client.
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+	settings, ok := config.Networks["ton"]
+	if !ok {
+		return nil, fmt.Errorf("network [ton] not found")
+	}
+
+	n := "mainnet"
+	if settings.Testnet {
+		n = "testnet"
+	}
+
+	return tonx.NewClient(tonx.Options{Network: n})
 }
