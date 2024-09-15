@@ -25,7 +25,7 @@ func NewFoundBlockHandler(
 	}
 }
 
-func (h *foundBlockHandler) Handle(event eventx.DomainEvent) {
+func (i *foundBlockHandler) Handle(event eventx.DomainEvent) {
 	ctx := contextx.Background()
 
 	blockEvent, ok := event.(*model.FoundBlockEvent)
@@ -36,7 +36,36 @@ func (h *foundBlockHandler) Handle(event eventx.DomainEvent) {
 
 	ctx.Info("found block", zap.String("block", blockEvent.Block.String()))
 
-	// TODO: 2024/9/15|sean|call block service to handle the block via block client
-
-	// TODO: 2024/9/15|sean|call transaction service to handle the block via transaction client
+	// // Call block service to handle the block via block client
+	// blockStream, err := i.blockClient.FoundNewBlock(ctx)
+	// if err != nil {
+	// 	ctx.Error("failed to call block service", zap.Error(err))
+	// 	return
+	// }
+	// err = blockStream.Send(blockEvent.Block)
+	// if err != nil {
+	// 	ctx.Error("failed to send block to block service", zap.Error(err))
+	// 	return
+	// }
+	// defer blockStream.CloseSend()
+	//
+	// // Wait for block service to receive the block
+	// _, err = blockStream.Recv()
+	// if err != nil {
+	// 	ctx.Error("failed to receive response from block service", zap.Error(err))
+	// 	return
+	// }
+	//
+	// // Call transaction service to handle the block via transaction client
+	// transactions, err := i.txClient.ProcessBlockTransactions(ctx)
+	// if err != nil {
+	// 	ctx.Error("failed to call transaction service", zap.Error(err))
+	// 	return
+	// }
+	// err = transactions.Send(blockEvent.Block)
+	// if err != nil {
+	// 	ctx.Error("failed to send block to transaction service", zap.Error(err))
+	// 	return
+	// }
+	// defer transactions.CloseSend()
 }
