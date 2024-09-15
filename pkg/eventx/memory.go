@@ -12,7 +12,7 @@ type InMemoryEventBus struct {
 }
 
 // NewInMemoryEventBus 创建一个新的基于内存的 EventBus 实例
-func NewInMemoryEventBus() *InMemoryEventBus {
+func NewInMemoryEventBus() EventBus {
 	return &InMemoryEventBus{
 		handlers: make([]EventHandler, 0),
 	}
