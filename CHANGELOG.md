@@ -1,3 +1,9 @@
+## 0.5.1 (2024-09-15)
+
+### Refactor
+
+- refactor client-side code for improved error handling
+
 ## 0.5.0 (2024-09-15)
 
 ### Feat
