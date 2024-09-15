@@ -3,6 +3,7 @@ package daemon
 import (
 	"context"
 
+	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/app/usecase/event"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -11,15 +12,17 @@ import (
 )
 
 type impl struct {
-	injector *Injector
-	bus      eventx.EventBus
+	injector   *Injector
+	grpcserver *grpcx.Server
+	bus        eventx.EventBus
 }
 
 // NewServer is a function to create a new server.
-func NewServer(injector *Injector, bus eventx.EventBus) (adapterx.Server, func(), error) {
+func NewServer(injector *Injector, grpcserver *grpcx.Server, bus eventx.EventBus) (adapterx.Server, func(), error) {
 	return &impl{
-		injector: injector,
-		bus:      bus,
+		injector:   injector,
+		grpcserver: grpcserver,
+		bus:        bus,
 	}, func() {}, nil
 }
 
