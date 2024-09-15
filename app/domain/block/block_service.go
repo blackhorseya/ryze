@@ -119,7 +119,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 
 		// 更新主鏈區塊以繼續監控新地分片區塊
 		nextSeqNo := master.SeqNo + 1
-		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(stickyContext, master.Workchain, master.Shard, nextSeqNo)
+		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(next, master.Workchain, master.Shard, nextSeqNo)
 		if err2 != nil && !errors.Is(err2, context.Canceled) {
 			ctx.Error("failed to lookup next block", zap.Uint32("seq_no", nextSeqNo), zap.Error(err2))
 			return err2
