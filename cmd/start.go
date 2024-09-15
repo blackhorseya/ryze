@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/blackhorseya/ryze/adapter/blockscanner"
 	"github.com/blackhorseya/ryze/adapter/daemon"
 	"github.com/blackhorseya/ryze/adapter/platform"
 	"github.com/blackhorseya/ryze/pkg/cmdx"
@@ -18,7 +17,6 @@ func init() {
 	rootCmd.AddCommand(startCmd)
 
 	startCmd.AddCommand(cmdx.NewServiceCmd("platform", "start platform service", platform.New))
-	startCmd.AddCommand(cmdx.NewServiceCmd("scanner", "start scanner service", blockscanner.New))
 	startCmd.AddCommand(cmdx.NewServiceCmd("daemon", "start daemon service", daemon.New))
 
 	// Here you will define your flags and configuration settings.
