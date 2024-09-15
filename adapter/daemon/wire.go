@@ -8,9 +8,11 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -56,6 +58,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 		// storage
 		mongodbx.NewClientWithClean,
+		pgx.NewClient,
 
 		// transports
 		grpcx.NewServer,
@@ -68,5 +71,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		// domain layer
 		block.ProviderSet,
 		block.NewBlockServiceClient,
+		transaction.ProviderSet,
+		transaction.NewTransactionServiceClient,
 	))
 }

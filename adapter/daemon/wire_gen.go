@@ -9,9 +9,11 @@ package daemon
 import (
 	"fmt"
 	"github.com/blackhorseya/ryze/app/domain/block"
+	"github.com/blackhorseya/ryze/app/domain/transaction"
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/app/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -44,11 +46,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
 	injector := &Injector{
 		C:           configuration,
 		A:           application,
 		OTelx:       sdk,
 		blockClient: blockServiceClient,
+		txClient:    transactionServiceClient,
 	}
 	tonxClient, err := InitTonClient(configuration)
 	if err != nil {
@@ -67,7 +75,20 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		return nil, nil, err
 	}
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
-	initServers := NewInitServersFn(blockServiceServer)
+	db, err := pgx.NewClient(application)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	iTransactionRepo, err := pgx.NewTransactionRepo(db)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
+	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		cleanup2()
