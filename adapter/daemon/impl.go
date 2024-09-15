@@ -56,7 +56,7 @@ func (i *impl) Start(c context.Context) error {
 	go i.listenForBlockEvents(ctx, blockScanner)
 
 	// subscribe found block handler
-	err = i.bus.Subscribe(event.NewFoundBlockHandler())
+	err = i.bus.Subscribe(event.NewFoundBlockHandler(i.injector.blockClient, i.injector.txClient))
 	if err != nil {
 		ctx.Error("subscribe found block handler", zap.Error(err))
 		return err

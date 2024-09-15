@@ -3,6 +3,7 @@ package daemon
 import (
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
+	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -10,7 +11,10 @@ import (
 )
 
 // NewInitServersFn is a function to create a new init servers function.
-func NewInitServersFn(blockServer blockB.BlockServiceServer) grpcx.InitServers {
+func NewInitServersFn(
+	blockServer blockB.BlockServiceServer,
+	txServer txB.TransactionServiceServer,
+) grpcx.InitServers {
 	return func(s *grpc.Server) {
 		// register health server
 		healthServer := health.NewServer()
@@ -22,5 +26,6 @@ func NewInitServersFn(blockServer blockB.BlockServiceServer) grpcx.InitServers {
 
 		// register our services
 		blockB.RegisterBlockServiceServer(s, blockServer)
+		txB.RegisterTransactionServiceServer(s, txServer)
 	}
 }
