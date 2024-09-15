@@ -1,3 +1,72 @@
+## 0.5.0 (2024-09-15)
+
+### Feat
+
+- refactor block handling logic across services
+- update transaction handling in adapter and daemon files
+- log detailed information for found blocks
+- refactor block handling in daemon components (#73)
+- refactor event handling and dependencies
+- refactor block handling in daemon components
+- improve error handling and server lifecycle management
+- refactor adapter daemon with new gRPC server functionalities
+- refactor logging and event handling in subscription functionality
+- refactor event bus handling across files (#72)
+- refactor event bus handling across files
+- implement in-memory event bus with asynchronous notifications
+- refactor server initialization and event bus handling (#70)
+- refactor event handling with new EventBus structure
+- refactor server initialization and event bus handling
+- consolidate new infra files under `app` directory
+- refactor implementation to use event bus throughout (#69)
+- refactor event handling in Start function
+- refactor implementation to use event bus throughout
+- refactor event handling and block processing
+- refactor event handling and subscription mechanism
+- refactor project structure and organization
+- add `.gitkeep` file in `app/usecase` directory
+- consolidate service initialization logic in various files (#68)
+- consolidate service initialization logic in various files
+- initialize gRPC server for new adapter (#67)
+- update implementation to use `grpcx.Server` consistently
+- initialize gRPC server for new adapter
+- consolidate dependency injection logic in daemon (#65)
+- refactor initialization commands for `daemon` service
+- refactor server implementation and context handling
+- consolidate dependency injection logic in daemon
+- introduce blockchain sync command in cmd directory (#64)
+- consolidate sync functionality and remove recovery feature
+- introduce blockchain recovery command in cmd directory
+- refactor transaction listing process (#63)
+- refactor transaction listing process
+- refactor transaction listing function and error handling (#62)
+- refactor transaction listing function and error handling
+- implement `ListByAccount` method and mock implementations
+- introduce new RPC method for listing transactions
+- organize file structure for analytics domain
+
+### Fix
+
+- refactor error handling and query construction
+
+### Refactor
+
+- refactor handling of block services (#75)
+- refactor handling of block services
+- refactor block lookup functionality
+- refactor context handling and import statements
+- refactor transaction repository interfaces and methods (#71)
+- refactor transaction repository interfaces and methods
+- refactor codebase to remove eventx package and related code
+- refactor file structure and update constants
+- refactor server initialization in daemon components
+- refactor event names in codebase
+- refactor project structure to internal packages
+- refactor SDK initialization process across packages (#66)
+- refactor SDK initialization process across packages
+- refactor scan command initialization across files
+- refactor query construction for bytea field comparisons
+
 ## 0.4.1 (2024-09-14)
 
 ### Feat
