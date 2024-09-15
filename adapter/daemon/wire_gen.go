@@ -34,12 +34,23 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	injector := &Injector{
-		C:     configuration,
-		A:     application,
-		OTelx: sdk,
+	client, err := grpcx.NewClient(configuration)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
 	}
-	client, err := InitTonClient(configuration)
+	blockServiceClient, err := block.NewBlockServiceClient(client)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	injector := &Injector{
+		C:           configuration,
+		A:           application,
+		OTelx:       sdk,
+		blockClient: blockServiceClient,
+	}
+	tonxClient, err := InitTonClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -55,7 +66,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceServer := block.NewBlockService(client, iBlockRepo)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
 	initServers := NewInitServersFn(blockServiceServer)
 	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {

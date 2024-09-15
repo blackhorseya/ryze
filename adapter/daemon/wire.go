@@ -59,6 +59,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 		// transports
 		grpcx.NewServer,
+		grpcx.NewClient,
 		InitTonClient,
 
 		// app layer
@@ -66,5 +67,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 		// domain layer
 		block.ProviderSet,
+		block.NewBlockServiceClient,
 	))
 }
