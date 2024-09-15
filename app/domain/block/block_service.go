@@ -3,6 +3,7 @@ package block
 import (
 	"context"
 	"errors"
+	"io"
 	"strconv"
 	"time"
 
@@ -136,6 +137,9 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 
 	for {
 		newBlock, err := stream.Recv()
+		if errors.Is(err, io.EOF) || errors.Is(err, context.Canceled) {
+			break
+		}
 		if err != nil {
 			ctx.Error("failed to receive new block", zap.Error(err))
 			continue
@@ -159,6 +163,8 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 			continue
 		}
 	}
+
+	return nil
 }
 
 // FetchBlockInfo is used to fetch block info
