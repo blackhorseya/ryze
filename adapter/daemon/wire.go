@@ -7,8 +7,8 @@ package daemon
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
 )
@@ -29,6 +29,6 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		otelx.SetupSDK,
 
 		// infra layer
-		grpcx.NewEventBus,
+		eventx.NewInMemoryEventBus,
 	))
 }

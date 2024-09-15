@@ -9,8 +9,8 @@ package daemon
 import (
 	"github.com/blackhorseya/ryze/app/infra/configx"
 	"github.com/blackhorseya/ryze/app/infra/otelx"
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
+	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 )
 
@@ -34,7 +34,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		A:     application,
 		OTelx: sdk,
 	}
-	eventBus := grpcx.NewEventBus()
+	eventBus := eventx.NewInMemoryEventBus()
 	server, cleanup2, err := NewServer(injector, eventBus)
 	if err != nil {
 		cleanup()
