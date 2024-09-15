@@ -6,6 +6,7 @@ import (
 	"io"
 
 	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/app/usecase/event"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
@@ -53,12 +54,12 @@ func (i *impl) Start(c context.Context) error {
 	go i.listenForBlockEvents(ctx, blockScanner)
 
 	// subscribe found block handler
-	// err = i.bus.Subscribe(event.NewFoundBlockHandler())
-	// if err != nil {
-	// 	ctx.Error("subscribe found block handler", zap.Error(err))
-	// 	return err
-	// }
-	// ctx.Info("subscribed to block events")
+	err = i.bus.Subscribe(event.NewFoundBlockHandler())
+	if err != nil {
+		ctx.Error("subscribe found block handler", zap.Error(err))
+		return err
+	}
+	ctx.Info("subscribed to block events")
 
 	return nil
 }
