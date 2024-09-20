@@ -102,7 +102,7 @@ deploy-app-scan: ## deploy app scan
   --values ./deployments/$(DEPLOY_TO)/scan.yaml
 
 .PHONY: deploy-storage
-deploy-storage: ## deploy storage
+deploy-storage: deploy-storage-mongodb deploy-storage-postgresql ## deploy storage
 
 .PHONY: deploy-storage-mongodb
 deploy-storage-mongodb: ## deploy mongodb
@@ -110,3 +110,10 @@ deploy-storage-mongodb: ## deploy mongodb
   --install --namespace $(PROJECT_NAME) \
   --history-max 3 \
   --values ./deployments/$(DEPLOY_TO)/mongodb.yaml
+
+.PHONY: deploy-storage-postgresql
+deploy-storage-postgresql: ## deploy postgresql
+	@helm upgrade $(DEPLOY_TO)-$(PROJECT_NAME)-postgresql bitnami/postgresql \
+  --install --namespace $(PROJECT_NAME) \
+  --history-max 3 \
+  --values ./deployments/$(DEPLOY_TO)/postgresql.yaml
