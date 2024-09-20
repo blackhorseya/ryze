@@ -104,23 +104,9 @@ deploy-app-scan: ## deploy app scan
 .PHONY: deploy-storage
 deploy-storage: ## deploy storage
 
-#.PHONY: deploy-mariadb
-#deploy-mariadb: ## deploy mariadb
-#	@helm upgrade $(DEPLOY_TO)-godine-mariadb bitnami/mariadb \
-#  --install --namespace $(PROJECT_NAME) \
-#  --history-max 3 \
-#  --values ./deployments/$(DEPLOY_TO)/godine-mariadb.yaml
-#
-#.PHONY: deploy-mongodb
-#deploy-mongodb: ## deploy mongodb
-#	@helm upgrade $(DEPLOY_TO)-godine-mongodb bitnami/mongodb \
-#  --install --namespace $(PROJECT_NAME) \
-#  --history-max 3 \
-#  --values ./deployments/$(DEPLOY_TO)/godine-mongodb.yaml
-#
-#.PHONY: deploy-redis
-#deploy-redis: ## deploy redis
-#	@helm upgrade $(DEPLOY_TO)-godine-redis bitnami/redis \
-#  --install --namespace $(PROJECT_NAME) \
-#  --history-max 3 \
-#  --values ./deployments/$(DEPLOY_TO)/godine-redis.yaml
+.PHONY: deploy-storage-mongodb
+deploy-storage-mongodb: ## deploy mongodb
+	@helm upgrade $(DEPLOY_TO)-$(PROJECT_NAME)-mongodb bitnami/mongodb \
+  --install --namespace $(PROJECT_NAME) \
+  --history-max 3 \
+  --values ./deployments/$(DEPLOY_TO)/mongodb.yaml
