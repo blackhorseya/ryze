@@ -88,22 +88,22 @@ docker-push: ## push docker image
 DEPLOY_TO := prod
 HELM_REPO_NAME := blackhorseya
 
-#.PHONY: deploy
-#deploy: deploy-app deploy-storage ## deploy all
-#
-#.PHONY: deploy-app
-#deploy-app: deploy-restaurant-restful ## deploy app
-#
-#.PHONY: deploy-restaurant-restful
-#deploy-restaurant-restful: ## deploy restaurant
-#	@helm upgrade $(DEPLOY_TO)-godine-restaurant-restful $(HELM_REPO_NAME)/godine \
-#  --install --namespace $(PROJECT_NAME) \
-#  --history-max 3 \
-#  --values ./deployments/$(DEPLOY_TO)/godine-restaurant-restful.yaml
-#
-#.PHONY: deploy-storage
-#deploy-storage: deploy-mariadb deploy-mongodb deploy-redis ## deploy storage
-#
+.PHONY: deploy
+deploy: deploy-app deploy-storage ## deploy all
+
+.PHONY: deploy-app
+deploy-app: deploy-app-scan ## deploy app
+
+.PHONY: deploy-app-scan
+deploy-app-scan: ## deploy app scan
+	@helm upgrade $(DEPLOY_TO)-$(PROJECT_NAME)-scan $(HELM_REPO_NAME)/$(PROJECT_NAME) \
+  --install --namespace $(PROJECT_NAME) \
+  --history-max 3 \
+  --values ./deployments/$(DEPLOY_TO)/scan.yaml
+
+.PHONY: deploy-storage
+deploy-storage: ## deploy storage
+
 #.PHONY: deploy-mariadb
 #deploy-mariadb: ## deploy mariadb
 #	@helm upgrade $(DEPLOY_TO)-godine-mariadb bitnami/mariadb \
