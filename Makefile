@@ -92,10 +92,17 @@ HELM_REPO_NAME := blackhorseya
 deploy: deploy-app deploy-storage ## deploy all
 
 .PHONY: deploy-app
-deploy-app: deploy-app-scan ## deploy app
+deploy-app: deploy-app-daemon ## deploy app
 
-.PHONY: deploy-app-scan
-deploy-app-scan: ## deploy app scan
+.PHONY: deploy-app-daemon
+deploy-app-daemon: ## deploy app daemon
+	@helm upgrade $(DEPLOY_TO)-$(PROJECT_NAME)-daemon $(HELM_REPO_NAME)/$(PROJECT_NAME) \
+  --install --namespace $(PROJECT_NAME) \
+  --history-max 3 \
+  --values ./deployments/$(DEPLOY_TO)/daemon.yaml
+
+.PHONY: deploy-cmd-scan
+deploy-cmd-scan: ## deploy app scan
 	@helm upgrade $(DEPLOY_TO)-$(PROJECT_NAME)-scan $(HELM_REPO_NAME)/$(PROJECT_NAME) \
   --install --namespace $(PROJECT_NAME) \
   --history-max 3 \
