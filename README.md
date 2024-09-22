@@ -196,16 +196,11 @@ graph TD
 
     subgraph Persistence
         F1[PostgreSQL]
-        F2[Redis]
+        F3[MongoDB]
     end
 
-    B2 --> F1
     C2 --> F1
-    D2 --> F1
-    B2 --> F2
-    C2 --> F2
-    D2 --> F2
-    E1 --> F2
+    B2 --> F3
 
     subgraph Blockchain Network
         G1[TON Blockchain]
@@ -215,12 +210,6 @@ graph TD
     C1 --> G1
     D1 --> G1
     E1 --> G1
-%% Define relationships between contexts
-    B1 -->|Contains| C1
-    C1 -->|Updates| D1
-    E1 -->|Provides stats to| B1
-    E1 -->|Provides stats to| C1
-    E1 -->|Provides stats to| D1
 ```
 
 - **BlockContext and TransactionContext**:
