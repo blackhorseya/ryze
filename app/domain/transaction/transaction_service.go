@@ -34,8 +34,7 @@ func NewTransactionService(client *tonx.Client, transactions repo.ITransactionRe
 	}
 }
 
-func (i *txService) ProcessBlockTransactions(
-	stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
+func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
 	c := stream.Context()
 	next, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
 	defer span.End()
@@ -73,23 +72,18 @@ func (i *txService) ProcessBlockTransactions(
 }
 
 // FetchTransactionsByBlock is used to fetch transactions by block
-func (i *txService) FetchTransactionsByBlock(
-	c context.Context,
-	block *model.Block,
-) (chan *txM.Transaction, error) {
+func (i *txService) FetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
 	txChan := make(chan *txM.Transaction)
 
 	go func() {
 		defer close(txChan)
 
-		next, span := otelx.Tracer.Start(c, "transaction.biz.FetchTransactionsByBlock")
+		ctx, span := contextx.StartSpan(c, "transaction.biz.FetchTransactionsByBlock")
 		defer span.End()
-
-		ctx := contextx.WithContext(c)
 
 		api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
 		api.SetTrustedBlockFromConfig(i.client.Config)
-		stickyContext := api.Client().StickyContext(next)
+		stickyContext := api.Client().StickyContext(ctx)
 
 		var fetchedIDs []ton.TransactionShortInfo
 		var after *ton.TransactionID3
