@@ -3,6 +3,8 @@ package contextx
 import (
 	"context"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
 )
 
@@ -31,4 +33,11 @@ func WithContext(c context.Context) Contextx {
 		Context: c,
 		Logger:  zap.L(),
 	}
+}
+
+// StartSpan starts a new span with the given name and options.
+func StartSpan(c context.Context, spanName string, opts ...trace.SpanStartOption) (Contextx, trace.Span) {
+	tracer := otel.Tracer("contextx")
+	c, span := tracer.Start(c, spanName, opts...)
+	return WithContext(c), span
 }
