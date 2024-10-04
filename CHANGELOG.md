@@ -1,3 +1,13 @@
+## 0.5.2 (2024-10-04)
+
+### Feat
+
+- enhance gRPC call reliability with timeout and retries
+- refactor deploy-app targets and consolidate deploy commands
+- refactor Makefile for PostgreSQL deployment with Helm
+- update service configurations in Docker Compose files (#76)
+- update service configurations in Docker Compose files
+
 ## 0.5.1 (2024-09-15)
 
 ### Refactor
