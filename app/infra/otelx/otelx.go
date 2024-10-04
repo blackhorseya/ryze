@@ -33,7 +33,7 @@ type SDK struct {
 
 // SetupSDK creates a new OpenTelemetry SDK.
 func SetupSDK(app *configx.Application) (*SDK, func(), error) {
-	ctx := contextx.Background()
+	ctx := contextx.WithContext(context.Background())
 
 	instance := &SDK{
 		target:      app.OTel.Target,
