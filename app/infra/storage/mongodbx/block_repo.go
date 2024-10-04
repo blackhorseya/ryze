@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -35,13 +34,11 @@ func NewBlockRepo(rw *mongo.Client) (repo.IBlockRepo, error) {
 }
 
 func (i *mongodbBlockRepo) GetByID(c context.Context, id string) (item *model.Block, err error) {
-	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.GetByID")
+	ctx, span := contextx.StartSpan(c, "storage.mongodbx.block_repo.GetByID")
 	defer span.End()
 
-	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
-
-	ctx := contextx.WithContext(c)
 
 	var got blockDocument
 	filter := bson.M{"metadata._id": id}
@@ -55,13 +52,11 @@ func (i *mongodbBlockRepo) GetByID(c context.Context, id string) (item *model.Bl
 }
 
 func (i *mongodbBlockRepo) Create(c context.Context, item *model.Block) (err error) {
-	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.Create")
+	ctx, span := contextx.StartSpan(c, "storage.mongodbx.block_repo.Create")
 	defer span.End()
 
-	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
-
-	ctx := contextx.WithContext(c)
 
 	doc := newBlockDocument(item)
 	_, err = i.coll.InsertOne(timeout, doc)

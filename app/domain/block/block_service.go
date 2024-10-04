@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -39,18 +38,15 @@ func NewBlockService(
 
 //nolint:gocognit // ignore cognitive complexity
 func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_ScanBlockServer) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "block.biz.ScanBlock")
+	ctx, span := contextx.StartSpan(stream.Context(), "block.biz.ScanBlock")
 	defer span.End()
 
 	// 初始化 TON API 客戶端
 	api := ton.NewAPIClient(i.tonClient, ton.ProofCheckPolicyFast).WithRetry()
 	api.SetTrustedBlockFromConfig(i.tonClient.Config)
 
-	ctx := contextx.WithContext(c)
-
 	// 獲取主鏈資訊
-	master, err := api.GetMasterchainInfo(next)
+	master, err := api.GetMasterchainInfo(ctx)
 	if err != nil {
 		ctx.Error("failed to get master-chain info", zap.Error(err))
 		return err
@@ -58,7 +54,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	ctx.Info("master proofs chain successfully verified, all data is now safe and trusted!")
 
 	// 綁定單一伺服器的上下文以保持一致性
-	stickyContext := api.Client().StickyContext(next)
+	stickyContext := api.Client().StickyContext(ctx)
 
 	// 儲存分片的最後序列號，防止重複處理
 	shardLastSeqno := map[string]uint32{}
@@ -78,7 +74,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 	// 持續監聽所有分片上的新區塊
 	for {
 		// 獲取每個 workchain 和 shard 上的新區塊
-		currentShards, err2 := api.GetBlockShardsInfo(next, master)
+		currentShards, err2 := api.GetBlockShardsInfo(ctx, master)
 		if errors.Is(err2, context.Canceled) {
 			ctx.Info("scan block canceled")
 			return nil
@@ -120,7 +116,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 
 		// 更新主鏈區塊以繼續監控新地分片區塊
 		nextSeqNo := master.SeqNo + 1
-		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(next, master.Workchain, master.Shard, nextSeqNo)
+		master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(ctx, master.Workchain, master.Shard, nextSeqNo)
 		if err2 != nil && !errors.Is(err2, context.Canceled) {
 			ctx.Error("failed to lookup next block", zap.Uint32("seq_no", nextSeqNo), zap.Error(err2))
 			return err2
@@ -129,11 +125,8 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 }
 
 func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.Block]) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "block.biz.FoundNewBlock")
+	ctx, span := contextx.StartSpan(stream.Context(), "block.biz.FoundNewBlock")
 	defer span.End()
-
-	ctx := contextx.WithContext(c)
 
 	for {
 		newBlock, err := stream.Recv()
@@ -145,13 +138,13 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 			continue
 		}
 
-		err = i.FetchBlockInfo(next, newBlock)
+		err = i.FetchBlockInfo(ctx, newBlock)
 		if err != nil {
 			ctx.Error("failed to fetch block info", zap.Error(err))
 			continue
 		}
 
-		err = i.blocks.Create(next, newBlock)
+		err = i.blocks.Create(ctx, newBlock)
 		if err != nil {
 			ctx.Error("failed to create block", zap.Error(err))
 			continue
@@ -169,16 +162,14 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 
 // FetchBlockInfo is used to fetch block info
 func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error) {
-	next, span := otelx.Tracer.Start(c, "block.biz.FetchBlockInfo")
+	ctx, span := contextx.StartSpan(c, "block.biz.FetchBlockInfo")
 	defer span.End()
-
-	ctx := contextx.WithContext(c)
 
 	// 初始化 TON API 客戶端
 	api := ton.NewAPIClient(i.tonClient).WithRetry()
 
 	// 查找區塊
-	blockID, err := api.LookupBlock(next, block.Workchain, block.Shard, block.SeqNo)
+	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
 	if err != nil {
 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
 		span.RecordError(err)
@@ -186,7 +177,7 @@ func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error)
 	}
 
 	// 獲取區塊資訊
-	blockData, err := api.GetBlockData(next, blockID)
+	blockData, err := api.GetBlockData(ctx, blockID)
 	if err != nil {
 		ctx.Error("failed to get block data", zap.Error(err))
 		span.RecordError(err)
@@ -200,12 +191,10 @@ func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error)
 }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
-	next, span := otelx.Tracer.Start(c, "block.biz.GetBlock")
+	ctx, span := contextx.StartSpan(c, "block.biz.GetBlock")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	block, err := i.blocks.GetByID(next, req.BlockId)
+	block, err := i.blocks.GetByID(ctx, req.BlockId)
 	if err != nil {
 		ctx.Error("failed to get block", zap.Error(err))
 		return nil, err
