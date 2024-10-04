@@ -1,3 +1,23 @@
+## 0.5.3 (2024-10-04)
+
+### Feat
+
+- implement OpenTelemetry tracing functionality
+- consolidate analytics proto files in biz and model
+
+### Refactor
+
+- refactor error handling in block lookup process
+- refactor context management by removing OpenTelemetry usage
+- refactor context management for improved clarity
+- enhance context management in initialization process
+- refactor context management and error handling
+- refactor context management for block services
+- refactor context handling in tracing methods
+- eliminate Restful interface from adapterx package
+- refactor context handling for improved consistency (#77)
+- refactor context handling for improved consistency
+
 ## 0.5.2 (2024-10-04)
 
 ### Feat
