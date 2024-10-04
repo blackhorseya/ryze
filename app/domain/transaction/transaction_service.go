@@ -6,7 +6,6 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
@@ -35,11 +34,8 @@ func NewTransactionService(client *tonx.Client, transactions repo.ITransactionRe
 }
 
 func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[model.Block, txM.Transaction]) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "transaction.biz.ProcessBlockTransactions")
+	ctx, span := contextx.StartSpan(stream.Context(), "transaction.biz.ProcessBlockTransactions")
 	defer span.End()
-
-	ctx := contextx.WithContext(c)
 
 	for {
 		block, err := stream.Recv()
@@ -52,13 +48,13 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 		}
 		ctx.Debug("receive block", zap.Any("block_id", block.Id))
 
-		list, err := i.FetchTransactionsByBlock(next, block)
+		list, err := i.FetchTransactionsByBlock(ctx, block)
 		if err != nil {
 			ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
 			return err
 		}
 		for tx := range list {
-			if err = i.transactions.Create(next, tx); err != nil {
+			if err = i.transactions.Create(ctx, tx); err != nil {
 				ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
 				return err
 			}

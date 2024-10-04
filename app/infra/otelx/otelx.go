@@ -20,11 +20,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var (
-	// Tracer is the global tracer.
-	Tracer = otel.Tracer("ryze")
-)
-
 // SDK is the OpenTelemetry SDK.
 type SDK struct {
 	target      string
@@ -44,9 +39,6 @@ func SetupSDK(app *configx.Application) (*SDK, func(), error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to setup OpenTelemetry SDK: %w", err)
 	}
-
-	// Set global tracer and meter.
-	Tracer = otel.Tracer(app.Name)
 
 	return instance, clean, nil
 }

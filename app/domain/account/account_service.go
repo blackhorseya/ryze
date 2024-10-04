@@ -3,7 +3,6 @@ package account
 import (
 	"context"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/account/biz"
 	"github.com/blackhorseya/ryze/entity/domain/account/model"
@@ -25,13 +24,11 @@ func NewAccountService(client *tonx.Client) biz.AccountServiceServer {
 }
 
 func (i *accountService) GetAccount(c context.Context, req *biz.GetAccountRequest) (*model.Account, error) {
-	next, span := otelx.Tracer.Start(c, "account.biz.GetAccount")
+	ctx, span := contextx.StartSpan(c, "account.biz.GetAccount")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
 	api := ton.NewAPIClient(i.client).WithRetry()
-	master, err := api.CurrentMasterchainInfo(next)
+	master, err := api.CurrentMasterchainInfo(ctx)
 	if err != nil {
 		ctx.Error("failed to get masterchain info", zap.Error(err))
 		return nil, err
@@ -45,7 +42,7 @@ func (i *accountService) GetAccount(c context.Context, req *biz.GetAccountReques
 
 	// we use WaitForBlock to make sure block is ready,
 	// it is optional but escapes us from liteserver block not ready errors
-	res, err := api.WaitForBlock(master.SeqNo).GetAccount(next, master, addr)
+	res, err := api.WaitForBlock(master.SeqNo).GetAccount(ctx, master, addr)
 	if err != nil {
 		ctx.Error("failed to get account", zap.Error(err), zap.Any("address", addr))
 		return nil, err

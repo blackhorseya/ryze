@@ -3,7 +3,6 @@ package network
 import (
 	"context"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/app/infra/tonx"
 	"github.com/blackhorseya/ryze/entity/domain/network/biz"
 	"github.com/blackhorseya/ryze/entity/domain/network/model"
@@ -25,14 +24,11 @@ func NewNetworkService(client *tonx.Client) biz.NetworkServiceServer {
 }
 
 func (i *networkService) GetNetworkStats(c context.Context, empty *emptypb.Empty) (*model.NetworkStats, error) {
-	next, span := otelx.Tracer.Start(c, "network.biz.GetNetworkStats")
+	ctx, span := contextx.StartSpan(c, "network.biz.GetNetworkStats")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
 	api := ton.NewAPIClient(i.client).WithRetry()
-
-	stats, err := api.CurrentMasterchainInfo(next)
+	stats, err := api.CurrentMasterchainInfo(ctx)
 	if err != nil {
 		ctx.Error("failed to get current masterchain info", zap.Error(err))
 		return nil, err
