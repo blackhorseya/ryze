@@ -215,13 +215,10 @@ func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Blo
 }
 
 func (i *impl) ListBlocks(req *biz.ListBlocksRequest, stream grpc.ServerStreamingServer[model.Block]) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "block.biz.ListBlocks")
+	ctx, span := contextx.StartSpan(stream.Context(), "block.biz.ListBlocks")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	items, total, err := i.blocks.List(next, repo.ListCondition{
+	items, total, err := i.blocks.List(ctx, repo.ListCondition{
 		Limit: req.PageSize,
 		Skip:  (req.Page - 1) * req.PageSize,
 	})

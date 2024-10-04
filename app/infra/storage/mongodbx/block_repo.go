@@ -77,13 +77,11 @@ func (i *mongodbBlockRepo) List(
 	c context.Context,
 	cond repo.ListCondition,
 ) (items []*model.Block, total int, err error) {
-	_, span := otelx.Tracer.Start(c, "block.biz.block.mongodbBlockRepo.List")
+	ctx, span := contextx.StartSpan(c, "storage.mongodbx.block_repo.List")
 	defer span.End()
 
-	timeout, cancelFunc := context.WithTimeout(c, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
-
-	ctx := contextx.WithContext(c)
 
 	filter := bson.M{}
 
