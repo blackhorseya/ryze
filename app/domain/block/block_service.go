@@ -15,7 +15,9 @@ import (
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -134,8 +136,13 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 
 	for {
 		newBlock, err := stream.Recv()
-		if errors.Is(err, io.EOF) || errors.Is(err, context.Canceled) {
-			break
+		st, ok := status.FromError(err)
+		if ok && st.Code() == codes.Canceled {
+			ctx.Info("found new block canceled")
+			return nil
+		}
+		if errors.Is(err, io.EOF) {
+			return nil
 		}
 		if err != nil {
 			ctx.Error("failed to receive new block", zap.Error(err))
@@ -143,6 +150,10 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 		}
 
 		err = i.FetchBlockInfo(ctx, newBlock)
+		if errors.Is(err, context.Canceled) {
+			ctx.Info("found new block canceled")
+			return nil
+		}
 		if err != nil {
 			ctx.Error("failed to fetch block info", zap.Error(err))
 			continue
@@ -160,8 +171,6 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 			continue
 		}
 	}
-
-	return nil
 }
 
 // FetchBlockInfo is used to fetch block info
@@ -174,17 +183,15 @@ func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error)
 
 	// 查找區塊
 	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
-		span.RecordError(err)
 		return err
 	}
 
 	// 獲取區塊資訊
 	blockData, err := api.GetBlockData(ctx, blockID)
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		ctx.Error("failed to get block data", zap.Error(err))
-		span.RecordError(err)
 		return err
 	}
 
