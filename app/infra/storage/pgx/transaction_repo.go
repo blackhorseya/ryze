@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/infra/otelx"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -29,12 +28,10 @@ func NewTransactionRepo(rw *gorm.DB) (repo.ITransactionRepo, error) {
 }
 
 func (i *transactionRepo) Create(c context.Context, item *model.Transaction) (err error) {
-	next, span := otelx.Tracer.Start(c, "pgx.repo.transaction.Create")
+	ctx, span := contextx.StartSpan(c, "storage.pgx.transaction_repo.Create")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
 
 	err = i.rw.WithContext(timeout).Create(item).Error
@@ -48,19 +45,17 @@ func (i *transactionRepo) Create(c context.Context, item *model.Transaction) (er
 }
 
 func (i *transactionRepo) GetByID(c context.Context, id string) (item *model.Transaction, err error) {
-	next, span := otelx.Tracer.Start(c, "pgx.repo.transaction.GetByID")
+	ctx, span := contextx.StartSpan(c, "storage.pgx.transaction_repo.GetByID")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
 
 	err = i.rw.WithContext(timeout).Where("id = ?", id).First(&item).Error
 	if err != nil {
 		ctx.Error("get transaction by id from gormDB failed", zap.Error(err), zap.String("id", id))
 		span.RecordError(err)
-		return nil, err
+		return nil, fmt.Errorf("get transaction by id from gormDB failed: %w", err)
 	}
 
 	return item, nil
@@ -70,12 +65,10 @@ func (i *transactionRepo) List(
 	c context.Context,
 	cond repo.ListTransactionsCondition,
 ) (items []*model.Transaction, total int, err error) {
-	next, span := otelx.Tracer.Start(c, "pgx.repo.transaction.List")
+	ctx, span := contextx.StartSpan(c, "storage.pgx.transaction_repo.List")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
 
 	query := i.rw.WithContext(timeout).Model(&model.Transaction{})
@@ -109,12 +102,10 @@ func (i *transactionRepo) ListByAccount(
 	accountID string,
 	cond repo.ListTransactionsCondition,
 ) (items []*model.Transaction, total int, err error) {
-	next, span := otelx.Tracer.Start(c, "pgx.repo.transaction.ListByAccount")
+	ctx, span := contextx.StartSpan(c, "storage.pgx.transaction_repo.ListByAccount")
 	defer span.End()
 
-	ctx := contextx.WithContext(c)
-
-	timeout, cancelFunc := context.WithTimeout(next, defaultTimeout)
+	timeout, cancelFunc := context.WithTimeout(ctx, defaultTimeout)
 	defer cancelFunc()
 
 	query := i.rw.WithContext(timeout).
@@ -139,7 +130,7 @@ func (i *transactionRepo) ListByAccount(
 	if err != nil {
 		ctx.Error("list transactions by account from gormDB failed", zap.Error(err), zap.String("account_id", accountID))
 		span.RecordError(err)
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("list transactions by account from gormDB failed: %w", err)
 	}
 
 	return items, int(count), nil

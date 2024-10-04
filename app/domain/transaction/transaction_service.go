@@ -140,17 +140,14 @@ func (i *txService) ListTransactions(
 	req *txB.ListTransactionRequest,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactions")
+	ctx, span := contextx.StartSpan(stream.Context(), "transaction.biz.ListTransactions")
 	defer span.End()
-
-	ctx := contextx.WithContext(c)
 
 	cond := repo.ListTransactionsCondition{
 		Limit:  int(req.PageSize),
 		Offset: int((req.Page - 1) * req.PageSize),
 	}
-	items, total, err := i.transactions.List(next, cond)
+	items, total, err := i.transactions.List(ctx, cond)
 	if err != nil {
 		ctx.Error("list transactions error", zap.Error(err), zap.Any("cond", &cond))
 		return err
@@ -171,17 +168,14 @@ func (i *txService) ListTransactionsByAccount(
 	req *txB.ListTransactionsByAccountRequest,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
-	c := stream.Context()
-	next, span := otelx.Tracer.Start(c, "transaction.biz.ListTransactionsByAccount")
+	ctx, span := contextx.StartSpan(stream.Context(), "transaction.biz.ListTransactionsByAccount")
 	defer span.End()
-
-	ctx := contextx.WithContext(c)
 
 	cond := repo.ListTransactionsCondition{
 		Limit:  int(req.PageSize),
 		Offset: int((req.Page - 1) * req.PageSize),
 	}
-	items, total, err := i.transactions.ListByAccount(next, req.AccountId, cond)
+	items, total, err := i.transactions.ListByAccount(ctx, req.AccountId, cond)
 	if err != nil {
 		ctx.Error("list transactions by account error", zap.Error(err))
 		return err
