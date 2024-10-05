@@ -14,8 +14,10 @@ import (
 )
 
 type foundBlockHandler struct {
-	blockClient blockB.BlockServiceClient
-	txClient    txB.TransactionServiceClient
+	blockClient  blockB.BlockServiceClient
+	txClient     txB.TransactionServiceClient
+	blockStream  blockB.BlockService_FoundNewBlockClient               // 儲存 block 連線
+	transactions txB.TransactionService_ProcessBlockTransactionsClient // 儲存 transaction 連線
 }
 
 // NewFoundBlockHandler creates a new-found block handler.
@@ -29,55 +31,65 @@ func NewFoundBlockHandler(
 	}
 }
 
+// setupConnections 初始化連線
+func (i *foundBlockHandler) setupConnections(ctx context.Context) error {
+	var err error
+
+	if i.blockStream == nil {
+		i.blockStream, err = i.blockClient.FoundNewBlock(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	if i.transactions == nil {
+		i.transactions, err = i.txClient.ProcessBlockTransactions(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (i *foundBlockHandler) Handle(event eventx.DomainEvent) {
-	ctx := contextx.Background()
+	ctx := contextx.WithContext(context.Background())
 
 	blockEvent, ok := event.(*model.FoundBlockEvent)
 	if !ok {
 		ctx.Error("failed to cast event to FoundBlockEvent")
 		return
 	}
-
 	block := blockEvent.Block
 
-	// Call block service to handle the block via block client
-	blockStream, err := i.blockClient.FoundNewBlock(ctx)
-	if err != nil {
-		ctx.Error("failed to call block service", zap.Error(err))
+	// 初始化連線
+	if err := i.setupConnections(ctx); err != nil {
+		ctx.Error("failed to setup connections", zap.Error(err))
 		return
 	}
-	err = blockStream.Send(block)
+
+	// Send block to block service
+	err := i.blockStream.Send(block)
 	if err != nil {
 		ctx.Error("failed to send block to block service", zap.Error(err))
 		return
 	}
-	_ = blockStream.CloseSend()
-
-	// Wait for block service to receive the block
-	block, err = blockStream.Recv()
+	block, err = i.blockStream.Recv()
 	if err != nil {
 		ctx.Error("failed to receive response from block service", zap.Error(err))
 		return
 	}
-
 	ctx.Info("found block", zap.String("block", block.String()))
 
-	// Call transaction service to handle the block via transaction client
-	transactions, err := i.txClient.ProcessBlockTransactions(ctx)
-	if err != nil {
-		ctx.Error("failed to call transaction service", zap.Error(err))
-		return
-	}
-	err = transactions.Send(block)
+	// Send block to transaction service
+	err = i.transactions.Send(block)
 	if err != nil {
 		ctx.Error("failed to send block to transaction service", zap.Error(err))
 		return
 	}
-	_ = transactions.CloseSend()
 
-	// Wait for transaction service to receive the block
 	for {
-		transaction, err2 := transactions.Recv()
+		transaction, err2 := i.transactions.Recv()
 		if errors.Is(err2, io.EOF) || errors.Is(err2, context.Canceled) {
 			break
 		}
