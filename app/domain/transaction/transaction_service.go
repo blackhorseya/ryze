@@ -163,8 +163,9 @@ func (i *txService) ProcessBlockTransactionsNonStream(
 
 // fetchTransactionsByBlock is used to fetch transactions by block
 //
-//nolint:gocognit // ignore this
+//nolint:gocognit,unparam // ignore this
 func (i *txService) fetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
+	// TODO: 2024/10/5|sean|refactor me
 	txChan := make(chan *txM.Transaction)
 
 	go func() {
