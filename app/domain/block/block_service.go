@@ -249,14 +249,14 @@ func (i *impl) fetchBlockInfo(c context.Context, block *model.Block) (err error)
 
 	// 查找區塊
 	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
-	if err != nil && !errors.Is(err, context.Canceled) {
+	if err != nil {
 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
 		return err
 	}
 
 	// 獲取區塊資訊
 	blockData, err := api.GetBlockData(ctx, blockID)
-	if err != nil && !errors.Is(err, context.Canceled) {
+	if err != nil {
 		ctx.Error("failed to get block data", zap.Error(err))
 		return err
 	}
