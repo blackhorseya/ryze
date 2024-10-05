@@ -16,7 +16,9 @@ import (
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type txService struct {
@@ -39,6 +41,10 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 
 	for {
 		block, err := stream.Recv()
+		st, ok := status.FromError(err)
+		if ok && st.Code() == codes.Canceled {
+			return nil
+		}
 		if errors.Is(err, io.EOF) {
 			return nil
 		}
@@ -68,6 +74,8 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 }
 
 // FetchTransactionsByBlock is used to fetch transactions by block
+//
+//nolint:gocognit // ignore this
 func (i *txService) FetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
 	txChan := make(chan *txM.Transaction)
 
@@ -87,12 +95,18 @@ func (i *txService) FetchTransactionsByBlock(c context.Context, block *model.Blo
 
 		for more {
 			blockInfo, err := api.LookupBlock(stickyContext, block.Workchain, block.Shard, block.SeqNo)
+			if errors.Is(err, context.Canceled) {
+				return
+			}
 			if err != nil {
 				ctx.Error("lookup block error", zap.Error(err), zap.Any("block", block))
 				return
 			}
 
 			fetchedIDs, more, err = api.GetBlockTransactionsV2(stickyContext, blockInfo, 100, after)
+			if errors.Is(err, context.Canceled) {
+				return
+			}
 			if err != nil {
 				ctx.Error("get block transactions error", zap.Error(err), zap.Any("blockInfo", blockInfo))
 				return
