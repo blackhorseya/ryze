@@ -3,6 +3,7 @@ package block
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strconv"
 	"time"
@@ -149,7 +150,7 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 			continue
 		}
 
-		err = i.FetchBlockInfo(ctx, newBlock)
+		err = i.fetchBlockInfo(ctx, newBlock)
 		if errors.Is(err, context.Canceled) {
 			ctx.Info("found new block canceled")
 			return nil
@@ -171,34 +172,6 @@ func (i *impl) FoundNewBlock(stream grpc.BidiStreamingServer[model.Block, model.
 			continue
 		}
 	}
-}
-
-// FetchBlockInfo is used to fetch block info
-func (i *impl) FetchBlockInfo(c context.Context, block *model.Block) (err error) {
-	ctx, span := contextx.StartSpan(c, "block.biz.FetchBlockInfo")
-	defer span.End()
-
-	// 初始化 TON API 客戶端
-	api := ton.NewAPIClient(i.tonClient).WithRetry()
-
-	// 查找區塊
-	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
-	if err != nil && !errors.Is(err, context.Canceled) {
-		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
-		return err
-	}
-
-	// 獲取區塊資訊
-	blockData, err := api.GetBlockData(ctx, blockID)
-	if err != nil && !errors.Is(err, context.Canceled) {
-		ctx.Error("failed to get block data", zap.Error(err))
-		return err
-	}
-
-	// fill block info
-	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
-
-	return nil
 }
 
 func (i *impl) GetBlock(c context.Context, req *biz.GetBlockRequest) (*model.Block, error) {
@@ -242,6 +215,54 @@ func (i *impl) ListBlocks(req *biz.ListBlocksRequest, stream grpc.ServerStreamin
 }
 
 func (i *impl) FoundNewBlockNonStream(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
-	// TODO: 2024/10/5|sean|implement me
-	panic("implement me")
+	ctx, span := contextx.StartSpan(c, "block.biz.FoundNewBlockNonStream")
+	defer span.End()
+
+	block, err := model.NewBlock(req.Workchain, req.Shard, req.SeqNo)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err), zap.Any("request", &req))
+		return nil, err
+	}
+
+	err = i.fetchBlockInfo(ctx, block)
+	if err != nil {
+		ctx.Error("failed to fetch block info", zap.Error(err), zap.Any("block", &block))
+		return nil, fmt.Errorf("failed to fetch block info: %w", err)
+	}
+
+	err = i.blocks.Create(ctx, block)
+	if err != nil {
+		ctx.Error("failed to create block", zap.Error(err), zap.Any("block", &block))
+		return nil, fmt.Errorf("failed to create block: %w", err)
+	}
+
+	return block, nil
+}
+
+// fetchBlockInfo is used to fetch block info
+func (i *impl) fetchBlockInfo(c context.Context, block *model.Block) (err error) {
+	ctx, span := contextx.StartSpan(c, "block.biz.fetchBlockInfo")
+	defer span.End()
+
+	// 初始化 TON API 客戶端
+	api := ton.NewAPIClient(i.tonClient).WithRetry()
+
+	// 查找區塊
+	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
+	if err != nil && !errors.Is(err, context.Canceled) {
+		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
+		return err
+	}
+
+	// 獲取區塊資訊
+	blockData, err := api.GetBlockData(ctx, blockID)
+	if err != nil && !errors.Is(err, context.Canceled) {
+		ctx.Error("failed to get block data", zap.Error(err))
+		return err
+	}
+
+	// fill block info
+	block.Timestamp = timestamppb.New(time.Unix(int64(blockData.BlockInfo.GenUtime), 0))
+
+	return nil
 }
