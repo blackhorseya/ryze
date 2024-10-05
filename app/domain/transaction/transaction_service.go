@@ -54,7 +54,7 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 		}
 		ctx.Debug("receive block", zap.Any("block_id", block.Id))
 
-		list, err := i.FetchTransactionsByBlock(ctx, block)
+		list, err := i.fetchTransactionsByBlock(ctx, block)
 		if err != nil {
 			ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
 			return err
@@ -71,73 +71,6 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 			}
 		}
 	}
-}
-
-// FetchTransactionsByBlock is used to fetch transactions by block
-//
-//nolint:gocognit // ignore this
-func (i *txService) FetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
-	txChan := make(chan *txM.Transaction)
-
-	go func() {
-		defer close(txChan)
-
-		ctx, span := contextx.StartSpan(c, "transaction.biz.FetchTransactionsByBlock")
-		defer span.End()
-
-		api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
-		api.SetTrustedBlockFromConfig(i.client.Config)
-		stickyContext := api.Client().StickyContext(ctx)
-
-		var fetchedIDs []ton.TransactionShortInfo
-		var after *ton.TransactionID3
-		var more = true
-
-		for more {
-			blockInfo, err := api.LookupBlock(stickyContext, block.Workchain, block.Shard, block.SeqNo)
-			if errors.Is(err, context.Canceled) {
-				return
-			}
-			if err != nil {
-				ctx.Error("lookup block error", zap.Error(err), zap.Any("block", block))
-				return
-			}
-
-			fetchedIDs, more, err = api.GetBlockTransactionsV2(stickyContext, blockInfo, 100, after)
-			if errors.Is(err, context.Canceled) {
-				return
-			}
-			if err != nil {
-				ctx.Error("get block transactions error", zap.Error(err), zap.Any("blockInfo", blockInfo))
-				return
-			}
-
-			if more {
-				after = fetchedIDs[len(fetchedIDs)-1].ID3()
-			}
-
-			for _, id := range fetchedIDs {
-				tx, err2 := api.GetTransaction(
-					stickyContext,
-					blockInfo,
-					address.NewAddress(0, byte(blockInfo.Workchain), id.Account),
-					id.LT,
-				)
-				if err2 != nil {
-					ctx.Error("get transaction error", zap.Error(err2), zap.Any("id", id))
-					return
-				}
-				ctx.Debug("get transaction", zap.String("tx_string", tx.String()))
-
-				got := txM.NewTransactionFromTon(tx)
-				got.BlockId = block.Id
-				got.Timestamp = block.Timestamp
-				txChan <- got
-			}
-		}
-	}()
-
-	return txChan, nil
 }
 
 func (i *txService) ListTransactions(
@@ -200,6 +133,97 @@ func (i *txService) ProcessBlockTransactionsNonStream(
 	block *model.Block,
 	stream grpc.ServerStreamingServer[txM.Transaction],
 ) error {
-	// TODO: 2024/10/5|sean|implement me
-	panic("implement me")
+	ctx, span := contextx.StartSpan(stream.Context(), "transaction.biz.ProcessBlockTransactionsNonStream")
+	defer span.End()
+
+	list, err := i.fetchTransactionsByBlock(ctx, block)
+	if err != nil {
+		ctx.Error("list transactions by block error", zap.Error(err), zap.Any("block", &block))
+		return err
+	}
+
+	var txns []*txM.Transaction
+	for tx := range list {
+		if err = i.transactions.Create(ctx, tx); err != nil {
+			ctx.Error("create transaction error", zap.Error(err), zap.Any("tx", &tx))
+			return err
+		}
+
+		if err = stream.Send(tx); err != nil {
+			ctx.Error("send transaction error", zap.Error(err), zap.Any("tx", &tx))
+			return err
+		}
+
+		txns = append(txns, tx)
+	}
+	stream.SetTrailer(metadata.New(map[string]string{"total": strconv.Itoa(len(txns))}))
+
+	return nil
+}
+
+// fetchTransactionsByBlock is used to fetch transactions by block
+//
+//nolint:gocognit // ignore this
+func (i *txService) fetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
+	txChan := make(chan *txM.Transaction)
+
+	go func() {
+		defer close(txChan)
+
+		ctx, span := contextx.StartSpan(c, "transaction.biz.fetchTransactionsByBlock")
+		defer span.End()
+
+		api := ton.NewAPIClient(i.client, ton.ProofCheckPolicyFast).WithRetry()
+		api.SetTrustedBlockFromConfig(i.client.Config)
+		stickyContext := api.Client().StickyContext(ctx)
+
+		var fetchedIDs []ton.TransactionShortInfo
+		var after *ton.TransactionID3
+		var more = true
+
+		for more {
+			blockInfo, err := api.LookupBlock(stickyContext, block.Workchain, block.Shard, block.SeqNo)
+			if errors.Is(err, context.Canceled) {
+				return
+			}
+			if err != nil {
+				ctx.Error("lookup block error", zap.Error(err), zap.Any("block", block))
+				return
+			}
+
+			fetchedIDs, more, err = api.GetBlockTransactionsV2(stickyContext, blockInfo, 100, after)
+			if errors.Is(err, context.Canceled) {
+				return
+			}
+			if err != nil {
+				ctx.Error("get block transactions error", zap.Error(err), zap.Any("blockInfo", blockInfo))
+				return
+			}
+
+			if more {
+				after = fetchedIDs[len(fetchedIDs)-1].ID3()
+			}
+
+			for _, id := range fetchedIDs {
+				tx, err2 := api.GetTransaction(
+					stickyContext,
+					blockInfo,
+					address.NewAddress(0, byte(blockInfo.Workchain), id.Account),
+					id.LT,
+				)
+				if err2 != nil {
+					ctx.Error("get transaction error", zap.Error(err2), zap.Any("id", id))
+					return
+				}
+				ctx.Debug("get transaction", zap.String("tx_string", tx.String()))
+
+				got := txM.NewTransactionFromTon(tx)
+				got.BlockId = block.Id
+				got.Timestamp = block.Timestamp
+				txChan <- got
+			}
+		}
+	}()
+
+	return txChan, nil
 }
