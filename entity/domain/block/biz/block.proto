@@ -36,6 +36,7 @@ message ListBlocksRequest {
 service BlockService {
   rpc ScanBlock(ScanBlockRequest) returns (stream Block) {}
   rpc FoundNewBlock(stream Block) returns (stream Block) {}
+  rpc FoundNewBlockNonStream(FoundNewBlockRequest) returns (Block) {}
 
   rpc GetBlock(GetBlockRequest) returns (Block) {}
   rpc ListBlocks(ListBlocksRequest) returns (stream Block) {}

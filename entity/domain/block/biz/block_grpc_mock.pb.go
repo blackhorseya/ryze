@@ -811,6 +811,26 @@ func (mr *MockBlockServiceClientMockRecorder) FoundNewBlock(ctx interface{}, opt
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceClient)(nil).FoundNewBlock), varargs...)
 }
 
+// FoundNewBlockNonStream mocks base method.
+func (m *MockBlockServiceClient) FoundNewBlockNonStream(ctx context.Context, in *FoundNewBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "FoundNewBlockNonStream", varargs...)
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FoundNewBlockNonStream indicates an expected call of FoundNewBlockNonStream.
+func (mr *MockBlockServiceClientMockRecorder) FoundNewBlockNonStream(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlockNonStream", reflect.TypeOf((*MockBlockServiceClient)(nil).FoundNewBlockNonStream), varargs...)
+}
+
 // GetBlock mocks base method.
 func (m *MockBlockServiceClient) GetBlock(ctx context.Context, in *GetBlockRequest, opts ...grpc.CallOption) (*model.Block, error) {
 	m.ctrl.T.Helper()
@@ -906,6 +926,21 @@ func (m *MockBlockServiceServer) FoundNewBlock(server BlockService_FoundNewBlock
 func (mr *MockBlockServiceServerMockRecorder) FoundNewBlock(server interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlock", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlock), server)
+}
+
+// FoundNewBlockNonStream mocks base method.
+func (m *MockBlockServiceServer) FoundNewBlockNonStream(ctx context.Context, in *FoundNewBlockRequest) (*model.Block, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FoundNewBlockNonStream", ctx, in)
+	ret0, _ := ret[0].(*model.Block)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FoundNewBlockNonStream indicates an expected call of FoundNewBlockNonStream.
+func (mr *MockBlockServiceServerMockRecorder) FoundNewBlockNonStream(ctx, in interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FoundNewBlockNonStream", reflect.TypeOf((*MockBlockServiceServer)(nil).FoundNewBlockNonStream), ctx, in)
 }
 
 // GetBlock mocks base method.
