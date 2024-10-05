@@ -74,6 +74,8 @@ func (i *txService) ProcessBlockTransactions(stream grpc.BidiStreamingServer[mod
 }
 
 // FetchTransactionsByBlock is used to fetch transactions by block
+//
+//nolint:gocognit // ignore this
 func (i *txService) FetchTransactionsByBlock(c context.Context, block *model.Block) (chan *txM.Transaction, error) {
 	txChan := make(chan *txM.Transaction)
 
