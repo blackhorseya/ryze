@@ -20,6 +20,7 @@ message ListTransactionsByAccountRequest {
 // Service definition for handling transactions.
 service TransactionService {
   rpc ProcessBlockTransactions(stream block.Block) returns (stream Transaction) {}
+  rpc ProcessBlockTransactionsNonStream(block.Block) returns (stream Transaction) {}
 
   rpc ListTransactions(ListTransactionRequest) returns (stream Transaction) {}
 

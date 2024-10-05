@@ -195,3 +195,11 @@ func (i *txService) ListTransactionsByAccount(
 
 	return nil
 }
+
+func (i *txService) ProcessBlockTransactionsNonStream(
+	block *model.Block,
+	stream grpc.ServerStreamingServer[txM.Transaction],
+) error {
+	// TODO: 2024/10/5|sean|implement me
+	panic("implement me")
+}

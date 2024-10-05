@@ -240,3 +240,8 @@ func (i *impl) ListBlocks(req *biz.ListBlocksRequest, stream grpc.ServerStreamin
 
 	return nil
 }
+
+func (i *impl) FoundNewBlockNonStream(c context.Context, req *biz.FoundNewBlockRequest) (*model.Block, error) {
+	// TODO: 2024/10/5|sean|implement me
+	panic("implement me")
+}
