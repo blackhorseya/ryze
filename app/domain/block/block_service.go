@@ -225,6 +225,10 @@ func (i *impl) FoundNewBlockNonStream(c context.Context, req *biz.FoundNewBlockR
 	}
 
 	err = i.fetchBlockInfo(ctx, block)
+	if errors.Is(err, context.Canceled) {
+		ctx.Info("found new block canceled")
+		return block, nil
+	}
 	if err != nil {
 		ctx.Error("failed to fetch block info", zap.Error(err), zap.Any("block", &block))
 		return nil, fmt.Errorf("failed to fetch block info: %w", err)
@@ -249,6 +253,10 @@ func (i *impl) fetchBlockInfo(c context.Context, block *model.Block) (err error)
 
 	// 查找區塊
 	blockID, err := api.LookupBlock(ctx, block.Workchain, block.Shard, block.SeqNo)
+	if errors.Is(err, context.Canceled) {
+		ctx.Info("fetch block info canceled")
+		return err
+	}
 	if err != nil {
 		ctx.Error("failed to lookup block", zap.Error(err), zap.Any("block", block))
 		return err
@@ -256,6 +264,10 @@ func (i *impl) fetchBlockInfo(c context.Context, block *model.Block) (err error)
 
 	// 獲取區塊資訊
 	blockData, err := api.GetBlockData(ctx, blockID)
+	if errors.Is(err, context.Canceled) {
+		ctx.Info("get block data canceled")
+		return err
+	}
 	if err != nil {
 		ctx.Error("failed to get block data", zap.Error(err))
 		return err
