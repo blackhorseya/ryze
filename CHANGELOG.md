@@ -1,3 +1,31 @@
+## 0.5.4 (2024-10-16)
+
+### Feat
+
+- implement version 2 of the found block handler
+- refactor transaction fetching and listing methods (#81)
+- refactor transaction fetching and listing methods
+- add new RPC method for block (#79)
+- implement block processing methods with TODOs
+- implement non-streaming block transaction handling
+- add new RPC method for block notifications
+
+### Fix
+
+- enhance block transaction processing with error handling
+- enhance block fetching with cancellation and error handling
+- improve gRPC error handling and cancellation logic
+
+### Refactor
+
+- improve block event handling and logging (#82)
+- improve block event handling and logging
+- enhance linting rules and add future refactoring note
+- refactor block info fetching and enhance error handling (#80)
+- refactor block info fetching and enhance error handling
+- improve connection handling and stream management (#78)
+- improve connection handling and stream management
+
 ## 0.5.3 (2024-10-04)
 
 ### Feat
