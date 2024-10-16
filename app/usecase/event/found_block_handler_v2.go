@@ -2,6 +2,8 @@ package event
 
 import (
 	"context"
+	"errors"
+	"io"
 
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
@@ -55,23 +57,22 @@ func (i *foundBlockHandlerV2) Handle(event eventx.DomainEvent) {
 		zap.Time("block_time", newBlock.Timestamp.AsTime()),
 	)
 
-	// TODO: 2024/10/5|sean|handle new block transactions
 	// handle new block transactions
-	// stream, err := i.txClient.ProcessBlockTransactionsNonStream(ctx, newBlock)
-	// if err != nil {
-	// 	ctx.Error("failed to handle new block transactions", zap.Error(err))
-	// 	return
-	// }
-	//
-	// for {
-	// 	tx, err2 := stream.Recv()
-	// 	if errors.Is(err2, io.EOF) {
-	// 		break
-	// 	}
-	// 	if err2 != nil {
-	// 		ctx.Error("failed to receive new block transaction", zap.Error(err2))
-	// 		break
-	// 	}
-	// 	ctx.Debug("found new block transaction", zap.String("tx_id", string(tx.Id)))
-	// }
+	stream, err := i.txClient.ProcessBlockTransactionsNonStream(ctx, newBlock)
+	if err != nil {
+		ctx.Error("failed to handle new block transactions", zap.Error(err))
+		return
+	}
+
+	for {
+		tx, err2 := stream.Recv()
+		if errors.Is(err2, io.EOF) {
+			break
+		}
+		if err2 != nil {
+			ctx.Error("failed to receive new block transaction", zap.Error(err2))
+			break
+		}
+		ctx.Debug("found new block transaction", zap.String("tx_id", string(tx.Id)))
+	}
 }
