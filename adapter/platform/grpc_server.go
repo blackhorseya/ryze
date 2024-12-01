@@ -1,11 +1,11 @@
 package platform
 
 import (
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	accountB "github.com/blackhorseya/ryze/entity/domain/account/biz"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"

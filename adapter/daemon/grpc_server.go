@@ -1,9 +1,9 @@
 package daemon
 
 import (
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"

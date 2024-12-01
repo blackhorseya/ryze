@@ -1,7 +1,7 @@
 package block
 
 import (
-	"github.com/blackhorseya/ryze/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
 	"github.com/google/wire"
 )
 

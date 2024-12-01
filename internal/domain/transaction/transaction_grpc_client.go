@@ -3,8 +3,8 @@ package transaction
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/biz"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 )
 
 // NewTransactionServiceClient is used to create a new transaction service client.

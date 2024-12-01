@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/blackhorseya/ryze/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/infra/configx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/testcontainers/testcontainers-go/modules/mongodb"
 	"go.mongodb.org/mongo-driver/bson"

@@ -3,7 +3,7 @@ package configx
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/app/infra/transports/httpx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/httpx"
 	"github.com/blackhorseya/ryze/pkg/netx"
 )
 
