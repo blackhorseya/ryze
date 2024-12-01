@@ -140,7 +140,13 @@ func getNotSeenShards(
 
 	parents, err := b.BlockInfo.GetParentBlocks()
 	if err != nil {
-		return nil, fmt.Errorf("get parent blocks (%d:%x:%d): %w", shard.Workchain, uint64(shard.Shard), shard.Shard, err)
+		return nil, fmt.Errorf(
+			"get parent blocks (%d:%x:%d): %w",
+			shard.Workchain,
+			uint64(shard.Shard), //nolint:gosec // ignore gosec
+			shard.Shard,
+			err,
+		)
 	}
 
 	for _, parent := range parents {
