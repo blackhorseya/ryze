@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/entity/domain/transaction/model"
-	"github.com/blackhorseya/ryze/entity/domain/transaction/repo"
+	"github.com/blackhorseya/ryze/internal/app/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"
 	"gorm.io/gorm"

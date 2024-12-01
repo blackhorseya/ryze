@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
-	"github.com/blackhorseya/ryze/entity/domain/block/repo"
+	"github.com/blackhorseya/ryze/internal/app/repo"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

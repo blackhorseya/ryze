@@ -10,7 +10,7 @@ import (
 
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
-	"github.com/blackhorseya/ryze/entity/domain/block/repo"
+	"github.com/blackhorseya/ryze/internal/app/repo"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
