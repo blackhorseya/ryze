@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
+	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/internal/app/repo"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
@@ -34,7 +34,7 @@ func NewBlockAdapter(impl *BlockAdapterImpl) repo.BlockAdapter {
 func (i *BlockAdapterImpl) ScanBlock(
 	c context.Context,
 	req repo.ScanBlockRequest,
-	blockCh chan<- *blockB.Block,
+	blockCh chan<- *biz.Block,
 ) error {
 	ctx, span := contextx.StartSpan(c, "datasource.ton.BlockAdapterImpl.ScanBlock")
 	defer span.End()
