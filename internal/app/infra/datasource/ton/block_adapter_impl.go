@@ -67,18 +67,39 @@ func (i *BlockAdapterImpl) ScanBlock(
 
 	// 持續監聽所有分片上的新區塊
 	for {
-		// 獲取每個 workchain 和 shard 上的新區塊
-		currentShards, err2 := api.GetBlockShardsInfo(ctx, master)
-		if err2 != nil {
-			ctx.Error("failed to get block shards info", zap.Error(err2), zap.Any("master", &master))
-			return err2
-		}
+		select {
+		case <-ctx.Done():
+			ctx.Info("scan block canceled")
+			return nil
+		default:
+			// 獲取每個 workchain 和 shard 上的新區塊
+			currentShards, err2 := api.GetBlockShardsInfo(ctx, master)
+			if err2 != nil {
+				ctx.Error("failed to get block shards info", zap.Error(err2), zap.Any("master", &master))
+				return err2
+			}
 
-		for _, shard := range currentShards {
-			// 檢查是否有新的區塊
-			value, ok := i.shardLastSeqno.Load(tonx.GetShardID(shard))
-			if ok && shard.SeqNo <= value.(uint32) {
-				continue
+			for _, shard := range currentShards {
+				// 檢查是否有新的區塊
+				value, ok := i.shardLastSeqno.Load(tonx.GetShardID(shard))
+				if ok && shard.SeqNo <= value.(uint32) {
+					continue
+				}
+
+				// 更新分片序號
+				i.shardLastSeqno.Store(tonx.GetShardID(shard), shard.SeqNo)
+
+				// TODO: 2024/12/1|sean|send event here
+
+				ctx.Info("new block found", zap.Any("shard", &shard))
+			}
+
+			// 更新主鏈區塊以繼續監控新地分片區塊
+			nextSeqNo := master.SeqNo + 1
+			master, err2 = api.WaitForBlock(nextSeqNo).LookupBlock(ctx, master.Workchain, master.Shard, nextSeqNo)
+			if err2 != nil {
+				ctx.Error("failed to lookup next block", zap.Uint32("seq_no", nextSeqNo), zap.Error(err2))
+				return err2
 			}
 		}
 	}
