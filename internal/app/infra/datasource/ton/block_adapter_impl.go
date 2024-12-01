@@ -89,9 +89,18 @@ func (i *BlockAdapterImpl) ScanBlock(
 				// 更新分片序號
 				i.shardLastSeqno.Store(tonx.GetShardID(shard), shard.SeqNo)
 
-				// TODO: 2024/12/1|sean|send event here
+				// 傳送新區塊
+				block, err3 := biz.NewBlock(shard.Workchain, shard.Shard, shard.SeqNo)
+				if err3 != nil {
+					ctx.Error("failed to create new block", zap.Error(err3))
+					return err3
+				}
+				// TODO: 2024/12/1|sean|if you need more information, you can use the following code
+				if blockCh != nil {
+					blockCh <- block
+				}
 
-				ctx.Info("new block found", zap.Any("shard", &shard))
+				ctx.Info("new block found", zap.Any("shard", &shard), zap.Any("block", &block))
 			}
 
 			// 更新主鏈區塊以繼續監控新地分片區塊
