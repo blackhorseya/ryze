@@ -31,6 +31,7 @@ func NewBlockAdapter(impl *BlockAdapterImpl) repo.BlockAdapter {
 	return impl
 }
 
+//nolint:gocognit // it's fine
 func (i *BlockAdapterImpl) ScanBlock(
 	c context.Context,
 	req repo.ScanBlockRequest,

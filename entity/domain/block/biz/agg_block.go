@@ -1,6 +1,8 @@
 package biz
 
 import (
+	"fmt"
+
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 )
 
@@ -9,13 +11,14 @@ type Block struct {
 	model.Block
 }
 
+// NewBlock is used to create a new block.
 func NewBlock(workchain int32, shard int64, seqno uint32) (*Block, error) {
-	b, err := model.NewBlock(workchain, shard, seqno)
-	if err != nil {
-		return nil, err
-	}
-
 	return &Block{
-		Block: *b,
+		Block: model.Block{
+			Id:        fmt.Sprintf("%d:%d:%d", workchain, shard, seqno),
+			Workchain: workchain,
+			Shard:     shard,
+			SeqNo:     seqno,
+		},
 	}, nil
 }
