@@ -5,7 +5,7 @@ import (
 
 	"github.com/blackhorseya/ryze/entity/domain/account/biz"
 	"github.com/blackhorseya/ryze/entity/domain/account/model"
-	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/ton"

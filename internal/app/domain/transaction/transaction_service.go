@@ -10,7 +10,7 @@ import (
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
 	txM "github.com/blackhorseya/ryze/entity/domain/transaction/model"
 	"github.com/blackhorseya/ryze/entity/domain/transaction/repo"
-	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/address"
 	"github.com/xssnick/tonutils-go/ton"

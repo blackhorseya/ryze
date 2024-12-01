@@ -13,12 +13,12 @@ import (
 	"github.com/blackhorseya/ryze/internal/app/domain/block"
 	"github.com/blackhorseya/ryze/internal/app/domain/network"
 	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
-	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
-	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
 	mongodbx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
 	pgx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
 	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/shared/configx"
+	"github.com/blackhorseya/ryze/internal/shared/otelx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 )
@@ -26,7 +26,7 @@ import (
 // Injectors from wire.go:
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
-	configuration, err := configx2.NewConfiguration(v)
+	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -99,7 +99,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 const serviceName = "platform"
 
-func initApplication(config *configx2.Configuration) (*configx2.Application, error) {
+func initApplication(config *configx.Configuration) (*configx.Application, error) {
 	app, err := config.GetService(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get %s config: %w", serviceName, err)
@@ -109,7 +109,7 @@ func initApplication(config *configx2.Configuration) (*configx2.Application, err
 }
 
 // InitTonClient is used to initialize the ton client.
-func InitTonClient(config *configx2.Configuration) (*tonx.Client, error) {
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
 	settings, ok := config.Networks["ton"]
 	if !ok {
 		return nil, fmt.Errorf("network [ton] not found")

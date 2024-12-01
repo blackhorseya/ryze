@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/app/infra/configx"
-	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	"github.com/blackhorseya/ryze/internal/shared/configx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

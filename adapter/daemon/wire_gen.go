@@ -11,12 +11,12 @@ import (
 
 	block2 "github.com/blackhorseya/ryze/internal/app/domain/block"
 	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
-	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
-	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
 	mongodbx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
 	pgx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
 	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/shared/configx"
+	"github.com/blackhorseya/ryze/internal/shared/otelx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
@@ -25,7 +25,7 @@ import (
 // Injectors from wire.go:
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
-	configuration, err := configx2.NewConfiguration(v)
+	configuration, err := configx.NewConfiguration(v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,12 +115,12 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 const serviceName = "daemon"
 
 // InitApplication is a function to initialize application.
-func InitApplication(config *configx2.Configuration) (*configx2.Application, error) {
+func InitApplication(config *configx.Configuration) (*configx.Application, error) {
 	return config.GetService(serviceName)
 }
 
 // InitTonClient is used to initialize the ton client.
-func InitTonClient(config *configx2.Configuration) (*tonx.Client, error) {
+func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
 	settings, ok := config.Networks["ton"]
 	if !ok {
 		return nil, fmt.Errorf("network [ton] not found")

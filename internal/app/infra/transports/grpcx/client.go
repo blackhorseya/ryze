@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/shared/configx"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -14,11 +14,11 @@ import (
 
 // Client is the grpc client
 type Client struct {
-	services map[string]*configx2.Application
+	services map[string]*configx.Application
 }
 
 // NewClient is used to create a new grpc client
-func NewClient(config *configx2.Configuration) (*Client, error) {
+func NewClient(config *configx.Configuration) (*Client, error) {
 	return &Client{
 		services: config.Services,
 	}, nil

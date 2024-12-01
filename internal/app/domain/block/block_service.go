@@ -11,7 +11,7 @@ import (
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/entity/domain/block/repo"
-	tonx2 "github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
@@ -23,14 +23,14 @@ import (
 )
 
 type impl struct {
-	tonClient *tonx2.Client
+	tonClient *tonx.Client
 
 	blocks repo.IBlockRepo
 }
 
 // NewBlockService is used to create a new block service
 func NewBlockService(
-	tonClient *tonx2.Client,
+	tonClient *tonx.Client,
 	blocks repo.IBlockRepo,
 ) biz.BlockServiceServer {
 	return &impl{
@@ -71,7 +71,7 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 
 	// 初始化分片序號的記錄
 	for _, shard := range firstShards {
-		shardLastSeqno[tonx2.GetShardID(shard)] = shard.SeqNo
+		shardLastSeqno[tonx.GetShardID(shard)] = shard.SeqNo
 	}
 
 	// 持續監聽所有分片上的新區塊
@@ -94,12 +94,12 @@ func (i *impl) ScanBlock(req *biz.ScanBlockRequest, stream biz.BlockService_Scan
 			}
 
 			// 檢查是否有新的區塊
-			if lastSeqno, ok := shardLastSeqno[tonx2.GetShardID(shard)]; ok && shard.SeqNo <= lastSeqno {
+			if lastSeqno, ok := shardLastSeqno[tonx.GetShardID(shard)]; ok && shard.SeqNo <= lastSeqno {
 				continue
 			}
 
 			// 更新分片序號
-			shardLastSeqno[tonx2.GetShardID(shard)] = shard.SeqNo
+			shardLastSeqno[tonx.GetShardID(shard)] = shard.SeqNo
 
 			// 創建一個新的區塊事件並發送
 			newBlock, err3 := model.NewBlock(shard.Workchain, shard.Shard, shard.SeqNo)
