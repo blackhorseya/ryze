@@ -15,10 +15,10 @@ import (
 	pgx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
 	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
+	"github.com/blackhorseya/ryze/internal/shared/messaging"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
-	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/spf13/viper"
 )
 
@@ -96,7 +96,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	eventBus := eventx.NewInMemoryEventBus()
+	eventBus := messaging.NewInMemoryEventBus()
 	adapterxServer, cleanup3, err := NewServer(injector, server, eventBus)
 	if err != nil {
 		cleanup2()

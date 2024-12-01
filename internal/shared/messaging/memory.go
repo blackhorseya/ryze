@@ -1,25 +1,27 @@
-package eventx
+package messaging
 
 import (
 	"errors"
 	"sync"
+
+	"github.com/blackhorseya/ryze/pkg/eventx"
 )
 
 // InMemoryEventBus 是一个基于内存的事件总线实现
 type InMemoryEventBus struct {
 	mu       sync.Mutex
-	handlers []EventHandler
+	handlers []eventx.EventHandler
 }
 
 // NewInMemoryEventBus 创建一个新的基于内存的 EventBus 实例
-func NewInMemoryEventBus() EventBus {
+func NewInMemoryEventBus() eventx.EventBus {
 	return &InMemoryEventBus{
-		handlers: make([]EventHandler, 0),
+		handlers: make([]eventx.EventHandler, 0),
 	}
 }
 
 // Subscribe 用于订阅事件处理器
-func (bus *InMemoryEventBus) Subscribe(handler EventHandler) error {
+func (bus *InMemoryEventBus) Subscribe(handler eventx.EventHandler) error {
 	bus.mu.Lock()
 	defer bus.mu.Unlock()
 
@@ -28,7 +30,7 @@ func (bus *InMemoryEventBus) Subscribe(handler EventHandler) error {
 }
 
 // Publish 用于发布事件，通知所有订阅的处理器
-func (bus *InMemoryEventBus) Publish(event DomainEvent) error {
+func (bus *InMemoryEventBus) Publish(event eventx.DomainEvent) error {
 	bus.mu.Lock()
 	defer bus.mu.Unlock()
 
