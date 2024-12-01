@@ -8,16 +8,17 @@ package platform
 
 import (
 	"fmt"
-	"github.com/blackhorseya/ryze/internal/domain/account"
-	"github.com/blackhorseya/ryze/internal/domain/block"
-	"github.com/blackhorseya/ryze/internal/domain/network"
-	"github.com/blackhorseya/ryze/internal/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/infra/tonx"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+
+	"github.com/blackhorseya/ryze/internal/app/domain/account"
+	"github.com/blackhorseya/ryze/internal/app/domain/block"
+	"github.com/blackhorseya/ryze/internal/app/domain/network"
+	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
+	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
+	mongodbx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
+	pgx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/spf13/viper"
 )
@@ -25,7 +26,7 @@ import (
 // Injectors from wire.go:
 
 func New(v *viper.Viper) (adapterx.Server, func(), error) {
-	configuration, err := configx.NewConfiguration(v)
+	configuration, err := configx2.NewConfiguration(v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,12 +38,12 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := grpcx.NewClient(configuration)
+	client, err := grpcx2.NewClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
+	transactionServiceClient, err := transaction2.NewTransactionServiceClient(client)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -58,32 +59,32 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	mongoClient, err := mongodbx.NewClient(application)
+	mongoClient, err := mongodbx2.NewClient(application)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
+	iBlockRepo, err := mongodbx2.NewBlockRepo(mongoClient)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
 	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
 	networkServiceServer := network.NewNetworkService(tonxClient)
-	db, err := pgx.NewClient(application)
+	db, err := pgx2.NewClient(application)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iTransactionRepo, err := pgx.NewTransactionRepo(db)
+	iTransactionRepo, err := pgx2.NewTransactionRepo(db)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
+	transactionServiceServer := transaction2.NewTransactionService(tonxClient, iTransactionRepo)
 	accountServiceServer := account.NewAccountService(tonxClient)
 	initServers := NewInitServersFn(blockServiceServer, networkServiceServer, transactionServiceServer, accountServiceServer)
-	server, err := grpcx.NewServer(application, initServers)
+	server, err := grpcx2.NewServer(application, initServers)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -98,7 +99,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 
 const serviceName = "platform"
 
-func initApplication(config *configx.Configuration) (*configx.Application, error) {
+func initApplication(config *configx2.Configuration) (*configx2.Application, error) {
 	app, err := config.GetService(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get %s config: %w", serviceName, err)
@@ -108,7 +109,7 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 }
 
 // InitTonClient is used to initialize the ton client.
-func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+func InitTonClient(config *configx2.Configuration) (*tonx.Client, error) {
 	settings, ok := config.Networks["ton"]
 	if !ok {
 		return nil, fmt.Errorf("network [ton] not found")

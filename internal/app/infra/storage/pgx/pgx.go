@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/blackhorseya/ryze/internal/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/configx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"

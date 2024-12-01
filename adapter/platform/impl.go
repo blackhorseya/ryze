@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.uber.org/zap"

@@ -7,16 +7,16 @@ package platform
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/domain/account"
-	"github.com/blackhorseya/ryze/internal/domain/block"
-	"github.com/blackhorseya/ryze/internal/domain/network"
-	"github.com/blackhorseya/ryze/internal/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/infra/tonx"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/app/domain/account"
+	"github.com/blackhorseya/ryze/internal/app/domain/block"
+	"github.com/blackhorseya/ryze/internal/app/domain/network"
+	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
+	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
+	"github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/google/wire"
 	"github.com/spf13/viper"
@@ -24,7 +24,7 @@ import (
 
 const serviceName = "platform"
 
-func initApplication(config *configx.Configuration) (*configx.Application, error) {
+func initApplication(config *configx2.Configuration) (*configx2.Application, error) {
 	app, err := config.GetService(serviceName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get %s config: %w", serviceName, err)
@@ -34,7 +34,7 @@ func initApplication(config *configx.Configuration) (*configx.Application, error
 }
 
 // InitTonClient is used to initialize the ton client.
-func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+func InitTonClient(config *configx2.Configuration) (*tonx.Client, error) {
 	settings, ok := config.Networks["ton"]
 	if !ok {
 		return nil, fmt.Errorf("network [ton] not found")
@@ -53,19 +53,19 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		wire.Struct(new(Injector), "*"),
 
 		NewServer,
-		configx.NewConfiguration,
+		configx2.NewConfiguration,
 		initApplication,
-		grpcx.NewServer,
+		grpcx2.NewServer,
 		NewInitServersFn,
 		otelx.SetupSDK,
-		grpcx.NewClient,
+		grpcx2.NewClient,
 		pgx.NewClient,
 
 		account.ProviderSet,
 		block.ProviderSet,
 		network.ProviderSet,
-		transaction.ProviderSet,
-		transaction.NewTransactionServiceClient,
+		transaction2.ProviderSet,
+		transaction2.NewTransactionServiceClient,
 
 		InitTonClient,
 		mongodbx.NewClient,

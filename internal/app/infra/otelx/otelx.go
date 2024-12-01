@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/blackhorseya/ryze/internal/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/configx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"

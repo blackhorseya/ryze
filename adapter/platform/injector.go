@@ -2,14 +2,14 @@ package platform
 
 import (
 	"github.com/blackhorseya/ryze/entity/domain/transaction/biz"
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
+	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
 )
 
 // Injector is the injector for wirex
 type Injector struct {
-	C     *configx.Configuration
-	A     *configx.Application
+	C     *configx2.Configuration
+	A     *configx2.Application
 	OTelx *otelx.SDK
 
 	txClient biz.TransactionServiceClient

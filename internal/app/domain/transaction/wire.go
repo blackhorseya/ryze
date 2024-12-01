@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
 	"github.com/google/wire"
 )
 

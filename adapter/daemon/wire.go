@@ -7,14 +7,14 @@ package daemon
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/domain/block"
-	"github.com/blackhorseya/ryze/internal/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/infra/configx"
-	"github.com/blackhorseya/ryze/internal/infra/otelx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/infra/tonx"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	block2 "github.com/blackhorseya/ryze/internal/app/domain/block"
+	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
+	configx2 "github.com/blackhorseya/ryze/internal/app/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/otelx"
+	"github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
+	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"github.com/google/wire"
@@ -24,12 +24,12 @@ import (
 const serviceName = "daemon"
 
 // InitApplication is a function to initialize application.
-func InitApplication(config *configx.Configuration) (*configx.Application, error) {
+func InitApplication(config *configx2.Configuration) (*configx2.Application, error) {
 	return config.GetService(serviceName)
 }
 
 // InitTonClient is used to initialize the ton client.
-func InitTonClient(config *configx.Configuration) (*tonx.Client, error) {
+func InitTonClient(config *configx2.Configuration) (*tonx.Client, error) {
 	settings, ok := config.Networks["ton"]
 	if !ok {
 		return nil, fmt.Errorf("network [ton] not found")
@@ -49,7 +49,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		wire.Struct(new(Injector), "*"),
 
 		// config
-		configx.NewConfiguration,
+		configx2.NewConfiguration,
 		InitApplication,
 		otelx.SetupSDK,
 
@@ -61,17 +61,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		pgx.NewClient,
 
 		// transports
-		grpcx.NewServer,
-		grpcx.NewClient,
+		grpcx2.NewServer,
+		grpcx2.NewClient,
 		InitTonClient,
 
 		// app layer
 		NewInitServersFn,
 
 		// domain layer
-		block.ProviderSet,
-		block.NewBlockServiceClient,
-		transaction.ProviderSet,
-		transaction.NewTransactionServiceClient,
+		block2.ProviderSet,
+		block2.NewBlockServiceClient,
+		transaction2.ProviderSet,
+		transaction2.NewTransactionServiceClient,
 	))
 }

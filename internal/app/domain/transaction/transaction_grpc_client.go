@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/entity/domain/transaction/biz"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
 )
 
 // NewTransactionServiceClient is used to create a new transaction service client.

@@ -5,7 +5,7 @@ import (
 
 	"github.com/blackhorseya/ryze/entity/domain/network/biz"
 	"github.com/blackhorseya/ryze/entity/domain/network/model"
-	"github.com/blackhorseya/ryze/internal/infra/tonx"
+	"github.com/blackhorseya/ryze/internal/app/infra/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"

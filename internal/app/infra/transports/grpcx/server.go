@@ -3,7 +3,7 @@ package grpcx
 import (
 	"net"
 
-	"github.com/blackhorseya/ryze/internal/infra/configx"
+	"github.com/blackhorseya/ryze/internal/app/infra/configx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
