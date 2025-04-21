@@ -5,7 +5,7 @@ import (
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	netB "github.com/blackhorseya/ryze/entity/domain/network/biz"
 	txB "github.com/blackhorseya/ryze/entity/domain/transaction/biz"
-	"github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"

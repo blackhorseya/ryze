@@ -7,11 +7,11 @@ package daemon
 import (
 	"fmt"
 
-	block2 "github.com/blackhorseya/ryze/internal/app/domain/block"
-	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
-	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/domain/block"
+	"github.com/blackhorseya/ryze/internal/domain/transaction"
+	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
@@ -61,17 +61,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		pgx.NewClient,
 
 		// transports
-		grpcx2.NewServer,
-		grpcx2.NewClient,
+		grpcx.NewServer,
+		grpcx.NewClient,
 		InitTonClient,
 
 		// app layer
 		NewInitServersFn,
 
 		// domain layer
-		block2.ProviderSet,
-		block2.NewBlockServiceClient,
-		transaction2.ProviderSet,
-		transaction2.NewTransactionServiceClient,
+		block.ProviderSet,
+		block.NewBlockServiceClient,
+		transaction.ProviderSet,
+		transaction.NewTransactionServiceClient,
 	))
 }

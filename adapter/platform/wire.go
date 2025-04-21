@@ -7,13 +7,13 @@ package platform
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/app/domain/account"
-	"github.com/blackhorseya/ryze/internal/app/domain/block"
-	"github.com/blackhorseya/ryze/internal/app/domain/network"
-	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
-	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/domain/account"
+	"github.com/blackhorseya/ryze/internal/domain/block"
+	"github.com/blackhorseya/ryze/internal/domain/network"
+	"github.com/blackhorseya/ryze/internal/domain/transaction"
+	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
@@ -55,17 +55,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		NewServer,
 		configx.NewConfiguration,
 		initApplication,
-		grpcx2.NewServer,
+		grpcx.NewServer,
 		NewInitServersFn,
 		otelx.SetupSDK,
-		grpcx2.NewClient,
+		grpcx.NewClient,
 		pgx.NewClient,
 
 		account.ProviderSet,
 		block.ProviderSet,
 		network.ProviderSet,
-		transaction2.ProviderSet,
-		transaction2.NewTransactionServiceClient,
+		transaction.ProviderSet,
+		transaction.NewTransactionServiceClient,
 
 		InitTonClient,
 		mongodbx.NewClient,

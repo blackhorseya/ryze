@@ -7,8 +7,8 @@ import (
 
 	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
-	"github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
-	"github.com/blackhorseya/ryze/internal/app/usecase/event"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/usecase/event"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"

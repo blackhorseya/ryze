@@ -9,11 +9,11 @@ package daemon
 import (
 	"fmt"
 
-	block2 "github.com/blackhorseya/ryze/internal/app/domain/block"
-	transaction2 "github.com/blackhorseya/ryze/internal/app/domain/transaction"
-	mongodbx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/mongodbx"
-	pgx2 "github.com/blackhorseya/ryze/internal/app/infra/storage/pgx"
-	grpcx2 "github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/domain/block"
+	"github.com/blackhorseya/ryze/internal/domain/transaction"
+	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
+	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
@@ -37,17 +37,17 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := grpcx2.NewClient(configuration)
+	client, err := grpcx.NewClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceClient, err := block2.NewBlockServiceClient(client)
+	blockServiceClient, err := block.NewBlockServiceClient(client)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	transactionServiceClient, err := transaction2.NewTransactionServiceClient(client)
+	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
@@ -64,33 +64,33 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	mongoClient, cleanup2, err := mongodbx2.NewClientWithClean(application)
+	mongoClient, cleanup2, err := mongodbx.NewClientWithClean(application)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iBlockRepo, err := mongodbx2.NewBlockRepo(mongoClient)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	blockServiceServer := block2.NewBlockService(tonxClient, iBlockRepo)
-	db, err := pgx2.NewClient(application)
+	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	iTransactionRepo, err := pgx2.NewTransactionRepo(db)
+	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
+	db, err := pgx.NewClient(application)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	transactionServiceServer := transaction2.NewTransactionService(tonxClient, iTransactionRepo)
+	iTransactionRepo, err := pgx.NewTransactionRepo(db)
+	if err != nil {
+		cleanup2()
+		cleanup()
+		return nil, nil, err
+	}
+	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
 	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
-	server, err := grpcx2.NewServer(application, initServers)
+	server, err := grpcx.NewServer(application, initServers)
 	if err != nil {
 		cleanup2()
 		cleanup()

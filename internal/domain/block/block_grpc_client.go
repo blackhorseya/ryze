@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/blackhorseya/ryze/entity/domain/block/biz"
-	"github.com/blackhorseya/ryze/internal/app/infra/transports/grpcx"
+	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 )
 
 // NewBlockServiceClient is used to create a new block service tonClient

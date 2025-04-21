@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
-	"github.com/blackhorseya/ryze/internal/app/repo"
+	"github.com/blackhorseya/ryze/internal/repo"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/spf13/viper"
