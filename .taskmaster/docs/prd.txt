@@ -1,6 +1,6 @@
 <context>
 # Overview
-Ryze 是一個專為 TON 區塊鏈設計的區塊鏈瀏覽器，提供區塊、交易、帳戶等資料的查詢與分析。現計畫保留原有 domain 設計，並以 Go-kit 進行微服務分層重構，提升可維護性與擴展性。
+Ryze 是一個專為 TON 區塊鏈設計的區塊鏈瀏覽器，提供區塊、交易、帳戶等資料的查詢與分析。現計畫保留原有 domain 設計，並以 Go-kit + Clean Architecture + DDD 進行微服務分層重構，提升可維護性、可測試性與業務邏輯隔離。
 
 # Core Features
 - 區塊查詢：檢索最新區塊、依 ID 查詢區塊詳情。
@@ -16,38 +16,60 @@ Ryze 是一個專為 TON 區塊鏈設計的區塊鏈瀏覽器，提供區塊、�
 - UI/UX：簡潔查詢介面、即時數據展示、API 文件完善
 </context>
 <PRD>
-# Technical Architecture
-- 採用 Go-kit 分層架構（Service/Endpoint/Transport）
-- 微服務設計，區分 Platform/Daemon 服務
-- 支援 gRPC 與 HTTP API
-- 資料庫：MongoDB（區塊）、PostgreSQL（交易/帳戶）
-- Docker 容器化部署
-- Prometheus + OpenTelemetry 監控
-- 保留現有 domain/entity/model 結構
+# 技術架構（Clean Architecture + DDD + Go-kit）
+- 完全遵循 Clean Architecture 與 Domain-Driven Design（DDD）精神
+- 採用 Go-kit 四層分層架構：
+  - domain（僅定義 Entity、Value Object、Proto、Domain Event、Repository interface、Domain Service interface，不含任何實作）
+  - service（Go-kit Service interface 及其實作，協調 domain interface，實現應用/用例邏輯）
+  - endpoint（將 Service 方法包裝為 endpoint.Endpoint，處理 request/response struct）
+  - transport（HTTP/gRPC handler/route，僅協定與解碼/編碼）
+- 嚴格依賴規則：外層依賴內層，內層永不依賴外層
+- 目錄結構範例：
+```
+internal/
+  domain/
+    {context}/
+      model/
+      event/
+      repository/
+      service/
+  service/
+    {context}/
+      service.go
+      middleware.go
+  endpoint/
+    {context}/
+      endpoint.go
+  transport/
+    http/
+      {context}.go
+    grpc/
+      {context}.go
+```
+- 命名慣例：interface 以 -er 結尾，實作 struct 以 Impl 結尾，檔名 xxx_impl.go，測試檔 *_test.go，exported symbol 需完整 doc comment
+- Go 語言風格：Go 1.21+，gofmt，Tab 縮排，MixedCaps 命名，Getter 不加 Get 前綴，if/for/switch 無大括號，忽略回傳值用 _，錯誤變數統一 err，early return
+- context 參數名 c，擴展型 ctx，使用 contextx.WithContext(c) 取得 thread-safe logger，結構化日誌，含 context，自訂 error type，分級：Debug · Info · Warn · Error
+- 測試與 Mock：google/wire + wire provider，uber-go/mock，檔名 *_mock.go，Service/Endpoint/Transport 各層獨立測試
+- ORM 原則：domain 層禁止 GORM，infra adapter 可用 GORM model & tag，優先 interface + 明確 SQL 實作
+- DON'T：domain 層禁止 import service/endpoint/transport，不可將業務邏輯寫在 endpoint/transport，不可在 entity 內直接暴露資料庫欄位，不可破壞聚合邊界，不可在 domain 層用 GORM
 
-# Development Roadmap
-- MVP：
-  - 完成 Block/Transaction/Account/Network Service 的 Go-kit 重構
-  - 提供 gRPC/HTTP API 查詢
-  - Docker Compose 部署
-- 未來擴充：
-  - 前端 UI 優化
-  - 增加更多統計/分析功能
-  - 支援多鏈查詢
+# 開發規劃
+- 依據 Clean Architecture + DDD + Go-kit 分層，逐步重構：
+  1. 先完成 domain 層 interface 定義（model/event/repository/service）
+  2. 實作 service 層（Go-kit Service interface & 實作，協調 domain interface）
+  3. 完成 endpoint 層（將 Service 方法包裝為 endpoint.Endpoint）
+  4. 完成 transport 層（HTTP/gRPC handler/route，僅協定與解碼/編碼）
+  5. 整合資料庫與外部 TON 區塊鏈
+  6. 提供 API 給前端或第三方使用
+  7. 最後優化監控、測試與 CI/CD
 
-# Logical Dependency Chain
-1. 先完成 domain/service 層重構
-2. 實作 endpoint/transport 層（gRPC/HTTP）
-3. 整合資料庫與外部 TON 區塊鏈
-4. 提供 API 給前端或第三方使用
-5. 最後優化監控、測試與 CI/CD
-
-# Risks and Mitigations
+# 風險與對策
 - 重構風險：逐步遷移，保留原有 domain 測試
-- 技術選型：Go-kit 架構已廣泛應用，社群資源豐富
+- 技術選型：Go-kit + Clean Architecture + DDD 架構已廣泛應用，社群資源豐富
 - 測試覆蓋：加強單元測試與整合測試
 
-# Appendix
+# 附錄
 - 現有 domain 結構：block, transaction, account, network
 - Go-kit 官方文件與範例
+- Clean Architecture & DDD 參考資料
 </PRD> 

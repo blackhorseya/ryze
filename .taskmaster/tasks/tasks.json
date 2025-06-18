@@ -2,208 +2,273 @@
   "master": {
     "tasks": [
       {
-        "id": 1,
-        "title": "Setup Project Structure for Go-kit Microservices",
-        "description": "Initialize the project repository with Go-kit microservice architecture, setting up the basic folder structure and configuration files.",
-        "details": "1. Create a new Go module for the project\n2. Set up directory structure following Go-kit conventions:\n   - `/cmd` - Entry points for services\n   - `/pkg` - Shared packages\n   - `/internal` - Service-specific code\n   - `/api` - API definitions\n   - `/config` - Configuration files\n3. Configure Go modules and dependencies\n4. Set up Docker and Docker Compose files\n5. Initialize git repository with appropriate .gitignore\n6. Add README.md with project overview and setup instructions\n7. Create Makefile for common operations\n<info added on 2025-06-18T03:57:25.258Z>\n## Detailed Implementation Plan\n\n1. Go Module Initialization:\n   - Run `go mod init [project-name]`\n   - Verify go.mod and go.sum files are created correctly\n\n2. Directory Structure (Following Go-kit and Clean Architecture):\n   - `/cmd`: Service entry points (block, transaction, account, network)\n   - `/pkg`: Shared components (contextx, errorx, logging, persistence)\n   - `/internal`: Service-specific code organized by bounded contexts\n   - `/entity/domain`: Aggregate roots, models, business logic, proto definitions\n   - `/api`: API definitions (gRPC proto files, OpenAPI yaml)\n   - `/configs`: Configuration files\n\n3. Docker Configuration:\n   - Create Dockerfile with multi-stage build support\n   - Develop compose.yaml defining services, databases, and networks\n\n4. Git Repository Setup:\n   - Add comprehensive .gitignore for Go projects\n   - Create README.md with project overview, architecture explanation, and startup instructions\n   - Add CHANGELOG.md for version tracking\n\n5. Makefile Commands:\n   - build: Compile the application\n   - test: Run unit and integration tests\n   - lint: Run code quality checks\n   - run: Start the application locally\n   - docker-build: Build Docker images\n   - docker-up: Start services with Docker Compose\n   - docker-down: Stop and clean up Docker Compose services\n\n6. Validation Steps:\n   - Check for existing files to avoid duplication\n   - Ensure the project builds successfully\n   - Verify the structure is clear and follows established patterns\n</info added on 2025-06-18T03:57:25.258Z>",
-        "testStrategy": "Verify project structure manually. Ensure all configuration files are valid and the project can be built without errors.",
+        "id": 16,
+        "title": "Define Domain Layer Interfaces for Block Context",
+        "description": "Define the domain layer interfaces for the Block context following Clean Architecture and DDD principles, including entities, value objects, repository interfaces, and domain service interfaces.",
+        "details": "Create the following structure in internal/domain/block/:\n- model/: Define Block entity and related value objects\n- event/: Define domain events related to blocks\n- repository/: Define BlockRepository interface with methods like FindByID, FindLatest, etc.\n- service/: Define BlockService interface\n\nExample for Block entity:\n```go\npackage model\n\nimport (\n  \"time\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n)\n\n// Block represents a block in the TON blockchain\ntype Block struct {\n  ID          string\n  Height      uint64\n  Hash        string\n  PrevHash    string\n  CreatedAt   time.Time\n  Transactions []transaction.Transaction\n  // Other block properties\n}\n```\n\nExample for repository interface:\n```go\npackage repository\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/block/model\"\n)\n\n// BlockRepository defines the interface for block data access\ntype BlockRepository interface {\n  FindByID(ctx context.Context, id string) (*model.Block, error)\n  FindLatest(ctx context.Context, limit int) ([]*model.Block, error)\n  // Other methods\n}\n```",
+        "testStrategy": "Create unit tests for domain models to verify business rules and invariants. Use table-driven tests to verify different scenarios. No mocking is needed at this layer as we're only defining interfaces.",
         "priority": "high",
         "dependencies": [],
-        "status": "in-progress",
+        "status": "pending",
         "subtasks": []
       },
       {
-        "id": 2,
-        "title": "Define Domain Models and Interfaces",
-        "description": "Define the core domain models and interfaces for Block, Transaction, Account, and Network entities, preserving the existing domain structure.",
-        "details": "1. Create domain models for:\n   - Block: structure representing TON blockchain blocks\n   - Transaction: structure for transactions\n   - Account: structure for account information\n   - Network: structure for network statistics\n2. Define repository interfaces for each domain\n3. Define service interfaces for each domain\n4. Ensure backward compatibility with existing domain structure\n5. Add validation methods for each model\n\nExample Block model:\n```go\ntype Block struct {\n    ID          string    `json:\"id\"`\n    Height      int64     `json:\"height\"`\n    Timestamp   time.Time `json:\"timestamp\"`\n    PrevBlockID string    `json:\"prev_block_id\"`\n    Transactions []string `json:\"transactions\"`\n    // Other fields as per TON blockchain specification\n}\n\ntype BlockRepository interface {\n    GetByID(ctx context.Context, id string) (*Block, error)\n    GetLatest(ctx context.Context, limit int) ([]*Block, error)\n    // Other methods\n}\n```",
-        "testStrategy": "Write unit tests for domain models validation logic. Test serialization/deserialization of models to ensure compatibility with existing systems.",
+        "id": 17,
+        "title": "Define Domain Layer Interfaces for Transaction Context",
+        "description": "Define the domain layer interfaces for the Transaction context following Clean Architecture and DDD principles, including entities, value objects, repository interfaces, and domain service interfaces.",
+        "details": "Create the following structure in internal/domain/transaction/:\n- model/: Define Transaction entity and related value objects\n- event/: Define domain events related to transactions\n- repository/: Define TransactionRepository interface with methods like FindByID, FindByBlockID, etc.\n- service/: Define TransactionService interface\n\nExample for Transaction entity:\n```go\npackage model\n\nimport \"time\"\n\n// Transaction represents a transaction in the TON blockchain\ntype Transaction struct {\n  ID        string\n  BlockID   string\n  FromAddr  string\n  ToAddr    string\n  Amount    uint64\n  Fee       uint64\n  Status    TransactionStatus\n  Timestamp time.Time\n  // Other transaction properties\n}\n\n// TransactionStatus represents the status of a transaction\ntype TransactionStatus string\n\nconst (\n  StatusPending   TransactionStatus = \"pending\"\n  StatusCompleted TransactionStatus = \"completed\"\n  StatusFailed    TransactionStatus = \"failed\"\n)\n```\n\nExample for repository interface:\n```go\npackage repository\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n)\n\n// TransactionRepository defines the interface for transaction data access\ntype TransactionRepository interface {\n  FindByID(ctx context.Context, id string) (*model.Transaction, error)\n  FindByBlockID(ctx context.Context, blockID string) ([]*model.Transaction, error)\n  // Other methods\n}\n```",
+        "testStrategy": "Create unit tests for domain models to verify business rules and invariants. Use table-driven tests to verify different scenarios. No mocking is needed at this layer as we're only defining interfaces.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Define Domain Layer Interfaces for Account Context",
+        "description": "Define the domain layer interfaces for the Account context following Clean Architecture and DDD principles, including entities, value objects, repository interfaces, and domain service interfaces.",
+        "details": "Create the following structure in internal/domain/account/:\n- model/: Define Account entity and related value objects\n- event/: Define domain events related to accounts\n- repository/: Define AccountRepository interface with methods like FindByAddress, GetBalance, etc.\n- service/: Define AccountService interface\n\nExample for Account entity:\n```go\npackage model\n\n// Account represents a user account in the TON blockchain\ntype Account struct {\n  Address     string\n  Balance     uint64\n  LastActive  time.Time\n  // Other account properties\n}\n```\n\nExample for repository interface:\n```go\npackage repository\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/account/model\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n)\n\n// AccountRepository defines the interface for account data access\ntype AccountRepository interface {\n  FindByAddress(ctx context.Context, address string) (*model.Account, error)\n  GetBalance(ctx context.Context, address string) (uint64, error)\n  GetTransactionHistory(ctx context.Context, address string, limit int) ([]*transaction.Transaction, error)\n  // Other methods\n}\n```",
+        "testStrategy": "Create unit tests for domain models to verify business rules and invariants. Use table-driven tests to verify different scenarios. No mocking is needed at this layer as we're only defining interfaces.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Define Domain Layer Interfaces for Network Context",
+        "description": "Define the domain layer interfaces for the Network context following Clean Architecture and DDD principles, including entities, value objects, repository interfaces, and domain service interfaces.",
+        "details": "Create the following structure in internal/domain/network/:\n- model/: Define Network entity and related value objects for network statistics\n- event/: Define domain events related to network status changes\n- repository/: Define NetworkRepository interface with methods like GetStats, GetNodeStatus, etc.\n- service/: Define NetworkService interface\n\nExample for Network models:\n```go\npackage model\n\nimport \"time\"\n\n// NetworkStats represents statistics about the TON blockchain network\ntype NetworkStats struct {\n  BlockHeight      uint64\n  TPS              float64  // Transactions per second\n  ActiveValidators uint64\n  TotalAccounts    uint64\n  UpdatedAt        time.Time\n}\n\n// NodeStatus represents the status of a network node\ntype NodeStatus struct {\n  ID           string\n  IsActive     bool\n  Version      string\n  LastSeen     time.Time\n  BlockHeight  uint64\n}\n```\n\nExample for repository interface:\n```go\npackage repository\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/network/model\"\n)\n\n// NetworkRepository defines the interface for network data access\ntype NetworkRepository interface {\n  GetStats(ctx context.Context) (*model.NetworkStats, error)\n  GetNodeStatus(ctx context.Context, nodeID string) (*model.NodeStatus, error)\n  GetAllNodes(ctx context.Context) ([]*model.NodeStatus, error)\n  // Other methods\n}\n```",
+        "testStrategy": "Create unit tests for domain models to verify business rules and invariants. Use table-driven tests to verify different scenarios. No mocking is needed at this layer as we're only defining interfaces.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Implement Block Service Layer",
+        "description": "Implement the service layer for the Block context using Go-kit, coordinating domain interfaces to fulfill application use cases.",
+        "details": "Create the following structure in internal/service/block/:\n- service.go: Define BlockService interface and implementation\n- middleware.go: Implement logging, metrics, and other cross-cutting concerns\n\nExample implementation:\n```go\npackage block\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/block/model\"\n  \"github.com/your-org/ryze/internal/domain/block/repository\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// Service defines the block service interface\ntype Service interface {\n  GetBlockByID(ctx context.Context, id string) (*model.Block, error)\n  GetLatestBlocks(ctx context.Context, limit int) ([]*model.Block, error)\n  // Other methods\n}\n\n// serviceImpl implements the Service interface\ntype serviceImpl struct {\n  blockRepo repository.BlockRepository\n}\n\n// NewService creates a new block service\nfunc NewService(blockRepo repository.BlockRepository) Service {\n  return &serviceImpl{\n    blockRepo: blockRepo,\n  }\n}\n\n// GetBlockByID retrieves a block by its ID\nfunc (s *serviceImpl) GetBlockByID(ctx context.Context, id string) (*model.Block, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting block by ID\", \"id\", id)\n  \n  return s.blockRepo.FindByID(ctx, id)\n}\n\n// GetLatestBlocks retrieves the latest blocks\nfunc (s *serviceImpl) GetLatestBlocks(ctx context.Context, limit int) ([]*model.Block, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting latest blocks\", \"limit\", limit)\n  \n  return s.blockRepo.FindLatest(ctx, limit)\n}\n```\n\nImplement middleware for logging and instrumentation:\n```go\npackage block\n\nimport (\n  \"context\"\n  \"time\"\n  \"github.com/your-org/ryze/internal/domain/block/model\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// LoggingMiddleware logs service method calls\ntype LoggingMiddleware struct {\n  next Service\n}\n\n// NewLoggingMiddleware creates a new logging middleware\nfunc NewLoggingMiddleware(next Service) Service {\n  return &LoggingMiddleware{next: next}\n}\n\n// GetBlockByID logs the method call and delegates to the next service\nfunc (mw *LoggingMiddleware) GetBlockByID(ctx context.Context, id string) (block *model.Block, err error) {\n  logger := contextx.Logger(ctx)\n  defer func(begin time.Time) {\n    logger.Info(\n      \"GetBlockByID\",\n      \"id\", id,\n      \"took\", time.Since(begin),\n      \"err\", err,\n    )\n  }(time.Now())\n  return mw.next.GetBlockByID(ctx, id)\n}\n\n// Implement other middleware methods...\n```",
+        "testStrategy": "Create unit tests for the service layer using mocks for repositories. Use uber-go/mock to generate mocks for the repository interfaces. Test happy paths, error cases, and edge cases. Verify that the service correctly coordinates with repositories and applies business logic.",
+        "priority": "medium",
+        "dependencies": [
+          16
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 21,
+        "title": "Implement Transaction Service Layer",
+        "description": "Implement the service layer for the Transaction context using Go-kit, coordinating domain interfaces to fulfill application use cases.",
+        "details": "Create the following structure in internal/service/transaction/:\n- service.go: Define TransactionService interface and implementation\n- middleware.go: Implement logging, metrics, and other cross-cutting concerns\n\nExample implementation:\n```go\npackage transaction\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n  \"github.com/your-org/ryze/internal/domain/transaction/repository\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// Service defines the transaction service interface\ntype Service interface {\n  GetTransactionByID(ctx context.Context, id string) (*model.Transaction, error)\n  GetTransactionsByBlockID(ctx context.Context, blockID string) ([]*model.Transaction, error)\n  // Other methods\n}\n\n// serviceImpl implements the Service interface\ntype serviceImpl struct {\n  txRepo repository.TransactionRepository\n}\n\n// NewService creates a new transaction service\nfunc NewService(txRepo repository.TransactionRepository) Service {\n  return &serviceImpl{\n    txRepo: txRepo,\n  }\n}\n\n// GetTransactionByID retrieves a transaction by its ID\nfunc (s *serviceImpl) GetTransactionByID(ctx context.Context, id string) (*model.Transaction, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting transaction by ID\", \"id\", id)\n  \n  return s.txRepo.FindByID(ctx, id)\n}\n\n// GetTransactionsByBlockID retrieves transactions by block ID\nfunc (s *serviceImpl) GetTransactionsByBlockID(ctx context.Context, blockID string) ([]*model.Transaction, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting transactions by block ID\", \"blockID\", blockID)\n  \n  return s.txRepo.FindByBlockID(ctx, blockID)\n}\n```\n\nImplement middleware for logging and instrumentation similar to the Block service.",
+        "testStrategy": "Create unit tests for the service layer using mocks for repositories. Use uber-go/mock to generate mocks for the repository interfaces. Test happy paths, error cases, and edge cases. Verify that the service correctly coordinates with repositories and applies business logic.",
+        "priority": "medium",
+        "dependencies": [
+          17
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 22,
+        "title": "Implement Account Service Layer",
+        "description": "Implement the service layer for the Account context using Go-kit, coordinating domain interfaces to fulfill application use cases.",
+        "details": "Create the following structure in internal/service/account/:\n- service.go: Define AccountService interface and implementation\n- middleware.go: Implement logging, metrics, and other cross-cutting concerns\n\nExample implementation:\n```go\npackage account\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/account/model\"\n  \"github.com/your-org/ryze/internal/domain/account/repository\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// Service defines the account service interface\ntype Service interface {\n  GetAccountByAddress(ctx context.Context, address string) (*model.Account, error)\n  GetAccountBalance(ctx context.Context, address string) (uint64, error)\n  GetAccountTransactions(ctx context.Context, address string, limit int) ([]*transaction.Transaction, error)\n  // Other methods\n}\n\n// serviceImpl implements the Service interface\ntype serviceImpl struct {\n  accountRepo repository.AccountRepository\n}\n\n// NewService creates a new account service\nfunc NewService(accountRepo repository.AccountRepository) Service {\n  return &serviceImpl{\n    accountRepo: accountRepo,\n  }\n}\n\n// GetAccountByAddress retrieves an account by its address\nfunc (s *serviceImpl) GetAccountByAddress(ctx context.Context, address string) (*model.Account, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting account by address\", \"address\", address)\n  \n  return s.accountRepo.FindByAddress(ctx, address)\n}\n\n// GetAccountBalance retrieves an account's balance\nfunc (s *serviceImpl) GetAccountBalance(ctx context.Context, address string) (uint64, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting account balance\", \"address\", address)\n  \n  return s.accountRepo.GetBalance(ctx, address)\n}\n\n// GetAccountTransactions retrieves an account's transaction history\nfunc (s *serviceImpl) GetAccountTransactions(ctx context.Context, address string, limit int) ([]*transaction.Transaction, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting account transactions\", \"address\", address, \"limit\", limit)\n  \n  return s.accountRepo.GetTransactionHistory(ctx, address, limit)\n}\n```\n\nImplement middleware for logging and instrumentation similar to the Block service.",
+        "testStrategy": "Create unit tests for the service layer using mocks for repositories. Use uber-go/mock to generate mocks for the repository interfaces. Test happy paths, error cases, and edge cases. Verify that the service correctly coordinates with repositories and applies business logic.",
+        "priority": "medium",
+        "dependencies": [
+          18
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Implement Network Service Layer",
+        "description": "Implement the service layer for the Network context using Go-kit, coordinating domain interfaces to fulfill application use cases.",
+        "details": "Create the following structure in internal/service/network/:\n- service.go: Define NetworkService interface and implementation\n- middleware.go: Implement logging, metrics, and other cross-cutting concerns\n\nExample implementation:\n```go\npackage network\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/network/model\"\n  \"github.com/your-org/ryze/internal/domain/network/repository\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// Service defines the network service interface\ntype Service interface {\n  GetNetworkStats(ctx context.Context) (*model.NetworkStats, error)\n  GetNodeStatus(ctx context.Context, nodeID string) (*model.NodeStatus, error)\n  GetAllNodes(ctx context.Context) ([]*model.NodeStatus, error)\n  // Other methods\n}\n\n// serviceImpl implements the Service interface\ntype serviceImpl struct {\n  networkRepo repository.NetworkRepository\n}\n\n// NewService creates a new network service\nfunc NewService(networkRepo repository.NetworkRepository) Service {\n  return &serviceImpl{\n    networkRepo: networkRepo,\n  }\n}\n\n// GetNetworkStats retrieves network statistics\nfunc (s *serviceImpl) GetNetworkStats(ctx context.Context) (*model.NetworkStats, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting network stats\")\n  \n  return s.networkRepo.GetStats(ctx)\n}\n\n// GetNodeStatus retrieves a node's status\nfunc (s *serviceImpl) GetNodeStatus(ctx context.Context, nodeID string) (*model.NodeStatus, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting node status\", \"nodeID\", nodeID)\n  \n  return s.networkRepo.GetNodeStatus(ctx, nodeID)\n}\n\n// GetAllNodes retrieves all nodes' status\nfunc (s *serviceImpl) GetAllNodes(ctx context.Context) ([]*model.NodeStatus, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Getting all nodes\")\n  \n  return s.networkRepo.GetAllNodes(ctx)\n}\n```\n\nImplement middleware for logging and instrumentation similar to the Block service.",
+        "testStrategy": "Create unit tests for the service layer using mocks for repositories. Use uber-go/mock to generate mocks for the repository interfaces. Test happy paths, error cases, and edge cases. Verify that the service correctly coordinates with repositories and applies business logic.",
+        "priority": "medium",
+        "dependencies": [
+          19
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 24,
+        "title": "Implement Block Endpoints",
+        "description": "Implement the endpoint layer for the Block context, wrapping service methods as Go-kit endpoints.",
+        "details": "Create the following structure in internal/endpoint/block/:\n- endpoint.go: Define request/response structs and endpoint functions\n\nExample implementation:\n```go\npackage block\n\nimport (\n  \"context\"\n  \"github.com/go-kit/kit/endpoint\"\n  \"github.com/your-org/ryze/internal/domain/block/model\"\n  \"github.com/your-org/ryze/internal/service/block\"\n)\n\n// GetBlockByIDRequest represents a request to get a block by ID\ntype GetBlockByIDRequest struct {\n  ID string `json:\"id\"`\n}\n\n// GetBlockByIDResponse represents a response containing a block\ntype GetBlockByIDResponse struct {\n  Block *model.Block `json:\"block,omitempty\"`\n  Err   string       `json:\"error,omitempty\"`\n}\n\n// GetLatestBlocksRequest represents a request to get the latest blocks\ntype GetLatestBlocksRequest struct {\n  Limit int `json:\"limit\"`\n}\n\n// GetLatestBlocksResponse represents a response containing blocks\ntype GetLatestBlocksResponse struct {\n  Blocks []*model.Block `json:\"blocks,omitempty\"`\n  Err    string         `json:\"error,omitempty\"`\n}\n\n// MakeGetBlockByIDEndpoint creates an endpoint for getting a block by ID\nfunc MakeGetBlockByIDEndpoint(s block.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetBlockByIDRequest)\n    block, err := s.GetBlockByID(ctx, req.ID)\n    if err != nil {\n      return GetBlockByIDResponse{Err: err.Error()}, nil\n    }\n    return GetBlockByIDResponse{Block: block}, nil\n  }\n}\n\n// MakeGetLatestBlocksEndpoint creates an endpoint for getting the latest blocks\nfunc MakeGetLatestBlocksEndpoint(s block.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetLatestBlocksRequest)\n    blocks, err := s.GetLatestBlocks(ctx, req.Limit)\n    if err != nil {\n      return GetLatestBlocksResponse{Err: err.Error()}, nil\n    }\n    return GetLatestBlocksResponse{Blocks: blocks}, nil\n  }\n}\n\n// Endpoints collects all endpoints for the block service\ntype Endpoints struct {\n  GetBlockByID    endpoint.Endpoint\n  GetLatestBlocks endpoint.Endpoint\n}\n\n// NewEndpoints creates new block endpoints\nfunc NewEndpoints(s block.Service) Endpoints {\n  return Endpoints{\n    GetBlockByID:    MakeGetBlockByIDEndpoint(s),\n    GetLatestBlocks: MakeGetLatestBlocksEndpoint(s),\n  }\n}\n```",
+        "testStrategy": "Create unit tests for endpoints using mocks for services. Test that endpoints correctly transform requests to service calls and responses. Verify error handling and response formatting.",
+        "priority": "medium",
+        "dependencies": [
+          20
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 25,
+        "title": "Implement Transaction Endpoints",
+        "description": "Implement the endpoint layer for the Transaction context, wrapping service methods as Go-kit endpoints.",
+        "details": "Create the following structure in internal/endpoint/transaction/:\n- endpoint.go: Define request/response structs and endpoint functions\n\nExample implementation:\n```go\npackage transaction\n\nimport (\n  \"context\"\n  \"github.com/go-kit/kit/endpoint\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n  \"github.com/your-org/ryze/internal/service/transaction\"\n)\n\n// GetTransactionByIDRequest represents a request to get a transaction by ID\ntype GetTransactionByIDRequest struct {\n  ID string `json:\"id\"`\n}\n\n// GetTransactionByIDResponse represents a response containing a transaction\ntype GetTransactionByIDResponse struct {\n  Transaction *model.Transaction `json:\"transaction,omitempty\"`\n  Err         string             `json:\"error,omitempty\"`\n}\n\n// GetTransactionsByBlockIDRequest represents a request to get transactions by block ID\ntype GetTransactionsByBlockIDRequest struct {\n  BlockID string `json:\"block_id\"`\n}\n\n// GetTransactionsByBlockIDResponse represents a response containing transactions\ntype GetTransactionsByBlockIDResponse struct {\n  Transactions []*model.Transaction `json:\"transactions,omitempty\"`\n  Err          string               `json:\"error,omitempty\"`\n}\n\n// MakeGetTransactionByIDEndpoint creates an endpoint for getting a transaction by ID\nfunc MakeGetTransactionByIDEndpoint(s transaction.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetTransactionByIDRequest)\n    tx, err := s.GetTransactionByID(ctx, req.ID)\n    if err != nil {\n      return GetTransactionByIDResponse{Err: err.Error()}, nil\n    }\n    return GetTransactionByIDResponse{Transaction: tx}, nil\n  }\n}\n\n// MakeGetTransactionsByBlockIDEndpoint creates an endpoint for getting transactions by block ID\nfunc MakeGetTransactionsByBlockIDEndpoint(s transaction.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetTransactionsByBlockIDRequest)\n    txs, err := s.GetTransactionsByBlockID(ctx, req.BlockID)\n    if err != nil {\n      return GetTransactionsByBlockIDResponse{Err: err.Error()}, nil\n    }\n    return GetTransactionsByBlockIDResponse{Transactions: txs}, nil\n  }\n}\n\n// Endpoints collects all endpoints for the transaction service\ntype Endpoints struct {\n  GetTransactionByID      endpoint.Endpoint\n  GetTransactionsByBlockID endpoint.Endpoint\n}\n\n// NewEndpoints creates new transaction endpoints\nfunc NewEndpoints(s transaction.Service) Endpoints {\n  return Endpoints{\n    GetTransactionByID:      MakeGetTransactionByIDEndpoint(s),\n    GetTransactionsByBlockID: MakeGetTransactionsByBlockIDEndpoint(s),\n  }\n}\n```",
+        "testStrategy": "Create unit tests for endpoints using mocks for services. Test that endpoints correctly transform requests to service calls and responses. Verify error handling and response formatting.",
+        "priority": "medium",
+        "dependencies": [
+          21
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 26,
+        "title": "Implement Account Endpoints",
+        "description": "Implement the endpoint layer for the Account context, wrapping service methods as Go-kit endpoints.",
+        "details": "Create the following structure in internal/endpoint/account/:\n- endpoint.go: Define request/response structs and endpoint functions\n\nExample implementation:\n```go\npackage account\n\nimport (\n  \"context\"\n  \"github.com/go-kit/kit/endpoint\"\n  \"github.com/your-org/ryze/internal/domain/account/model\"\n  \"github.com/your-org/ryze/internal/domain/transaction/model\"\n  \"github.com/your-org/ryze/internal/service/account\"\n)\n\n// GetAccountByAddressRequest represents a request to get an account by address\ntype GetAccountByAddressRequest struct {\n  Address string `json:\"address\"`\n}\n\n// GetAccountByAddressResponse represents a response containing an account\ntype GetAccountByAddressResponse struct {\n  Account *model.Account `json:\"account,omitempty\"`\n  Err     string         `json:\"error,omitempty\"`\n}\n\n// GetAccountBalanceRequest represents a request to get an account balance\ntype GetAccountBalanceRequest struct {\n  Address string `json:\"address\"`\n}\n\n// GetAccountBalanceResponse represents a response containing an account balance\ntype GetAccountBalanceResponse struct {\n  Balance uint64 `json:\"balance,omitempty\"`\n  Err     string `json:\"error,omitempty\"`\n}\n\n// GetAccountTransactionsRequest represents a request to get account transactions\ntype GetAccountTransactionsRequest struct {\n  Address string `json:\"address\"`\n  Limit   int    `json:\"limit\"`\n}\n\n// GetAccountTransactionsResponse represents a response containing account transactions\ntype GetAccountTransactionsResponse struct {\n  Transactions []*transaction.Transaction `json:\"transactions,omitempty\"`\n  Err          string                     `json:\"error,omitempty\"`\n}\n\n// MakeGetAccountByAddressEndpoint creates an endpoint for getting an account by address\nfunc MakeGetAccountByAddressEndpoint(s account.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetAccountByAddressRequest)\n    account, err := s.GetAccountByAddress(ctx, req.Address)\n    if err != nil {\n      return GetAccountByAddressResponse{Err: err.Error()}, nil\n    }\n    return GetAccountByAddressResponse{Account: account}, nil\n  }\n}\n\n// MakeGetAccountBalanceEndpoint creates an endpoint for getting an account balance\nfunc MakeGetAccountBalanceEndpoint(s account.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetAccountBalanceRequest)\n    balance, err := s.GetAccountBalance(ctx, req.Address)\n    if err != nil {\n      return GetAccountBalanceResponse{Err: err.Error()}, nil\n    }\n    return GetAccountBalanceResponse{Balance: balance}, nil\n  }\n}\n\n// MakeGetAccountTransactionsEndpoint creates an endpoint for getting account transactions\nfunc MakeGetAccountTransactionsEndpoint(s account.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetAccountTransactionsRequest)\n    txs, err := s.GetAccountTransactions(ctx, req.Address, req.Limit)\n    if err != nil {\n      return GetAccountTransactionsResponse{Err: err.Error()}, nil\n    }\n    return GetAccountTransactionsResponse{Transactions: txs}, nil\n  }\n}\n\n// Endpoints collects all endpoints for the account service\ntype Endpoints struct {\n  GetAccountByAddress    endpoint.Endpoint\n  GetAccountBalance      endpoint.Endpoint\n  GetAccountTransactions endpoint.Endpoint\n}\n\n// NewEndpoints creates new account endpoints\nfunc NewEndpoints(s account.Service) Endpoints {\n  return Endpoints{\n    GetAccountByAddress:    MakeGetAccountByAddressEndpoint(s),\n    GetAccountBalance:      MakeGetAccountBalanceEndpoint(s),\n    GetAccountTransactions: MakeGetAccountTransactionsEndpoint(s),\n  }\n}\n```",
+        "testStrategy": "Create unit tests for endpoints using mocks for services. Test that endpoints correctly transform requests to service calls and responses. Verify error handling and response formatting.",
+        "priority": "medium",
+        "dependencies": [
+          22
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 27,
+        "title": "Implement Network Endpoints",
+        "description": "Implement the endpoint layer for the Network context, wrapping service methods as Go-kit endpoints.",
+        "details": "Create the following structure in internal/endpoint/network/:\n- endpoint.go: Define request/response structs and endpoint functions\n\nExample implementation:\n```go\npackage network\n\nimport (\n  \"context\"\n  \"github.com/go-kit/kit/endpoint\"\n  \"github.com/your-org/ryze/internal/domain/network/model\"\n  \"github.com/your-org/ryze/internal/service/network\"\n)\n\n// GetNetworkStatsRequest represents a request to get network stats\ntype GetNetworkStatsRequest struct {}\n\n// GetNetworkStatsResponse represents a response containing network stats\ntype GetNetworkStatsResponse struct {\n  Stats *model.NetworkStats `json:\"stats,omitempty\"`\n  Err   string              `json:\"error,omitempty\"`\n}\n\n// GetNodeStatusRequest represents a request to get a node's status\ntype GetNodeStatusRequest struct {\n  NodeID string `json:\"node_id\"`\n}\n\n// GetNodeStatusResponse represents a response containing a node's status\ntype GetNodeStatusResponse struct {\n  Status *model.NodeStatus `json:\"status,omitempty\"`\n  Err    string            `json:\"error,omitempty\"`\n}\n\n// GetAllNodesRequest represents a request to get all nodes\ntype GetAllNodesRequest struct {}\n\n// GetAllNodesResponse represents a response containing all nodes\ntype GetAllNodesResponse struct {\n  Nodes []*model.NodeStatus `json:\"nodes,omitempty\"`\n  Err   string              `json:\"error,omitempty\"`\n}\n\n// MakeGetNetworkStatsEndpoint creates an endpoint for getting network stats\nfunc MakeGetNetworkStatsEndpoint(s network.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    stats, err := s.GetNetworkStats(ctx)\n    if err != nil {\n      return GetNetworkStatsResponse{Err: err.Error()}, nil\n    }\n    return GetNetworkStatsResponse{Stats: stats}, nil\n  }\n}\n\n// MakeGetNodeStatusEndpoint creates an endpoint for getting a node's status\nfunc MakeGetNodeStatusEndpoint(s network.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    req := request.(GetNodeStatusRequest)\n    status, err := s.GetNodeStatus(ctx, req.NodeID)\n    if err != nil {\n      return GetNodeStatusResponse{Err: err.Error()}, nil\n    }\n    return GetNodeStatusResponse{Status: status}, nil\n  }\n}\n\n// MakeGetAllNodesEndpoint creates an endpoint for getting all nodes\nfunc MakeGetAllNodesEndpoint(s network.Service) endpoint.Endpoint {\n  return func(ctx context.Context, request interface{}) (interface{}, error) {\n    nodes, err := s.GetAllNodes(ctx)\n    if err != nil {\n      return GetAllNodesResponse{Err: err.Error()}, nil\n    }\n    return GetAllNodesResponse{Nodes: nodes}, nil\n  }\n}\n\n// Endpoints collects all endpoints for the network service\ntype Endpoints struct {\n  GetNetworkStats endpoint.Endpoint\n  GetNodeStatus   endpoint.Endpoint\n  GetAllNodes     endpoint.Endpoint\n}\n\n// NewEndpoints creates new network endpoints\nfunc NewEndpoints(s network.Service) Endpoints {\n  return Endpoints{\n    GetNetworkStats: MakeGetNetworkStatsEndpoint(s),\n    GetNodeStatus:   MakeGetNodeStatusEndpoint(s),\n    GetAllNodes:     MakeGetAllNodesEndpoint(s),\n  }\n}\n```",
+        "testStrategy": "Create unit tests for endpoints using mocks for services. Test that endpoints correctly transform requests to service calls and responses. Verify error handling and response formatting.",
+        "priority": "medium",
+        "dependencies": [
+          23
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 28,
+        "title": "Implement HTTP Transport Layer",
+        "description": "Implement the HTTP transport layer for all contexts, creating HTTP handlers and routes for the endpoints.",
+        "details": "Create the following structure in internal/transport/http/:\n- block.go: HTTP handlers for block endpoints\n- transaction.go: HTTP handlers for transaction endpoints\n- account.go: HTTP handlers for account endpoints\n- network.go: HTTP handlers for network endpoints\n- server.go: HTTP server setup and routing\n\nExample implementation for block.go:\n```go\npackage http\n\nimport (\n  \"context\"\n  \"encoding/json\"\n  \"net/http\"\n  \"github.com/gorilla/mux\"\n  \"github.com/go-kit/kit/transport/http\"\n  \"github.com/your-org/ryze/internal/endpoint/block\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// MakeBlockHandlers creates HTTP handlers for block endpoints\nfunc MakeBlockHandlers(endpoints block.Endpoints) http.Handler {\n  r := mux.NewRouter()\n  \n  // GET /blocks/{id}\n  r.Methods(\"GET\").Path(\"/blocks/{id}\").Handler(http.NewServer(\n    endpoints.GetBlockByID,\n    decodeGetBlockByIDRequest,\n    encodeResponse,\n    []http.ServerOption{\n      http.ServerBefore(contextx.HTTPToContext()),\n    }...,\n  ))\n  \n  // GET /blocks?limit={limit}\n  r.Methods(\"GET\").Path(\"/blocks\").Handler(http.NewServer(\n    endpoints.GetLatestBlocks,\n    decodeGetLatestBlocksRequest,\n    encodeResponse,\n    []http.ServerOption{\n      http.ServerBefore(contextx.HTTPToContext()),\n    }...,\n  ))\n  \n  return r\n}\n\n// decodeGetBlockByIDRequest decodes a GetBlockByIDRequest from an HTTP request\nfunc decodeGetBlockByIDRequest(_ context.Context, r *http.Request) (interface{}, error) {\n  vars := mux.Vars(r)\n  id, ok := vars[\"id\"]\n  if !ok {\n    return nil, ErrBadRouting\n  }\n  return block.GetBlockByIDRequest{ID: id}, nil\n}\n\n// decodeGetLatestBlocksRequest decodes a GetLatestBlocksRequest from an HTTP request\nfunc decodeGetLatestBlocksRequest(_ context.Context, r *http.Request) (interface{}, error) {\n  limit := 10 // Default limit\n  if l := r.URL.Query().Get(\"limit\"); l != \"\" {\n    limit, _ = strconv.Atoi(l)\n  }\n  return block.GetLatestBlocksRequest{Limit: limit}, nil\n}\n\n// encodeResponse encodes the response as JSON\nfunc encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {\n  w.Header().Set(\"Content-Type\", \"application/json; charset=utf-8\")\n  return json.NewEncoder(w).Encode(response)\n}\n```\n\nImplement similar handlers for transaction, account, and network endpoints.\n\nExample for server.go:\n```go\npackage http\n\nimport (\n  \"net/http\"\n  \"github.com/gorilla/mux\"\n  \"github.com/your-org/ryze/internal/endpoint/block\"\n  \"github.com/your-org/ryze/internal/endpoint/transaction\"\n  \"github.com/your-org/ryze/internal/endpoint/account\"\n  \"github.com/your-org/ryze/internal/endpoint/network\"\n)\n\n// NewServer creates a new HTTP server with all routes\nfunc NewServer(\n  blockEndpoints block.Endpoints,\n  txEndpoints transaction.Endpoints,\n  accountEndpoints account.Endpoints,\n  networkEndpoints network.Endpoints,\n) http.Handler {\n  r := mux.NewRouter()\n  \n  // Mount handlers for each context\n  r.PathPrefix(\"/blocks\").Handler(MakeBlockHandlers(blockEndpoints))\n  r.PathPrefix(\"/transactions\").Handler(MakeTransactionHandlers(txEndpoints))\n  r.PathPrefix(\"/accounts\").Handler(MakeAccountHandlers(accountEndpoints))\n  r.PathPrefix(\"/network\").Handler(MakeNetworkHandlers(networkEndpoints))\n  \n  // Add middleware for CORS, logging, etc.\n  \n  return r\n}\n```",
+        "testStrategy": "Create integration tests for HTTP handlers. Test that HTTP requests are correctly decoded, routed to the appropriate endpoint, and responses are correctly encoded. Use httptest package to create a test server and make requests to it.",
+        "priority": "medium",
+        "dependencies": [
+          24,
+          25,
+          26,
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 29,
+        "title": "Implement gRPC Transport Layer",
+        "description": "Implement the gRPC transport layer for all contexts, creating gRPC handlers and services for the endpoints.",
+        "details": "Create the following structure in internal/transport/grpc/:\n- block.go: gRPC handlers for block endpoints\n- transaction.go: gRPC handlers for transaction endpoints\n- account.go: gRPC handlers for account endpoints\n- network.go: gRPC handlers for network endpoints\n- server.go: gRPC server setup\n\nFirst, define Protocol Buffers for each context in proto/ directory and generate Go code using protoc.\n\nExample implementation for block.go:\n```go\npackage grpc\n\nimport (\n  \"context\"\n  \"github.com/go-kit/kit/transport/grpc\"\n  \"github.com/your-org/ryze/internal/endpoint/block\"\n  pb \"github.com/your-org/ryze/proto/block\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// blockServer implements the BlockService gRPC interface\ntype blockServer struct {\n  getBlockByID    grpc.Handler\n  getLatestBlocks grpc.Handler\n}\n\n// NewBlockServer creates a new gRPC server for block endpoints\nfunc NewBlockServer(endpoints block.Endpoints) pb.BlockServiceServer {\n  return &blockServer{\n    getBlockByID: grpc.NewServer(\n      endpoints.GetBlockByID,\n      decodeGetBlockByIDRequest,\n      encodeGetBlockByIDResponse,\n      []grpc.ServerOption{\n        grpc.ServerBefore(contextx.GRPCToContext()),\n      }...,\n    ),\n    getLatestBlocks: grpc.NewServer(\n      endpoints.GetLatestBlocks,\n      decodeGetLatestBlocksRequest,\n      encodeGetLatestBlocksResponse,\n      []grpc.ServerOption{\n        grpc.ServerBefore(contextx.GRPCToContext()),\n      }...,\n    ),\n  }\n}\n\n// GetBlockByID implements the gRPC method\nfunc (s *blockServer) GetBlockByID(ctx context.Context, req *pb.GetBlockByIDRequest) (*pb.GetBlockByIDResponse, error) {\n  _, resp, err := s.getBlockByID.ServeGRPC(ctx, req)\n  if err != nil {\n    return nil, err\n  }\n  return resp.(*pb.GetBlockByIDResponse), nil\n}\n\n// GetLatestBlocks implements the gRPC method\nfunc (s *blockServer) GetLatestBlocks(ctx context.Context, req *pb.GetLatestBlocksRequest) (*pb.GetLatestBlocksResponse, error) {\n  _, resp, err := s.getLatestBlocks.ServeGRPC(ctx, req)\n  if err != nil {\n    return nil, err\n  }\n  return resp.(*pb.GetLatestBlocksResponse), nil\n}\n\n// decodeGetBlockByIDRequest decodes a gRPC request to an endpoint request\nfunc decodeGetBlockByIDRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {\n  req := grpcReq.(*pb.GetBlockByIDRequest)\n  return block.GetBlockByIDRequest{ID: req.Id}, nil\n}\n\n// encodeGetBlockByIDResponse encodes an endpoint response to a gRPC response\nfunc encodeGetBlockByIDResponse(_ context.Context, response interface{}) (interface{}, error) {\n  resp := response.(block.GetBlockByIDResponse)\n  if resp.Err != \"\" {\n    return &pb.GetBlockByIDResponse{Error: resp.Err}, nil\n  }\n  return &pb.GetBlockByIDResponse{Block: convertBlockToPB(resp.Block)}, nil\n}\n\n// decodeGetLatestBlocksRequest decodes a gRPC request to an endpoint request\nfunc decodeGetLatestBlocksRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {\n  req := grpcReq.(*pb.GetLatestBlocksRequest)\n  return block.GetLatestBlocksRequest{Limit: int(req.Limit)}, nil\n}\n\n// encodeGetLatestBlocksResponse encodes an endpoint response to a gRPC response\nfunc encodeGetLatestBlocksResponse(_ context.Context, response interface{}) (interface{}, error) {\n  resp := response.(block.GetLatestBlocksResponse)\n  if resp.Err != \"\" {\n    return &pb.GetLatestBlocksResponse{Error: resp.Err}, nil\n  }\n  blocks := make([]*pb.Block, len(resp.Blocks))\n  for i, b := range resp.Blocks {\n    blocks[i] = convertBlockToPB(b)\n  }\n  return &pb.GetLatestBlocksResponse{Blocks: blocks}, nil\n}\n\n// convertBlockToPB converts a domain block to a protobuf block\nfunc convertBlockToPB(block *model.Block) *pb.Block {\n  return &pb.Block{\n    Id:        block.ID,\n    Height:    block.Height,\n    Hash:      block.Hash,\n    PrevHash:  block.PrevHash,\n    CreatedAt: timestamppb.New(block.CreatedAt),\n    // Convert other fields\n  }\n}\n```\n\nImplement similar handlers for transaction, account, and network endpoints.\n\nExample for server.go:\n```go\npackage grpc\n\nimport (\n  \"net\"\n  \"google.golang.org/grpc\"\n  \"github.com/your-org/ryze/internal/endpoint/block\"\n  \"github.com/your-org/ryze/internal/endpoint/transaction\"\n  \"github.com/your-org/ryze/internal/endpoint/account\"\n  \"github.com/your-org/ryze/internal/endpoint/network\"\n  pbBlock \"github.com/your-org/ryze/proto/block\"\n  pbTx \"github.com/your-org/ryze/proto/transaction\"\n  pbAccount \"github.com/your-org/ryze/proto/account\"\n  pbNetwork \"github.com/your-org/ryze/proto/network\"\n)\n\n// NewServer creates a new gRPC server with all services\nfunc NewServer(\n  blockEndpoints block.Endpoints,\n  txEndpoints transaction.Endpoints,\n  accountEndpoints account.Endpoints,\n  networkEndpoints network.Endpoints,\n) *grpc.Server {\n  server := grpc.NewServer()\n  \n  // Register services\n  pbBlock.RegisterBlockServiceServer(server, NewBlockServer(blockEndpoints))\n  pbTx.RegisterTransactionServiceServer(server, NewTransactionServer(txEndpoints))\n  pbAccount.RegisterAccountServiceServer(server, NewAccountServer(accountEndpoints))\n  pbNetwork.RegisterNetworkServiceServer(server, NewNetworkServer(networkEndpoints))\n  \n  return server\n}\n```",
+        "testStrategy": "Create integration tests for gRPC handlers. Test that gRPC requests are correctly decoded, routed to the appropriate endpoint, and responses are correctly encoded. Use bufconn package to create a test gRPC server and make requests to it.",
+        "priority": "medium",
+        "dependencies": [
+          24,
+          25,
+          26,
+          27
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 30,
+        "title": "Implement Repository Adapters",
+        "description": "Implement repository adapters for all contexts, connecting domain repositories to actual data sources.",
+        "details": "Create the following structure in internal/infrastructure/repository/:\n- block/: Block repository implementation\n- transaction/: Transaction repository implementation\n- account/: Account repository implementation\n- network/: Network repository implementation\n\nExample implementation for block repository:\n```go\npackage repository\n\nimport (\n  \"context\"\n  \"github.com/your-org/ryze/internal/domain/block/model\"\n  \"github.com/your-org/ryze/internal/domain/block/repository\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n  \"gorm.io/gorm\"\n)\n\n// BlockRepositoryImpl implements the BlockRepository interface\ntype BlockRepositoryImpl struct {\n  db *gorm.DB\n}\n\n// NewBlockRepository creates a new block repository\nfunc NewBlockRepository(db *gorm.DB) repository.BlockRepository {\n  return &BlockRepositoryImpl{\n    db: db,\n  }\n}\n\n// FindByID retrieves a block by its ID\nfunc (r *BlockRepositoryImpl) FindByID(ctx context.Context, id string) (*model.Block, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Finding block by ID\", \"id\", id)\n  \n  var blockEntity BlockEntity\n  if err := r.db.First(&blockEntity, \"id = ?\", id).Error; err != nil {\n    if err == gorm.ErrRecordNotFound {\n      return nil, repository.ErrBlockNotFound\n    }\n    return nil, err\n  }\n  \n  return r.mapToDomain(&blockEntity)\n}\n\n// FindLatest retrieves the latest blocks\nfunc (r *BlockRepositoryImpl) FindLatest(ctx context.Context, limit int) ([]*model.Block, error) {\n  logger := contextx.Logger(ctx)\n  logger.Debug(\"Finding latest blocks\", \"limit\", limit)\n  \n  var blockEntities []BlockEntity\n  if err := r.db.Order(\"height DESC\").Limit(limit).Find(&blockEntities).Error; err != nil {\n    return nil, err\n  }\n  \n  blocks := make([]*model.Block, len(blockEntities))\n  for i, entity := range blockEntities {\n    block, err := r.mapToDomain(&entity)\n    if err != nil {\n      return nil, err\n    }\n    blocks[i] = block\n  }\n  \n  return blocks, nil\n}\n\n// BlockEntity is the GORM model for blocks\ntype BlockEntity struct {\n  ID        string `gorm:\"primaryKey\"`\n  Height    uint64\n  Hash      string\n  PrevHash  string\n  CreatedAt time.Time\n  // Other fields\n}\n\n// mapToDomain maps a BlockEntity to a domain Block\nfunc (r *BlockRepositoryImpl) mapToDomain(entity *BlockEntity) (*model.Block, error) {\n  return &model.Block{\n    ID:        entity.ID,\n    Height:    entity.Height,\n    Hash:      entity.Hash,\n    PrevHash:  entity.PrevHash,\n    CreatedAt: entity.CreatedAt,\n    // Map other fields\n  }, nil\n}\n```\n\nImplement similar repository adapters for transaction, account, and network contexts.",
+        "testStrategy": "Create integration tests for repository adapters. Use a test database (e.g., SQLite in-memory) to test that repositories correctly interact with the database. Test CRUD operations, error handling, and edge cases.",
         "priority": "high",
         "dependencies": [
-          1
+          16,
+          17,
+          18,
+          19
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 3,
-        "title": "Implement Database Adapters",
-        "description": "Implement database adapters for MongoDB (blocks) and PostgreSQL (transactions/accounts) to persist and retrieve data.",
-        "details": "1. Create MongoDB adapter for Block repository:\n   - Connection management\n   - CRUD operations for blocks\n   - Indexing strategy\n2. Create PostgreSQL adapter for Transaction repository:\n   - Connection management\n   - CRUD operations for transactions\n   - SQL schema design\n3. Create PostgreSQL adapter for Account repository:\n   - CRUD operations for accounts\n   - Transaction history queries\n4. Implement connection pooling and retry mechanisms\n5. Add database migration scripts\n\nExample MongoDB adapter:\n```go\ntype mongoBlockRepository struct {\n    client *mongo.Client\n    db     *mongo.Database\n    coll   *mongo.Collection\n}\n\nfunc NewMongoBlockRepository(client *mongo.Client) domain.BlockRepository {\n    db := client.Database(\"ryze\")\n    coll := db.Collection(\"blocks\")\n    return &mongoBlockRepository{client, db, coll}\n}\n\nfunc (r *mongoBlockRepository) GetByID(ctx context.Context, id string) (*domain.Block, error) {\n    // Implementation\n}\n```",
-        "testStrategy": "Write integration tests with test containers for both MongoDB and PostgreSQL. Test CRUD operations, edge cases, and error handling. Verify data consistency across repositories.",
-        "priority": "high",
-        "dependencies": [
-          2
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Implement Block Service",
-        "description": "Implement the Block service layer using Go-kit architecture, providing business logic for block-related operations.",
-        "details": "1. Create Block service interface implementation:\n```go\ntype blockService struct {\n    repo domain.BlockRepository\n    logger log.Logger\n}\n\nfunc NewBlockService(repo domain.BlockRepository, logger log.Logger) domain.BlockService {\n    return &blockService{repo, logger}\n}\n```\n2. Implement methods for:\n   - GetBlockByID\n   - GetLatestBlocks\n   - SearchBlocks\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
-        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
+        "id": 31,
+        "title": "Implement Dependency Injection with Wire",
+        "description": "Implement dependency injection using Google Wire to wire up all components of the application.",
+        "details": "Create the following structure:\n- internal/wire/: Wire providers and injectors\n\nExample implementation:\n```go\n// wire.go\npackage wire\n\nimport (\n  \"github.com/google/wire\"\n  \"github.com/your-org/ryze/internal/domain/block/repository\" as blockRepo\n  \"github.com/your-org/ryze/internal/domain/transaction/repository\" as txRepo\n  \"github.com/your-org/ryze/internal/domain/account/repository\" as accountRepo\n  \"github.com/your-org/ryze/internal/domain/network/repository\" as networkRepo\n  \"github.com/your-org/ryze/internal/infrastructure/repository\" as repoImpl\n  \"github.com/your-org/ryze/internal/service/block\"\n  \"github.com/your-org/ryze/internal/service/transaction\"\n  \"github.com/your-org/ryze/internal/service/account\"\n  \"github.com/your-org/ryze/internal/service/network\"\n  \"github.com/your-org/ryze/internal/endpoint/block\" as blockEndpoint\n  \"github.com/your-org/ryze/internal/endpoint/transaction\" as txEndpoint\n  \"github.com/your-org/ryze/internal/endpoint/account\" as accountEndpoint\n  \"github.com/your-org/ryze/internal/endpoint/network\" as networkEndpoint\n  \"github.com/your-org/ryze/internal/transport/http\"\n  \"github.com/your-org/ryze/internal/transport/grpc\"\n  \"gorm.io/gorm\"\n)\n\n// ProvideBlockRepository provides a block repository\nfunc ProvideBlockRepository(db *gorm.DB) blockRepo.BlockRepository {\n  return repoImpl.NewBlockRepository(db)\n}\n\n// ProvideTransactionRepository provides a transaction repository\nfunc ProvideTransactionRepository(db *gorm.DB) txRepo.TransactionRepository {\n  return repoImpl.NewTransactionRepository(db)\n}\n\n// ProvideAccountRepository provides an account repository\nfunc ProvideAccountRepository(db *gorm.DB) accountRepo.AccountRepository {\n  return repoImpl.NewAccountRepository(db)\n}\n\n// ProvideNetworkRepository provides a network repository\nfunc ProvideNetworkRepository(db *gorm.DB) networkRepo.NetworkRepository {\n  return repoImpl.NewNetworkRepository(db)\n}\n\n// ProvideBlockService provides a block service\nfunc ProvideBlockService(repo blockRepo.BlockRepository) block.Service {\n  return block.NewService(repo)\n}\n\n// ProvideTransactionService provides a transaction service\nfunc ProvideTransactionService(repo txRepo.TransactionRepository) transaction.Service {\n  return transaction.NewService(repo)\n}\n\n// ProvideAccountService provides an account service\nfunc ProvideAccountService(repo accountRepo.AccountRepository) account.Service {\n  return account.NewService(repo)\n}\n\n// ProvideNetworkService provides a network service\nfunc ProvideNetworkService(repo networkRepo.NetworkRepository) network.Service {\n  return network.NewService(repo)\n}\n\n// ProvideBlockEndpoints provides block endpoints\nfunc ProvideBlockEndpoints(svc block.Service) blockEndpoint.Endpoints {\n  return blockEndpoint.NewEndpoints(svc)\n}\n\n// ProvideTransactionEndpoints provides transaction endpoints\nfunc ProvideTransactionEndpoints(svc transaction.Service) txEndpoint.Endpoints {\n  return txEndpoint.NewEndpoints(svc)\n}\n\n// ProvideAccountEndpoints provides account endpoints\nfunc ProvideAccountEndpoints(svc account.Service) accountEndpoint.Endpoints {\n  return accountEndpoint.NewEndpoints(svc)\n}\n\n// ProvideNetworkEndpoints provides network endpoints\nfunc ProvideNetworkEndpoints(svc network.Service) networkEndpoint.Endpoints {\n  return networkEndpoint.NewEndpoints(svc)\n}\n\n// ProvideHTTPServer provides an HTTP server\nfunc ProvideHTTPServer(\n  blockEndpoints blockEndpoint.Endpoints,\n  txEndpoints txEndpoint.Endpoints,\n  accountEndpoints accountEndpoint.Endpoints,\n  networkEndpoints networkEndpoint.Endpoints,\n) *http.Server {\n  return http.NewServer(blockEndpoints, txEndpoints, accountEndpoints, networkEndpoints)\n}\n\n// ProvideGRPCServer provides a gRPC server\nfunc ProvideGRPCServer(\n  blockEndpoints blockEndpoint.Endpoints,\n  txEndpoints txEndpoint.Endpoints,\n  accountEndpoints accountEndpoint.Endpoints,\n  networkEndpoints networkEndpoint.Endpoints,\n) *grpc.Server {\n  return grpc.NewServer(blockEndpoints, txEndpoints, accountEndpoints, networkEndpoints)\n}\n\n// Application represents the application\ntype Application struct {\n  HTTPServer *http.Server\n  GRPCServer *grpc.Server\n}\n\n// InitializeApplication initializes the application\nfunc InitializeApplication(db *gorm.DB) Application {\n  wire.Build(\n    ProvideBlockRepository,\n    ProvideTransactionRepository,\n    ProvideAccountRepository,\n    ProvideNetworkRepository,\n    ProvideBlockService,\n    ProvideTransactionService,\n    ProvideAccountService,\n    ProvideNetworkService,\n    ProvideBlockEndpoints,\n    ProvideTransactionEndpoints,\n    ProvideAccountEndpoints,\n    ProvideNetworkEndpoints,\n    ProvideHTTPServer,\n    ProvideGRPCServer,\n    wire.Struct(new(Application), \"*\"),\n  )\n  return Application{}\n}\n```\n\nCreate wire_gen.go by running:\n```\nwire gen ./internal/wire\n```",
+        "testStrategy": "Create unit tests for wire providers to ensure they correctly create and wire up components. Test that the application is correctly initialized with all dependencies.",
         "priority": "medium",
         "dependencies": [
-          2,
-          3
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 5,
-        "title": "Implement Transaction Service",
-        "description": "Implement the Transaction service layer using Go-kit architecture, providing business logic for transaction-related operations.",
-        "details": "1. Create Transaction service interface implementation:\n```go\ntype transactionService struct {\n    repo domain.TransactionRepository\n    logger log.Logger\n}\n\nfunc NewTransactionService(repo domain.TransactionRepository, logger log.Logger) domain.TransactionService {\n    return &transactionService{repo, logger}\n}\n```\n2. Implement methods for:\n   - GetTransactionByID\n   - GetTransactionsByBlockID\n   - SearchTransactions\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
-        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
+        "id": 32,
+        "title": "Implement Main Application Entry Point",
+        "description": "Implement the main application entry point, initializing all components and starting the servers.",
+        "details": "Create the following structure:\n- cmd/server/main.go: Main application entry point\n\nExample implementation:\n```go\npackage main\n\nimport (\n  \"context\"\n  \"flag\"\n  \"fmt\"\n  \"net\"\n  \"net/http\"\n  \"os\"\n  \"os/signal\"\n  \"syscall\"\n  \"time\"\n  \"github.com/your-org/ryze/internal/wire\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n  \"github.com/your-org/ryze/pkg/database\"\n  \"go.uber.org/zap\"\n)\n\nfunc main() {\n  // Parse command-line flags\n  var (\n    httpAddr  = flag.String(\"http-addr\", \":8080\", \"HTTP listen address\")\n    grpcAddr  = flag.String(\"grpc-addr\", \":9090\", \"gRPC listen address\")\n    dbURL     = flag.String(\"db-url\", \"postgres://user:password@localhost:5432/ryze?sslmode=disable\", \"Database URL\")\n  )\n  flag.Parse()\n  \n  // Initialize logger\n  logger, _ := zap.NewProduction()\n  defer logger.Sync()\n  \n  // Create context with logger\n  ctx := contextx.WithLogger(context.Background(), logger.Sugar())\n  \n  // Connect to database\n  db, err := database.Connect(*dbURL)\n  if err != nil {\n    logger.Fatal(\"Failed to connect to database\", zap.Error(err))\n  }\n  \n  // Initialize application\n  app := wire.InitializeApplication(db)\n  \n  // Start HTTP server\n  httpServer := &http.Server{\n    Addr:    *httpAddr,\n    Handler: app.HTTPServer,\n  }\n  go func() {\n    logger.Info(\"Starting HTTP server\", zap.String(\"addr\", *httpAddr))\n    if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {\n      logger.Fatal(\"HTTP server failed\", zap.Error(err))\n    }\n  }()\n  \n  // Start gRPC server\n  grpcListener, err := net.Listen(\"tcp\", *grpcAddr)\n  if err != nil {\n    logger.Fatal(\"Failed to listen for gRPC\", zap.Error(err))\n  }\n  go func() {\n    logger.Info(\"Starting gRPC server\", zap.String(\"addr\", *grpcAddr))\n    if err := app.GRPCServer.Serve(grpcListener); err != nil {\n      logger.Fatal(\"gRPC server failed\", zap.Error(err))\n    }\n  }()\n  \n  // Wait for interrupt signal\n  c := make(chan os.Signal, 1)\n  signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)\n  <-c\n  \n  // Graceful shutdown\n  logger.Info(\"Shutting down\")\n  \n  // Shutdown HTTP server\n  httpCtx, httpCancel := context.WithTimeout(ctx, 5*time.Second)\n  defer httpCancel()\n  if err := httpServer.Shutdown(httpCtx); err != nil {\n    logger.Error(\"HTTP server shutdown failed\", zap.Error(err))\n  }\n  \n  // Shutdown gRPC server\n  app.GRPCServer.GracefulStop()\n  \n  logger.Info(\"Shutdown complete\")\n}\n```",
+        "testStrategy": "Create integration tests for the main application. Test that the application correctly starts up, initializes all components, and gracefully shuts down. Use a test database and mock external dependencies.",
         "priority": "medium",
         "dependencies": [
-          2,
-          3
+          31
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 6,
-        "title": "Implement Account Service",
-        "description": "Implement the Account service layer using Go-kit architecture, providing business logic for account-related operations.",
-        "details": "1. Create Account service interface implementation:\n```go\ntype accountService struct {\n    repo domain.AccountRepository\n    txRepo domain.TransactionRepository\n    logger log.Logger\n}\n\nfunc NewAccountService(repo domain.AccountRepository, txRepo domain.TransactionRepository, logger log.Logger) domain.AccountService {\n    return &accountService{repo, txRepo, logger}\n}\n```\n2. Implement methods for:\n   - GetAccountByAddress\n   - GetAccountBalance\n   - GetAccountTransactions\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
-        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          3
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Implement Network Service",
-        "description": "Implement the Network service layer using Go-kit architecture, providing business logic for network-related operations and statistics.",
-        "details": "1. Create Network service interface implementation:\n```go\ntype networkService struct {\n    repo domain.NetworkRepository\n    blockRepo domain.BlockRepository\n    logger log.Logger\n}\n\nfunc NewNetworkService(repo domain.NetworkRepository, blockRepo domain.BlockRepository, logger log.Logger) domain.NetworkService {\n    return &networkService{repo, blockRepo, logger}\n}\n```\n2. Implement methods for:\n   - GetNetworkStats\n   - GetBlockchainStatus\n   - GetRecentActivity\n3. Add business logic for calculating statistics\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
-        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that statistics calculations are correct.",
-        "priority": "medium",
-        "dependencies": [
-          2,
-          3
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 8,
+        "id": 33,
         "title": "Implement TON Blockchain Integration",
-        "description": "Implement integration with the TON blockchain to fetch real-time data for blocks, transactions, and accounts.",
-        "details": "1. Create TON blockchain client:\n```go\ntype tonClient struct {\n    httpClient *http.Client\n    baseURL    string\n}\n\nfunc NewTONClient(baseURL string) *tonClient {\n    return &tonClient{\n        httpClient: &http.Client{Timeout: 10 * time.Second},\n        baseURL:    baseURL,\n    }\n}\n```\n2. Implement methods to fetch:\n   - Latest blocks\n   - Block details\n   - Transaction details\n   - Account information\n3. Add data transformation from TON format to domain models\n4. Implement error handling and retries\n5. Add caching mechanism for frequently accessed data\n6. Create background workers to sync blockchain data\n7. Implement webhook support for real-time updates",
-        "testStrategy": "Write integration tests with mocked TON API responses. Test data transformation, error handling, and retry mechanisms. Verify that the client correctly handles API rate limits and network errors.",
+        "description": "Implement integration with the TON blockchain to fetch real-time data for blocks, transactions, accounts, and network status.",
+        "details": "Create the following structure in internal/infrastructure/ton/:\n- client.go: TON blockchain client\n- block.go: Block data fetching\n- transaction.go: Transaction data fetching\n- account.go: Account data fetching\n- network.go: Network data fetching\n\nExample implementation for client.go:\n```go\npackage ton\n\nimport (\n  \"context\"\n  \"github.com/ton-blockchain/ton-go\"\n  \"github.com/your-org/ryze/pkg/contextx\"\n)\n\n// Client represents a TON blockchain client\ntype Client struct {\n  client *ton.Client\n  logger *zap.SugaredLogger\n}\n\n// NewClient creates a new TON blockchain client\nfunc NewClient(endpoint string) (*Client, error) {\n  client, err := ton.NewClient(endpoint)\n  if err != nil {\n    return nil, err\n  }\n  \n  return &Client{\n    client: client,\n    logger: zap.NewNop().Sugar(),\n  }, nil\n}\n\n// WithContext sets the logger from the context\nfunc (c *Client) WithContext(ctx context.Context) *Client {\n  return &Client{\n    client: c.client,\n    logger: contextx.Logger(ctx),\n  }\n}\n\n// GetBlockByID retrieves a block by its ID\nfunc (c *Client) GetBlockByID(ctx context.Context, id string) (*ton.Block, error) {\n  c.logger.Debug(\"Getting block from TON\", \"id\", id)\n  \n  // Implement TON-specific logic to fetch a block\n  \n  return nil, nil\n}\n\n// GetLatestBlocks retrieves the latest blocks\nfunc (c *Client) GetLatestBlocks(ctx context.Context, limit int) ([]*ton.Block, error) {\n  c.logger.Debug(\"Getting latest blocks from TON\", \"limit\", limit)\n  \n  // Implement TON-specific logic to fetch latest blocks\n  \n  return nil, nil\n}\n\n// GetTransactionByID retrieves a transaction by its ID\nfunc (c *Client) GetTransactionByID(ctx context.Context, id string) (*ton.Transaction, error) {\n  c.logger.Debug(\"Getting transaction from TON\", \"id\", id)\n  \n  // Implement TON-specific logic to fetch a transaction\n  \n  return nil, nil\n}\n\n// GetAccountByAddress retrieves an account by its address\nfunc (c *Client) GetAccountByAddress(ctx context.Context, address string) (*ton.Account, error) {\n  c.logger.Debug(\"Getting account from TON\", \"address\", address)\n  \n  // Implement TON-specific logic to fetch an account\n  \n  return nil, nil\n}\n\n// GetNetworkStats retrieves network statistics\nfunc (c *Client) GetNetworkStats(ctx context.Context) (*ton.NetworkStats, error) {\n  c.logger.Debug(\"Getting network stats from TON\")\n  \n  // Implement TON-specific logic to fetch network statistics\n  \n  return nil, nil\n}\n```\n\nImplement repository adapters that use the TON client to fetch data and map it to domain models.",
+        "testStrategy": "Create integration tests for the TON blockchain client. Use a mock TON node or testnet to test that the client correctly fetches data from the blockchain. Test error handling and edge cases.",
         "priority": "high",
         "dependencies": [
-          4,
-          5,
-          6,
-          7
+          30
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 9,
-        "title": "Implement Go-kit Endpoints",
-        "description": "Implement Go-kit endpoints for all services, defining the request/response structures and middleware.",
-        "details": "1. Create endpoint definitions for each service:\n```go\nfunc MakeGetBlockByIDEndpoint(s domain.BlockService) endpoint.Endpoint {\n    return func(ctx context.Context, request interface{}) (interface{}, error) {\n        req := request.(GetBlockByIDRequest)\n        block, err := s.GetBlockByID(ctx, req.ID)\n        if err != nil {\n            return nil, err\n        }\n        return GetBlockByIDResponse{Block: block}, nil\n    }\n}\n```\n2. Define request/response structs for each endpoint\n3. Implement middleware for:\n   - Logging\n   - Metrics\n   - Rate limiting\n   - Authentication (if needed)\n   - Request validation\n4. Create endpoint sets for each service\n5. Implement error handling and response mapping",
-        "testStrategy": "Write unit tests for endpoints with mocked services. Test request validation, error handling, and middleware functionality. Verify that endpoints correctly transform between transport and service layers.",
-        "priority": "medium",
-        "dependencies": [
-          4,
-          5,
-          6,
-          7
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Implement gRPC Transport",
-        "description": "Implement gRPC transport layer for all services, defining protobuf schemas and server implementations.",
-        "details": "1. Define protobuf schemas for all services:\n```protobuf\nsyntax = \"proto3\";\npackage ryze.block.v1;\n\nservice BlockService {\n  rpc GetBlockByID(GetBlockByIDRequest) returns (GetBlockByIDResponse);\n  rpc GetLatestBlocks(GetLatestBlocksRequest) returns (GetLatestBlocksResponse);\n}\n\nmessage GetBlockByIDRequest {\n  string id = 1;\n}\n\nmessage GetBlockByIDResponse {\n  Block block = 1;\n}\n\nmessage Block {\n  string id = 1;\n  int64 height = 2;\n  // Other fields\n}\n```\n2. Generate gRPC code using protoc\n3. Implement gRPC server adapters for each service\n4. Create request/response decoders/encoders\n5. Implement error handling and status code mapping\n6. Add gRPC middleware for logging, metrics, etc.\n7. Configure TLS and authentication",
-        "testStrategy": "Write integration tests for gRPC servers with gRPC clients. Test serialization/deserialization, error handling, and middleware functionality. Verify that the gRPC API correctly implements the protobuf contract.",
-        "priority": "medium",
-        "dependencies": [
-          9
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 11,
-        "title": "Implement HTTP Transport",
-        "description": "Implement HTTP transport layer for all services, defining REST API endpoints and handlers.",
-        "details": "1. Define HTTP routes for all services:\n```go\nfunc NewHTTPHandler(endpoints Endpoints, logger log.Logger) http.Handler {\n    r := mux.NewRouter()\n    \n    options := []kithttp.ServerOption{\n        kithttp.ServerErrorLogger(logger),\n        kithttp.ServerErrorEncoder(encodeError),\n    }\n    \n    r.Methods(\"GET\").Path(\"/blocks/{id}\").Handler(kithttp.NewServer(\n        endpoints.GetBlockByID,\n        decodeGetBlockByIDRequest,\n        encodeResponse,\n        options...,\n    ))\n    \n    // Other routes\n    \n    return r\n}\n```\n2. Implement request/response decoders/encoders\n3. Create HTTP handlers for each endpoint\n4. Implement error handling and HTTP status code mapping\n5. Add HTTP middleware for CORS, logging, metrics, etc.\n6. Configure TLS and authentication\n7. Implement OpenAPI documentation",
-        "testStrategy": "Write integration tests for HTTP handlers with HTTP clients. Test request/response handling, error handling, and middleware functionality. Verify that the HTTP API correctly implements the REST contract.",
-        "priority": "medium",
-        "dependencies": [
-          9
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 12,
-        "title": "Implement Monitoring and Observability",
-        "description": "Implement monitoring and observability using Prometheus and OpenTelemetry for metrics, traces, and logs.",
-        "details": "1. Configure Prometheus metrics:\n```go\nvar (\n    requestCount = prometheus.NewCounterVec(\n        prometheus.CounterOpts{\n            Namespace: \"ryze\",\n            Subsystem: \"block_service\",\n            Name:      \"request_count\",\n            Help:      \"Number of requests received.\",\n        },\n        []string{\"method\", \"endpoint\", \"status\"},\n    )\n    requestLatency = prometheus.NewHistogramVec(\n        prometheus.HistogramOpts{\n            Namespace: \"ryze\",\n            Subsystem: \"block_service\",\n            Name:      \"request_latency_seconds\",\n            Help:      \"Request latency in seconds.\",\n            Buckets:   prometheus.DefBuckets,\n        },\n        []string{\"method\", \"endpoint\"},\n    )\n)\n```\n2. Implement OpenTelemetry tracing\n3. Configure structured logging with correlation IDs\n4. Create health check endpoints\n5. Implement custom metrics for business operations\n6. Add dashboards for monitoring\n7. Configure alerting rules",
-        "testStrategy": "Verify metrics collection with Prometheus client. Test trace propagation across services. Verify that logs contain all necessary information for debugging. Test health check endpoints.",
-        "priority": "medium",
-        "dependencies": [
-          10,
-          11
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 13,
-        "title": "Implement Docker Containerization",
-        "description": "Implement Docker containerization for all services, creating Dockerfiles and Docker Compose configuration.",
-        "details": "1. Create Dockerfile for services:\n```dockerfile\nFROM golang:1.18-alpine AS builder\nWORKDIR /app\nCOPY go.* ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 GOOS=linux go build -o /bin/service ./cmd/service\n\nFROM alpine:3.15\nRUN apk --no-cache add ca-certificates\nCOPY --from=builder /bin/service /bin/service\nEXPOSE 8080 9090\nCMD [\"/bin/service\"]\n```\n2. Create Docker Compose configuration:\n```yaml\nversion: '3.8'\nservices:\n  block-service:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    command: [\"/bin/service\", \"--service=block\"]\n    ports:\n      - \"8081:8080\"\n      - \"9091:9090\"\n    environment:\n      - MONGODB_URI=mongodb://mongodb:27017\n    depends_on:\n      - mongodb\n  # Other services\n  mongodb:\n    image: mongo:5.0\n    volumes:\n      - mongodb_data:/data/db\n  postgres:\n    image: postgres:14\n    environment:\n      - POSTGRES_PASSWORD=password\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\nvolumes:\n  mongodb_data:\n  postgres_data:\n```\n3. Configure environment variables for services\n4. Set up volume mounts for persistence\n5. Configure networking between services\n6. Add health checks\n7. Optimize Docker images for size and security",
-        "testStrategy": "Test Docker builds and verify that containers start correctly. Test Docker Compose configuration and verify that services can communicate with each other. Verify that volumes persist data correctly.",
-        "priority": "medium",
-        "dependencies": [
-          10,
-          11,
-          12
-        ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 14,
+        "id": 34,
         "title": "Implement API Documentation",
-        "description": "Implement comprehensive API documentation for both gRPC and HTTP APIs using OpenAPI and gRPC reflection.",
-        "details": "1. Create OpenAPI specification for HTTP API:\n```yaml\nopenapi: 3.0.0\ninfo:\n  title: Ryze TON Blockchain Explorer API\n  version: 1.0.0\n  description: API for querying TON blockchain data\npaths:\n  /blocks/{id}:\n    get:\n      summary: Get block by ID\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        '200':\n          description: Block details\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/Block'\n```\n2. Enable gRPC reflection for service discovery\n3. Generate API documentation from protobuf definitions\n4. Create interactive API documentation using Swagger UI\n5. Add examples and use cases to documentation\n6. Document error codes and responses\n7. Create client libraries for common languages",
-        "testStrategy": "Verify that OpenAPI specification is valid using validators. Test that Swagger UI correctly displays API documentation. Verify that gRPC reflection works correctly with tools like grpcurl.",
+        "description": "Implement API documentation using Swagger/OpenAPI for HTTP endpoints and gRPC reflection for gRPC endpoints.",
+        "details": "Create the following structure:\n- api/swagger/: Swagger/OpenAPI documentation\n- internal/transport/http/swagger.go: Swagger handler\n\nExample implementation for swagger.go:\n```go\npackage http\n\nimport (\n  \"net/http\"\n  \"github.com/go-openapi/runtime/middleware\"\n  \"github.com/gorilla/mux\"\n)\n\n// AddSwaggerHandler adds Swagger documentation to the router\nfunc AddSwaggerHandler(r *mux.Router) {\n  // Serve the Swagger spec\n  r.Handle(\"/swagger.json\", http.FileServer(http.Dir(\"./api/swagger\")))\n  \n  // Serve Swagger UI\n  opts := middleware.SwaggerUIOpts{\n    SpecURL: \"/swagger.json\",\n  }\n  sh := middleware.SwaggerUI(opts, nil)\n  r.Handle(\"/docs\", sh)\n  r.Handle(\"/docs/\", sh)\n}\n```\n\nAdd gRPC reflection to the gRPC server:\n```go\npackage grpc\n\nimport (\n  \"google.golang.org/grpc\"\n  \"google.golang.org/grpc/reflection\"\n)\n\n// NewServer creates a new gRPC server with all services and reflection\nfunc NewServer(\n  blockEndpoints block.Endpoints,\n  txEndpoints transaction.Endpoints,\n  accountEndpoints account.Endpoints,\n  networkEndpoints network.Endpoints,\n) *grpc.Server {\n  server := grpc.NewServer()\n  \n  // Register services\n  pbBlock.RegisterBlockServiceServer(server, NewBlockServer(blockEndpoints))\n  pbTx.RegisterTransactionServiceServer(server, NewTransactionServer(txEndpoints))\n  pbAccount.RegisterAccountServiceServer(server, NewAccountServer(accountEndpoints))\n  pbNetwork.RegisterNetworkServiceServer(server, NewNetworkServer(networkEndpoints))\n  \n  // Register reflection service for gRPC tooling\n  reflection.Register(server)\n  \n  return server\n}\n```\n\nCreate Swagger/OpenAPI documentation for HTTP endpoints in api/swagger/swagger.yaml.",
+        "testStrategy": "Create tests to verify that Swagger documentation is correctly served and that gRPC reflection is working. Test that the Swagger UI is accessible and that the API documentation is accurate.",
         "priority": "low",
         "dependencies": [
-          10,
-          11
+          28,
+          29
         ],
         "status": "pending",
         "subtasks": []
       },
       {
-        "id": 15,
-        "title": "Implement Integration Tests and CI/CD",
-        "description": "Implement comprehensive integration tests and CI/CD pipeline for automated testing, building, and deployment.",
-        "details": "1. Create integration test suite:\n```go\nfunc TestBlockServiceIntegration(t *testing.T) {\n    // Start test containers\n    ctx := context.Background()\n    mongoC, err := testcontainers.StartMongoContainer(ctx)\n    require.NoError(t, err)\n    defer mongoC.Terminate(ctx)\n    \n    // Initialize repositories and services\n    mongoURI := mongoC.GetURI()\n    repo := repository.NewMongoBlockRepository(mongoURI)\n    svc := service.NewBlockService(repo, log.NewNopLogger())\n    \n    // Run tests\n    block, err := svc.GetBlockByID(ctx, \"test-id\")\n    require.NoError(t, err)\n    require.Equal(t, \"test-id\", block.ID)\n}\n```\n2. Set up GitHub Actions or similar CI/CD pipeline:\n```yaml\nname: CI/CD\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v2\n    - name: Set up Go\n      uses: actions/setup-go@v2\n      with:\n        go-version: 1.18\n    - name: Test\n      run: go test -v ./...\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v2\n    - name: Build Docker images\n      run: docker-compose build\n```\n3. Implement end-to-end tests\n4. Configure automated deployments\n5. Set up code quality checks\n6. Implement database migration in CI/CD\n7. Configure release automation",
-        "testStrategy": "Run integration tests in CI pipeline. Verify that all services can be built and deployed automatically. Test database migrations and verify that they can be applied automatically.",
-        "priority": "medium",
+        "id": 35,
+        "title": "Implement Monitoring and Observability",
+        "description": "Implement monitoring and observability using Prometheus for metrics, Jaeger for tracing, and structured logging.",
+        "details": "Create the following structure:\n- pkg/metrics/: Prometheus metrics\n- pkg/tracing/: Jaeger tracing\n- pkg/logging/: Structured logging\n\nExample implementation for metrics.go:\n```go\npackage metrics\n\nimport (\n  \"github.com/prometheus/client_golang/prometheus\"\n  \"github.com/prometheus/client_golang/prometheus/promauto\"\n)\n\n// Metrics represents application metrics\ntype Metrics struct {\n  RequestCount    *prometheus.CounterVec\n  RequestDuration *prometheus.HistogramVec\n  ErrorCount      *prometheus.CounterVec\n}\n\n// NewMetrics creates new application metrics\nfunc NewMetrics(namespace string) *Metrics {\n  return &Metrics{\n    RequestCount: promauto.NewCounterVec(\n      prometheus.CounterOpts{\n        Namespace: namespace,\n        Name:      \"request_count\",\n        Help:      \"The total number of requests\",\n      },\n      []string{\"method\", \"endpoint\", \"status\"},\n    ),\n    RequestDuration: promauto.NewHistogramVec(\n      prometheus.HistogramOpts{\n        Namespace: namespace,\n        Name:      \"request_duration_seconds\",\n        Help:      \"The request duration in seconds\",\n        Buckets:   prometheus.DefBuckets,\n      },\n      []string{\"method\", \"endpoint\"},\n    ),\n    ErrorCount: promauto.NewCounterVec(\n      prometheus.CounterOpts{\n        Namespace: namespace,\n        Name:      \"error_count\",\n        Help:      \"The total number of errors\",\n      },\n      []string{\"method\", \"endpoint\", \"error\"},\n    ),\n  }\n}\n```\n\nExample implementation for tracing.go:\n```go\npackage tracing\n\nimport (\n  \"context\"\n  \"github.com/opentracing/opentracing-go\"\n  \"github.com/uber/jaeger-client-go\"\n  jaegercfg \"github.com/uber/jaeger-client-go/config\"\n)\n\n// InitTracer initializes the Jaeger tracer\nfunc InitTracer(serviceName string) (opentracing.Tracer, func(), error) {\n  cfg := jaegercfg.Configuration{\n    ServiceName: serviceName,\n    Sampler: &jaegercfg.SamplerConfig{\n      Type:  jaeger.SamplerTypeConst,\n      Param: 1,\n    },\n    Reporter: &jaegercfg.ReporterConfig{\n      LogSpans: true,\n    },\n  }\n  \n  tracer, closer, err := cfg.NewTracer()\n  if err != nil {\n    return nil, nil, err\n  }\n  \n  opentracing.SetGlobalTracer(tracer)\n  \n  return tracer, func() { closer.Close() }, nil\n}\n\n// StartSpanFromContext starts a new span from the context\nfunc StartSpanFromContext(ctx context.Context, operationName string) (opentracing.Span, context.Context) {\n  return opentracing.StartSpanFromContext(ctx, operationName)\n}\n```\n\nAdd middleware to HTTP and gRPC servers to collect metrics and tracing information.",
+        "testStrategy": "Create tests to verify that metrics are correctly collected and exposed, that tracing spans are correctly created and propagated, and that logs are correctly structured and contain all necessary information.",
+        "priority": "low",
         "dependencies": [
-          13
+          32
         ],
         "status": "pending",
         "subtasks": []
@@ -211,7 +276,7 @@
     ],
     "metadata": {
       "created": "2025-06-18T03:53:43.936Z",
-      "updated": "2025-06-18T03:57:38.750Z",
+      "updated": "2025-06-18T04:30:16.619Z",
       "description": "Tasks for master context"
     }
   }
