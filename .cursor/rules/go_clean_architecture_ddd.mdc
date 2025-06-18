@@ -1,0 +1,73 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- **Go 語言與命名風格**
+  - Go 版本 1.21+
+  - 使用 gofmt，自動格式化，Tab 縮排
+  - 命名採 MixedCaps，避免底線
+  - Getter 不加 Get 前綴
+  - Interface 以 -er 結尾
+  - Impl 實作以 Impl 結尾，檔名 _impl.go
+  - exported symbol 需完整 doc comment
+  - if/for/switch 無大括號
+  - 忽略回傳值用 _
+  - 錯誤變數統一 err，early return
+  - 測試檔名 *_test.go
+
+- **Clean Architecture + DDD 分層原則**
+  - internal/domain/：Bounded Context 層，聚合 entity、repository、service、event
+  - internal/usecase/：業務用例（command、query、event、behavior）
+  - internal/infra/：資料庫、API、Redis、eventbus 等實作
+  - internal/delivery/：HTTP、gRPC、subscriber 等傳輸層
+  - 依賴規則：Domain 層不得依賴 Infra/Usecase 層
+  - Entity 具唯一標識，封裝可變狀態
+  - Value Object 不可變、無標識
+  - Repository Interface 定義聚合持久化契約
+  - Domain Service 封裝不適合放在實體的業務邏輯
+  - Domain Event 代表對外發佈的狀態改變
+  - Usecase 層僅協調，不含業務邏輯
+  - Infra 層僅實作接口，不含業務邏輯
+
+- **命名與檔案慣例**
+  - entity：xxx_entity.go
+  - service：xxx_service.go
+  - repository interface：xxx_repository.go
+  - impl 實作：XxxImpl，檔名 xxx_impl.go
+  - mock：xxx_mock.go
+
+- **context 使用規範**
+  - 參數名 c，擴展型 ctx
+  - 使用 contextx.WithContext(c) 取得 thread-safe logger
+  - 範例：
+    ```go
+    func Foo(c context.Context) {
+      ctx := contextx.WithContext(c)
+      ctx.Info("…")
+    }
+    ```
+
+- **相依注入與 Mock**
+  - DI：google/wire + wire provider
+  - Mock：uber-go/mock，檔名 *_mock.go
+
+- **ORM 原則**
+  - domain 層禁止 GORM
+  - infra 層可用 GORM model & tag
+  - 優先 interface + 明確 SQL 實作
+
+- **日誌與錯誤處理**
+  - 結構化日誌，含 context
+  - 自訂 error type
+  - 分級：Debug · Info · Warn · Error
+
+- **MCP/Taskmaster**
+  - 所有自動產生、AI 回覆、taskmaster 文件一律繁體中文
+
+- **DON'T**
+  - 不要在 domain 層 import infra/usecase
+  - 不要將業務邏輯寫在 infra/usecase/delivery
+  - 不要在 entity 內直接暴露資料庫欄位
+  - 不要破壞聚合邊界
+  - 不要在 domain 層用 GORM

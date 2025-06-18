@@ -1,0 +1,53 @@
+<context>
+# Overview
+Ryze 是一個專為 TON 區塊鏈設計的區塊鏈瀏覽器，提供區塊、交易、帳戶等資料的查詢與分析。現計畫保留原有 domain 設計，並以 Go-kit 進行微服務分層重構，提升可維護性與擴展性。
+
+# Core Features
+- 區塊查詢：檢索最新區塊、依 ID 查詢區塊詳情。
+- 交易查詢：依 ID 查詢交易、查詢區塊內所有交易。
+- 帳戶查詢：查詢帳戶餘額、交易歷史。
+- 網路監控：即時顯示區塊鏈網路狀態與統計。
+
+# User Experience
+- 目標用戶：區塊鏈開發者、分析師、一般用戶。
+- 主要流程：
+  1. 用戶透過 Web 前端或 API 查詢資料
+  2. 系統回應區塊、交易、帳戶等資訊
+- UI/UX：簡潔查詢介面、即時數據展示、API 文件完善
+</context>
+<PRD>
+# Technical Architecture
+- 採用 Go-kit 分層架構（Service/Endpoint/Transport）
+- 微服務設計，區分 Platform/Daemon 服務
+- 支援 gRPC 與 HTTP API
+- 資料庫：MongoDB（區塊）、PostgreSQL（交易/帳戶）
+- Docker 容器化部署
+- Prometheus + OpenTelemetry 監控
+- 保留現有 domain/entity/model 結構
+
+# Development Roadmap
+- MVP：
+  - 完成 Block/Transaction/Account/Network Service 的 Go-kit 重構
+  - 提供 gRPC/HTTP API 查詢
+  - Docker Compose 部署
+- 未來擴充：
+  - 前端 UI 優化
+  - 增加更多統計/分析功能
+  - 支援多鏈查詢
+
+# Logical Dependency Chain
+1. 先完成 domain/service 層重構
+2. 實作 endpoint/transport 層（gRPC/HTTP）
+3. 整合資料庫與外部 TON 區塊鏈
+4. 提供 API 給前端或第三方使用
+5. 最後優化監控、測試與 CI/CD
+
+# Risks and Mitigations
+- 重構風險：逐步遷移，保留原有 domain 測試
+- 技術選型：Go-kit 架構已廣泛應用，社群資源豐富
+- 測試覆蓋：加強單元測試與整合測試
+
+# Appendix
+- 現有 domain 結構：block, transaction, account, network
+- Go-kit 官方文件與範例
+</PRD> 
