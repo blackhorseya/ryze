@@ -17,23 +17,24 @@ alwaysApply: true
 ```
 internal/
   domain/
+    event/                // 全域共用 domain event interface、event bus 抽象（如 DomainEvent、EventBus）
     {context}/
-      model/         // Entity、Value Object、Proto（聚合根、業務核心資料結構）
-      event/         // Domain Event（業務狀態改變的訊號）
-      repository/    // Repository interface（聚合持久化契約，僅定義）
-      service/       // Domain Service interface（複雜業務規則，僅定義）
+      model/              // Entity、Value Object、Proto（聚合根、業務核心資料結構）
+      event/              // 該 context 的具體業務事件 struct/interface（如 TransactionCreatedEvent）
+      repository/         // Repository interface（聚合持久化契約，僅定義）
+      service/            // Domain Service interface（複雜業務規則，僅定義）
   service/
     {context}/
-      service.go     // Go-kit Service interface & 實作（協調 domain interface，實現應用/用例邏輯）
-      middleware.go  // Go-kit Middleware
+      service.go          // Go-kit Service interface & 實作（協調 domain interface，實現應用/用例邏輯）
+      middleware.go       // Go-kit Middleware
   endpoint/
     {context}/
-      endpoint.go    // Go-kit Endpoint（將 Service 方法包裝為 endpoint.Endpoint）
+      endpoint.go         // Go-kit Endpoint（將 Service 方法包裝為 endpoint.Endpoint）
   transport/
     http/
-      {context}.go   // HTTP handler/route（僅協定與解碼/編碼）
+      {context}.go        // HTTP handler/route（僅協定與解碼/編碼）
     grpc/
-      {context}.go   // gRPC handler/route（僅協定與解碼/編碼）
+      {context}.go        // gRPC handler/route（僅協定與解碼/編碼）
 ```
 
 ---
@@ -42,10 +43,12 @@ internal/
 
 - **domain 層**（internal/domain/{context}/）
   - model/：定義 Entity、Value Object、Proto，聚合根封裝狀態與行為（DDD）
-  - event/：定義 Domain Event，代表業務狀態改變（DDD）
+  - event/：定義該 context 的具體業務事件 struct/interface（如 TransactionCreatedEvent）
   - repository/：定義 Repository interface，聚合持久化契約（DDD）
   - service/：定義 Domain Service interface，封裝複雜業務規則（DDD）
   - 此層僅定義 interface，不含任何實作，不可依賴 service/endpoint/transport 層（Clean Architecture 依賴規則）
+- **domain/event 層**（internal/domain/event/）
+  - 放全域共用的 domain event interface 或 event bus 抽象（如 DomainEvent、EventBus）
 
 - **service 層**（internal/service/{context}/）
   - service.go：Go-kit Service interface 及其實作，協調多個 domain interface，實現應用/用例邏輯（Application Service，Clean Architecture）
