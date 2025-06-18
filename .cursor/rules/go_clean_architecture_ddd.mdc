@@ -104,6 +104,15 @@ internal/
 - 結構化日誌，含 context
 - 自訂 error type，分級：Debug · Info · Warn · Error
 
+```go
+func Foo(c context.Context) {
+  ctx := contextx.WithContext(c)
+  ctx.Info("…")
+}
+```
+
+- 參數名 `c`；擴展型 `ctx`  
+
 ---
 
 ## 7. 測試與 Mock（Clean Architecture）
