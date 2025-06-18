@@ -5,11 +5,11 @@
         "id": 1,
         "title": "Setup Project Structure for Go-kit Microservices",
         "description": "Initialize the project repository with Go-kit microservice architecture, setting up the basic folder structure and configuration files.",
-        "details": "1. Create a new Go module for the project\n2. Set up directory structure following Go-kit conventions:\n   - `/cmd` - Entry points for services\n   - `/pkg` - Shared packages\n   - `/internal` - Service-specific code\n   - `/api` - API definitions\n   - `/config` - Configuration files\n3. Configure Go modules and dependencies\n4. Set up Docker and Docker Compose files\n5. Initialize git repository with appropriate .gitignore\n6. Add README.md with project overview and setup instructions\n7. Create Makefile for common operations",
+        "details": "1. Create a new Go module for the project\n2. Set up directory structure following Go-kit conventions:\n   - `/cmd` - Entry points for services\n   - `/pkg` - Shared packages\n   - `/internal` - Service-specific code\n   - `/api` - API definitions\n   - `/config` - Configuration files\n3. Configure Go modules and dependencies\n4. Set up Docker and Docker Compose files\n5. Initialize git repository with appropriate .gitignore\n6. Add README.md with project overview and setup instructions\n7. Create Makefile for common operations\n<info added on 2025-06-18T03:57:25.258Z>\n## Detailed Implementation Plan\n\n1. Go Module Initialization:\n   - Run `go mod init [project-name]`\n   - Verify go.mod and go.sum files are created correctly\n\n2. Directory Structure (Following Go-kit and Clean Architecture):\n   - `/cmd`: Service entry points (block, transaction, account, network)\n   - `/pkg`: Shared components (contextx, errorx, logging, persistence)\n   - `/internal`: Service-specific code organized by bounded contexts\n   - `/entity/domain`: Aggregate roots, models, business logic, proto definitions\n   - `/api`: API definitions (gRPC proto files, OpenAPI yaml)\n   - `/configs`: Configuration files\n\n3. Docker Configuration:\n   - Create Dockerfile with multi-stage build support\n   - Develop compose.yaml defining services, databases, and networks\n\n4. Git Repository Setup:\n   - Add comprehensive .gitignore for Go projects\n   - Create README.md with project overview, architecture explanation, and startup instructions\n   - Add CHANGELOG.md for version tracking\n\n5. Makefile Commands:\n   - build: Compile the application\n   - test: Run unit and integration tests\n   - lint: Run code quality checks\n   - run: Start the application locally\n   - docker-build: Build Docker images\n   - docker-up: Start services with Docker Compose\n   - docker-down: Stop and clean up Docker Compose services\n\n6. Validation Steps:\n   - Check for existing files to avoid duplication\n   - Ensure the project builds successfully\n   - Verify the structure is clear and follows established patterns\n</info added on 2025-06-18T03:57:25.258Z>",
         "testStrategy": "Verify project structure manually. Ensure all configuration files are valid and the project can be built without errors.",
         "priority": "high",
         "dependencies": [],
-        "status": "pending",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -211,7 +211,7 @@
     ],
     "metadata": {
       "created": "2025-06-18T03:53:43.936Z",
-      "updated": "2025-06-18T03:53:43.936Z",
+      "updated": "2025-06-18T03:57:38.750Z",
       "description": "Tasks for master context"
     }
   }

@@ -3,71 +3,133 @@ description:
 globs: 
 alwaysApply: true
 ---
-- **Go 語言與命名風格**
-  - Go 版本 1.21+
-  - 使用 gofmt，自動格式化，Tab 縮排
-  - 命名採 MixedCaps，避免底線
-  - Getter 不加 Get 前綴
-  - Interface 以 -er 結尾
-  - Impl 實作以 Impl 結尾，檔名 _impl.go
-  - exported symbol 需完整 doc comment
-  - if/for/switch 無大括號
-  - 忽略回傳值用 _
-  - 錯誤變數統一 err，early return
-  - 測試檔名 *_test.go
+# Go-kit + Clean Architecture + DDD 精簡分層規範
 
-- **Clean Architecture + DDD 分層原則**
-  - internal/domain/：Bounded Context 層，聚合 entity、repository、service、event
-  - internal/usecase/：業務用例（command、query、event、behavior）
-  - internal/infra/：資料庫、API、Redis、eventbus 等實作
-  - internal/delivery/：HTTP、gRPC、subscriber 等傳輸層
-  - 依賴規則：Domain 層不得依賴 Infra/Usecase 層
-  - Entity 具唯一標識，封裝可變狀態
-  - Value Object 不可變、無標識
-  - Repository Interface 定義聚合持久化契約
-  - Domain Service 封裝不適合放在實體的業務邏輯
-  - Domain Event 代表對外發佈的狀態改變
-  - Usecase 層僅協調，不含業務邏輯
-  - Infra 層僅實作接口，不含業務邏輯
+## 核心理念
+本規範結合 Clean Architecture 與 Domain-Driven Design（DDD），以 Go-kit 微服務分層實踐高可維護性、可測試性與業務邏輯隔離。
+- **Clean Architecture**：強調依賴反轉、分層明確、業務邏輯與基礎設施解耦，確保核心邏輯不受外部框架影響。
+- **Domain-Driven Design（DDD）**：以業務語言建模，聚焦於聚合根（Aggregate）、實體（Entity）、值物件（Value Object）、領域服務（Domain Service）、領域事件（Domain Event）與倉儲（Repository）等核心概念，讓程式碼結構貼近真實業務。
 
-- **命名與檔案慣例**
-  - entity：xxx_entity.go
-  - service：xxx_service.go
-  - repository interface：xxx_repository.go
-  - impl 實作：XxxImpl，檔名 xxx_impl.go
-  - mock：xxx_mock.go
+---
 
-- **context 使用規範**
-  - 參數名 c，擴展型 ctx
-  - 使用 contextx.WithContext(c) 取得 thread-safe logger
-  - 範例：
-    ```go
-    func Foo(c context.Context) {
-      ctx := contextx.WithContext(c)
-      ctx.Info("…")
-    }
-    ```
+## 1. 目錄結構
 
-- **相依注入與 Mock**
-  - DI：google/wire + wire provider
-  - Mock：uber-go/mock，檔名 *_mock.go
+```
+internal/
+  domain/
+    {context}/
+      model/         // Entity、Value Object、Proto（聚合根、業務核心資料結構）
+      event/         // Domain Event（業務狀態改變的訊號）
+      repository/    // Repository interface（聚合持久化契約，僅定義）
+      service/       // Domain Service interface（複雜業務規則，僅定義）
+  service/
+    {context}/
+      service.go     // Go-kit Service interface & 實作（協調 domain interface，實現應用/用例邏輯）
+      middleware.go  // Go-kit Middleware
+  endpoint/
+    {context}/
+      endpoint.go    // Go-kit Endpoint（將 Service 方法包裝為 endpoint.Endpoint）
+  transport/
+    http/
+      {context}.go   // HTTP handler/route（僅協定與解碼/編碼）
+    grpc/
+      {context}.go   // gRPC handler/route（僅協定與解碼/編碼）
+```
 
-- **ORM 原則**
-  - domain 層禁止 GORM
-  - infra 層可用 GORM model & tag
-  - 優先 interface + 明確 SQL 實作
+---
 
-- **日誌與錯誤處理**
-  - 結構化日誌，含 context
-  - 自訂 error type
-  - 分級：Debug · Info · Warn · Error
+## 2. 分層職責（Clean Architecture + DDD）
 
-- **MCP/Taskmaster**
-  - 所有自動產生、AI 回覆、taskmaster 文件一律繁體中文
+- **domain 層**（internal/domain/{context}/）
+  - model/：定義 Entity、Value Object、Proto，聚合根封裝狀態與行為（DDD）
+  - event/：定義 Domain Event，代表業務狀態改變（DDD）
+  - repository/：定義 Repository interface，聚合持久化契約（DDD）
+  - service/：定義 Domain Service interface，封裝複雜業務規則（DDD）
+  - 此層僅定義 interface，不含任何實作，不可依賴 service/endpoint/transport 層（Clean Architecture 依賴規則）
 
-- **DON'T**
-  - 不要在 domain 層 import infra/usecase
-  - 不要將業務邏輯寫在 infra/usecase/delivery
-  - 不要在 entity 內直接暴露資料庫欄位
-  - 不要破壞聚合邊界
-  - 不要在 domain 層用 GORM
+- **service 層**（internal/service/{context}/）
+  - service.go：Go-kit Service interface 及其實作，協調多個 domain interface，實現應用/用例邏輯（Application Service，Clean Architecture）
+  - middleware.go：Go-kit Middleware（如日誌、指標、驗證等，橫切關注點）
+  - 此層可依賴 domain interface，不可依賴 endpoint/transport 層
+
+- **endpoint 層**（internal/endpoint/{context}/）
+  - endpoint.go：將 Service 方法包裝為 endpoint.Endpoint，處理 request/response struct（Go-kit 標準）
+  - 此層只包裝 service，不含業務邏輯
+
+- **transport 層**（internal/transport/http|grpc/）
+  - {context}.go：負責 HTTP/gRPC 協定、路由、解碼/編碼（Go-kit 標準）
+  - 此層只負責協定與資料轉換，不含業務邏輯，不可直接調用 repository
+
+---
+
+## 3. 依賴規則（Clean Architecture）
+
+- 依賴方向：外層依賴內層，內層永不依賴外層
+  - domain →（X）→ service/endpoint/transport
+  - service → domain
+  - endpoint → service
+  - transport → endpoint
+
+---
+
+## 4. 命名與檔案慣例（Clean Architecture + DDD）
+
+- interface 以 -er 結尾（如 BlockRepository、BlockService）
+- 實作 struct 以 Impl 結尾，檔名 xxx_impl.go
+- 測試檔名 *_test.go
+- exported symbol 需完整 doc comment
+- entity：xxx.go（如 block.go）
+- event：xxx_event.go
+- repository interface：xxx_repository.go
+- service interface：xxx_service.go
+
+---
+
+## 5. Go 語言風格
+
+- Go 1.21+
+- 使用 gofmt，自動格式化，Tab 縮排
+- 命名採 MixedCaps，避免底線
+- Getter 不加 Get 前綴
+- if/for/switch 無大括號
+- 忽略回傳值用 _
+- 錯誤變數統一 err，early return
+
+---
+
+## 6. context 與日誌（Clean Architecture）
+
+- context 參數名 c，擴展型 ctx
+- 使用 contextx.WithContext(c) 取得 thread-safe logger
+- 結構化日誌，含 context
+- 自訂 error type，分級：Debug · Info · Warn · Error
+
+---
+
+## 7. 測試與 Mock（Clean Architecture）
+
+- DI：google/wire + wire provider
+- Mock：uber-go/mock，檔名 *_mock.go
+- 測試時可針對 Service/Endpoint/Transport 各層獨立測試
+
+---
+
+## 8. ORM 與資料存取（Clean Architecture + DDD）
+
+- domain 層禁止 GORM
+- infra adapter 可用 GORM model & tag
+- 優先 interface + 明確 SQL 實作
+
+---
+
+## 9. DON'T（Clean Architecture + DDD）
+
+- 不要在 domain 層 import service/endpoint/transport
+- 不要將業務邏輯寫在 endpoint/transport
+- 不要在 entity 內直接暴露資料庫欄位
+- 不要破壞聚合邊界
+- 不要在 domain 層用 GORM
+
+---
+
+本規範嚴格落實 Clean Architecture 與 DDD 精神，並以 Go-kit 微服務分層實踐高可維護性、可測試性與業務邏輯隔離。
