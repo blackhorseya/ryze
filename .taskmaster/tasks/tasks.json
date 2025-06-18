@@ -1,0 +1,218 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Structure for Go-kit Microservices",
+        "description": "Initialize the project repository with Go-kit microservice architecture, setting up the basic folder structure and configuration files.",
+        "details": "1. Create a new Go module for the project\n2. Set up directory structure following Go-kit conventions:\n   - `/cmd` - Entry points for services\n   - `/pkg` - Shared packages\n   - `/internal` - Service-specific code\n   - `/api` - API definitions\n   - `/config` - Configuration files\n3. Configure Go modules and dependencies\n4. Set up Docker and Docker Compose files\n5. Initialize git repository with appropriate .gitignore\n6. Add README.md with project overview and setup instructions\n7. Create Makefile for common operations",
+        "testStrategy": "Verify project structure manually. Ensure all configuration files are valid and the project can be built without errors.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Define Domain Models and Interfaces",
+        "description": "Define the core domain models and interfaces for Block, Transaction, Account, and Network entities, preserving the existing domain structure.",
+        "details": "1. Create domain models for:\n   - Block: structure representing TON blockchain blocks\n   - Transaction: structure for transactions\n   - Account: structure for account information\n   - Network: structure for network statistics\n2. Define repository interfaces for each domain\n3. Define service interfaces for each domain\n4. Ensure backward compatibility with existing domain structure\n5. Add validation methods for each model\n\nExample Block model:\n```go\ntype Block struct {\n    ID          string    `json:\"id\"`\n    Height      int64     `json:\"height\"`\n    Timestamp   time.Time `json:\"timestamp\"`\n    PrevBlockID string    `json:\"prev_block_id\"`\n    Transactions []string `json:\"transactions\"`\n    // Other fields as per TON blockchain specification\n}\n\ntype BlockRepository interface {\n    GetByID(ctx context.Context, id string) (*Block, error)\n    GetLatest(ctx context.Context, limit int) ([]*Block, error)\n    // Other methods\n}\n```",
+        "testStrategy": "Write unit tests for domain models validation logic. Test serialization/deserialization of models to ensure compatibility with existing systems.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Implement Database Adapters",
+        "description": "Implement database adapters for MongoDB (blocks) and PostgreSQL (transactions/accounts) to persist and retrieve data.",
+        "details": "1. Create MongoDB adapter for Block repository:\n   - Connection management\n   - CRUD operations for blocks\n   - Indexing strategy\n2. Create PostgreSQL adapter for Transaction repository:\n   - Connection management\n   - CRUD operations for transactions\n   - SQL schema design\n3. Create PostgreSQL adapter for Account repository:\n   - CRUD operations for accounts\n   - Transaction history queries\n4. Implement connection pooling and retry mechanisms\n5. Add database migration scripts\n\nExample MongoDB adapter:\n```go\ntype mongoBlockRepository struct {\n    client *mongo.Client\n    db     *mongo.Database\n    coll   *mongo.Collection\n}\n\nfunc NewMongoBlockRepository(client *mongo.Client) domain.BlockRepository {\n    db := client.Database(\"ryze\")\n    coll := db.Collection(\"blocks\")\n    return &mongoBlockRepository{client, db, coll}\n}\n\nfunc (r *mongoBlockRepository) GetByID(ctx context.Context, id string) (*domain.Block, error) {\n    // Implementation\n}\n```",
+        "testStrategy": "Write integration tests with test containers for both MongoDB and PostgreSQL. Test CRUD operations, edge cases, and error handling. Verify data consistency across repositories.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Block Service",
+        "description": "Implement the Block service layer using Go-kit architecture, providing business logic for block-related operations.",
+        "details": "1. Create Block service interface implementation:\n```go\ntype blockService struct {\n    repo domain.BlockRepository\n    logger log.Logger\n}\n\nfunc NewBlockService(repo domain.BlockRepository, logger log.Logger) domain.BlockService {\n    return &blockService{repo, logger}\n}\n```\n2. Implement methods for:\n   - GetBlockByID\n   - GetLatestBlocks\n   - SearchBlocks\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
+        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Transaction Service",
+        "description": "Implement the Transaction service layer using Go-kit architecture, providing business logic for transaction-related operations.",
+        "details": "1. Create Transaction service interface implementation:\n```go\ntype transactionService struct {\n    repo domain.TransactionRepository\n    logger log.Logger\n}\n\nfunc NewTransactionService(repo domain.TransactionRepository, logger log.Logger) domain.TransactionService {\n    return &transactionService{repo, logger}\n}\n```\n2. Implement methods for:\n   - GetTransactionByID\n   - GetTransactionsByBlockID\n   - SearchTransactions\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
+        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Account Service",
+        "description": "Implement the Account service layer using Go-kit architecture, providing business logic for account-related operations.",
+        "details": "1. Create Account service interface implementation:\n```go\ntype accountService struct {\n    repo domain.AccountRepository\n    txRepo domain.TransactionRepository\n    logger log.Logger\n}\n\nfunc NewAccountService(repo domain.AccountRepository, txRepo domain.TransactionRepository, logger log.Logger) domain.AccountService {\n    return &accountService{repo, txRepo, logger}\n}\n```\n2. Implement methods for:\n   - GetAccountByAddress\n   - GetAccountBalance\n   - GetAccountTransactions\n3. Add business logic validation\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
+        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that the service correctly applies business rules and validations.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Implement Network Service",
+        "description": "Implement the Network service layer using Go-kit architecture, providing business logic for network-related operations and statistics.",
+        "details": "1. Create Network service interface implementation:\n```go\ntype networkService struct {\n    repo domain.NetworkRepository\n    blockRepo domain.BlockRepository\n    logger log.Logger\n}\n\nfunc NewNetworkService(repo domain.NetworkRepository, blockRepo domain.BlockRepository, logger log.Logger) domain.NetworkService {\n    return &networkService{repo, blockRepo, logger}\n}\n```\n2. Implement methods for:\n   - GetNetworkStats\n   - GetBlockchainStatus\n   - GetRecentActivity\n3. Add business logic for calculating statistics\n4. Implement error handling\n5. Add logging\n6. Implement metrics collection\n7. Follow Go-kit service layer patterns",
+        "testStrategy": "Write unit tests for the service layer with mocked repositories. Test business logic, error handling, and edge cases. Verify that statistics calculations are correct.",
+        "priority": "medium",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement TON Blockchain Integration",
+        "description": "Implement integration with the TON blockchain to fetch real-time data for blocks, transactions, and accounts.",
+        "details": "1. Create TON blockchain client:\n```go\ntype tonClient struct {\n    httpClient *http.Client\n    baseURL    string\n}\n\nfunc NewTONClient(baseURL string) *tonClient {\n    return &tonClient{\n        httpClient: &http.Client{Timeout: 10 * time.Second},\n        baseURL:    baseURL,\n    }\n}\n```\n2. Implement methods to fetch:\n   - Latest blocks\n   - Block details\n   - Transaction details\n   - Account information\n3. Add data transformation from TON format to domain models\n4. Implement error handling and retries\n5. Add caching mechanism for frequently accessed data\n6. Create background workers to sync blockchain data\n7. Implement webhook support for real-time updates",
+        "testStrategy": "Write integration tests with mocked TON API responses. Test data transformation, error handling, and retry mechanisms. Verify that the client correctly handles API rate limits and network errors.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Implement Go-kit Endpoints",
+        "description": "Implement Go-kit endpoints for all services, defining the request/response structures and middleware.",
+        "details": "1. Create endpoint definitions for each service:\n```go\nfunc MakeGetBlockByIDEndpoint(s domain.BlockService) endpoint.Endpoint {\n    return func(ctx context.Context, request interface{}) (interface{}, error) {\n        req := request.(GetBlockByIDRequest)\n        block, err := s.GetBlockByID(ctx, req.ID)\n        if err != nil {\n            return nil, err\n        }\n        return GetBlockByIDResponse{Block: block}, nil\n    }\n}\n```\n2. Define request/response structs for each endpoint\n3. Implement middleware for:\n   - Logging\n   - Metrics\n   - Rate limiting\n   - Authentication (if needed)\n   - Request validation\n4. Create endpoint sets for each service\n5. Implement error handling and response mapping",
+        "testStrategy": "Write unit tests for endpoints with mocked services. Test request validation, error handling, and middleware functionality. Verify that endpoints correctly transform between transport and service layers.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          5,
+          6,
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Implement gRPC Transport",
+        "description": "Implement gRPC transport layer for all services, defining protobuf schemas and server implementations.",
+        "details": "1. Define protobuf schemas for all services:\n```protobuf\nsyntax = \"proto3\";\npackage ryze.block.v1;\n\nservice BlockService {\n  rpc GetBlockByID(GetBlockByIDRequest) returns (GetBlockByIDResponse);\n  rpc GetLatestBlocks(GetLatestBlocksRequest) returns (GetLatestBlocksResponse);\n}\n\nmessage GetBlockByIDRequest {\n  string id = 1;\n}\n\nmessage GetBlockByIDResponse {\n  Block block = 1;\n}\n\nmessage Block {\n  string id = 1;\n  int64 height = 2;\n  // Other fields\n}\n```\n2. Generate gRPC code using protoc\n3. Implement gRPC server adapters for each service\n4. Create request/response decoders/encoders\n5. Implement error handling and status code mapping\n6. Add gRPC middleware for logging, metrics, etc.\n7. Configure TLS and authentication",
+        "testStrategy": "Write integration tests for gRPC servers with gRPC clients. Test serialization/deserialization, error handling, and middleware functionality. Verify that the gRPC API correctly implements the protobuf contract.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement HTTP Transport",
+        "description": "Implement HTTP transport layer for all services, defining REST API endpoints and handlers.",
+        "details": "1. Define HTTP routes for all services:\n```go\nfunc NewHTTPHandler(endpoints Endpoints, logger log.Logger) http.Handler {\n    r := mux.NewRouter()\n    \n    options := []kithttp.ServerOption{\n        kithttp.ServerErrorLogger(logger),\n        kithttp.ServerErrorEncoder(encodeError),\n    }\n    \n    r.Methods(\"GET\").Path(\"/blocks/{id}\").Handler(kithttp.NewServer(\n        endpoints.GetBlockByID,\n        decodeGetBlockByIDRequest,\n        encodeResponse,\n        options...,\n    ))\n    \n    // Other routes\n    \n    return r\n}\n```\n2. Implement request/response decoders/encoders\n3. Create HTTP handlers for each endpoint\n4. Implement error handling and HTTP status code mapping\n5. Add HTTP middleware for CORS, logging, metrics, etc.\n6. Configure TLS and authentication\n7. Implement OpenAPI documentation",
+        "testStrategy": "Write integration tests for HTTP handlers with HTTP clients. Test request/response handling, error handling, and middleware functionality. Verify that the HTTP API correctly implements the REST contract.",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Implement Monitoring and Observability",
+        "description": "Implement monitoring and observability using Prometheus and OpenTelemetry for metrics, traces, and logs.",
+        "details": "1. Configure Prometheus metrics:\n```go\nvar (\n    requestCount = prometheus.NewCounterVec(\n        prometheus.CounterOpts{\n            Namespace: \"ryze\",\n            Subsystem: \"block_service\",\n            Name:      \"request_count\",\n            Help:      \"Number of requests received.\",\n        },\n        []string{\"method\", \"endpoint\", \"status\"},\n    )\n    requestLatency = prometheus.NewHistogramVec(\n        prometheus.HistogramOpts{\n            Namespace: \"ryze\",\n            Subsystem: \"block_service\",\n            Name:      \"request_latency_seconds\",\n            Help:      \"Request latency in seconds.\",\n            Buckets:   prometheus.DefBuckets,\n        },\n        []string{\"method\", \"endpoint\"},\n    )\n)\n```\n2. Implement OpenTelemetry tracing\n3. Configure structured logging with correlation IDs\n4. Create health check endpoints\n5. Implement custom metrics for business operations\n6. Add dashboards for monitoring\n7. Configure alerting rules",
+        "testStrategy": "Verify metrics collection with Prometheus client. Test trace propagation across services. Verify that logs contain all necessary information for debugging. Test health check endpoints.",
+        "priority": "medium",
+        "dependencies": [
+          10,
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Docker Containerization",
+        "description": "Implement Docker containerization for all services, creating Dockerfiles and Docker Compose configuration.",
+        "details": "1. Create Dockerfile for services:\n```dockerfile\nFROM golang:1.18-alpine AS builder\nWORKDIR /app\nCOPY go.* ./\nRUN go mod download\nCOPY . .\nRUN CGO_ENABLED=0 GOOS=linux go build -o /bin/service ./cmd/service\n\nFROM alpine:3.15\nRUN apk --no-cache add ca-certificates\nCOPY --from=builder /bin/service /bin/service\nEXPOSE 8080 9090\nCMD [\"/bin/service\"]\n```\n2. Create Docker Compose configuration:\n```yaml\nversion: '3.8'\nservices:\n  block-service:\n    build:\n      context: .\n      dockerfile: Dockerfile\n    command: [\"/bin/service\", \"--service=block\"]\n    ports:\n      - \"8081:8080\"\n      - \"9091:9090\"\n    environment:\n      - MONGODB_URI=mongodb://mongodb:27017\n    depends_on:\n      - mongodb\n  # Other services\n  mongodb:\n    image: mongo:5.0\n    volumes:\n      - mongodb_data:/data/db\n  postgres:\n    image: postgres:14\n    environment:\n      - POSTGRES_PASSWORD=password\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\nvolumes:\n  mongodb_data:\n  postgres_data:\n```\n3. Configure environment variables for services\n4. Set up volume mounts for persistence\n5. Configure networking between services\n6. Add health checks\n7. Optimize Docker images for size and security",
+        "testStrategy": "Test Docker builds and verify that containers start correctly. Test Docker Compose configuration and verify that services can communicate with each other. Verify that volumes persist data correctly.",
+        "priority": "medium",
+        "dependencies": [
+          10,
+          11,
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Implement API Documentation",
+        "description": "Implement comprehensive API documentation for both gRPC and HTTP APIs using OpenAPI and gRPC reflection.",
+        "details": "1. Create OpenAPI specification for HTTP API:\n```yaml\nopenapi: 3.0.0\ninfo:\n  title: Ryze TON Blockchain Explorer API\n  version: 1.0.0\n  description: API for querying TON blockchain data\npaths:\n  /blocks/{id}:\n    get:\n      summary: Get block by ID\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema:\n            type: string\n      responses:\n        '200':\n          description: Block details\n          content:\n            application/json:\n              schema:\n                $ref: '#/components/schemas/Block'\n```\n2. Enable gRPC reflection for service discovery\n3. Generate API documentation from protobuf definitions\n4. Create interactive API documentation using Swagger UI\n5. Add examples and use cases to documentation\n6. Document error codes and responses\n7. Create client libraries for common languages",
+        "testStrategy": "Verify that OpenAPI specification is valid using validators. Test that Swagger UI correctly displays API documentation. Verify that gRPC reflection works correctly with tools like grpcurl.",
+        "priority": "low",
+        "dependencies": [
+          10,
+          11
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Implement Integration Tests and CI/CD",
+        "description": "Implement comprehensive integration tests and CI/CD pipeline for automated testing, building, and deployment.",
+        "details": "1. Create integration test suite:\n```go\nfunc TestBlockServiceIntegration(t *testing.T) {\n    // Start test containers\n    ctx := context.Background()\n    mongoC, err := testcontainers.StartMongoContainer(ctx)\n    require.NoError(t, err)\n    defer mongoC.Terminate(ctx)\n    \n    // Initialize repositories and services\n    mongoURI := mongoC.GetURI()\n    repo := repository.NewMongoBlockRepository(mongoURI)\n    svc := service.NewBlockService(repo, log.NewNopLogger())\n    \n    // Run tests\n    block, err := svc.GetBlockByID(ctx, \"test-id\")\n    require.NoError(t, err)\n    require.Equal(t, \"test-id\", block.ID)\n}\n```\n2. Set up GitHub Actions or similar CI/CD pipeline:\n```yaml\nname: CI/CD\non:\n  push:\n    branches: [ main ]\n  pull_request:\n    branches: [ main ]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v2\n    - name: Set up Go\n      uses: actions/setup-go@v2\n      with:\n        go-version: 1.18\n    - name: Test\n      run: go test -v ./...\n  build:\n    needs: test\n    runs-on: ubuntu-latest\n    steps:\n    - uses: actions/checkout@v2\n    - name: Build Docker images\n      run: docker-compose build\n```\n3. Implement end-to-end tests\n4. Configure automated deployments\n5. Set up code quality checks\n6. Implement database migration in CI/CD\n7. Configure release automation",
+        "testStrategy": "Run integration tests in CI pipeline. Verify that all services can be built and deployed automatically. Test database migrations and verify that they can be applied automatically.",
+        "priority": "medium",
+        "dependencies": [
+          13
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-06-18T03:53:43.936Z",
+      "updated": "2025-06-18T03:53:43.936Z",
+      "description": "Tasks for master context"
+    }
+  }
+}
