@@ -8,12 +8,7 @@ package daemon
 
 import (
 	"fmt"
-	"github.com/blackhorseya/ryze/internal/domain/block"
-	"github.com/blackhorseya/ryze/internal/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
-	block2 "github.com/blackhorseya/ryze/internal/service/block"
+	"github.com/blackhorseya/ryze/internal/service/block"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
@@ -37,76 +32,25 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	client, err := grpcx.NewClient(configuration)
+	client, err := InitTonClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	blockServiceClient, err := block.NewBlockServiceClient(client)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	transactionServiceClient, err := transaction.NewTransactionServiceClient(client)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	tonxClient, err := InitTonClient(configuration)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	service := block2.NewService(tonxClient)
+	service := block.NewService(client)
 	injector := &Injector{
-		C:           configuration,
-		A:           application,
-		OTelx:       sdk,
-		blockClient: blockServiceClient,
-		txClient:    transactionServiceClient,
-		BlockSvc:    service,
-	}
-	mongoClient, cleanup2, err := mongodbx.NewClientWithClean(application)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	iBlockRepo, err := mongodbx.NewBlockRepo(mongoClient)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	blockServiceServer := block.NewBlockService(tonxClient, iBlockRepo)
-	db, err := pgx.NewClient(application)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	iTransactionRepo, err := pgx.NewTransactionRepo(db)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
-	}
-	transactionServiceServer := transaction.NewTransactionService(tonxClient, iTransactionRepo)
-	initServers := NewInitServersFn(blockServiceServer, transactionServiceServer)
-	server, err := grpcx.NewServer(application, initServers)
-	if err != nil {
-		cleanup2()
-		cleanup()
-		return nil, nil, err
+		C:        configuration,
+		A:        application,
+		OTelx:    sdk,
+		BlockSvc: service,
 	}
 	eventBus := messaging.NewInMemoryEventBus()
-	adapterxServer, cleanup3, err := NewServer(injector, server, eventBus)
+	server, cleanup2, err := NewServer(injector, eventBus)
 	if err != nil {
-		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
-	return adapterxServer, func() {
-		cleanup3()
+	return server, func() {
 		cleanup2()
 		cleanup()
 	}, nil

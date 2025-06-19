@@ -7,11 +7,6 @@ package daemon
 import (
 	"fmt"
 
-	"github.com/blackhorseya/ryze/internal/domain/block"
-	"github.com/blackhorseya/ryze/internal/domain/transaction"
-	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
-	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	blockSvcPkg "github.com/blackhorseya/ryze/internal/service/block"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
@@ -58,22 +53,13 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		messaging.NewInMemoryEventBus,
 
 		// storage
-		mongodbx.NewClientWithClean,
-		pgx.NewClient,
+		// mongodbx.NewClientWithClean,
+		// pgx.NewClient,
 
 		// transports
-		grpcx.NewServer,
-		grpcx.NewClient,
 		InitTonClient,
-		blockSvcPkg.NewService,
-
-		// app layer
-		NewInitServersFn,
 
 		// domain layer
-		block.ProviderSet,
-		block.NewBlockServiceClient,
-		transaction.ProviderSet,
-		transaction.NewTransactionServiceClient,
+		blockSvcPkg.NewService,
 	))
 }

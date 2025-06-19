@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
+	"github.com/blackhorseya/ryze/internal/domain/block/model"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/xssnick/tonutils-go/ton"
 )

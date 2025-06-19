@@ -3,9 +3,7 @@ package daemon
 import (
 	"context"
 
-	"github.com/blackhorseya/ryze/entity/domain/block/model"
-	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
-	"github.com/blackhorseya/ryze/internal/usecase/event"
+	"github.com/blackhorseya/ryze/internal/domain/block/model"
 	"github.com/blackhorseya/ryze/pkg/adapterx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
@@ -13,31 +11,21 @@ import (
 )
 
 type impl struct {
-	injector   *Injector
-	grpcserver *grpcx.Server
-	bus        eventx.EventBus
+	injector *Injector
+	bus      eventx.EventBus
 }
 
 // NewServer is a function to create a new server.
-func NewServer(injector *Injector, grpcserver *grpcx.Server, bus eventx.EventBus) (adapterx.Server, func(), error) {
+func NewServer(injector *Injector, bus eventx.EventBus) (adapterx.Server, func(), error) {
 	return &impl{
-		injector:   injector,
-		grpcserver: grpcserver,
-		bus:        bus,
+		injector: injector,
+		bus:      bus,
 	}, func() {}, nil
 }
 
 func (i *impl) Start(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server start")
-
-	// start service server
-	if i.grpcserver != nil {
-		if err := i.grpcserver.Start(ctx); err != nil {
-			ctx.Error("start grpc server", zap.Error(err))
-			return err
-		}
-	}
 
 	// start scanning for blocks using local service
 	blocks := make(chan *model.Block)
@@ -50,12 +38,12 @@ func (i *impl) Start(c context.Context) error {
 	go i.listenForBlockEvents(ctx, blocks)
 
 	// subscribe found block handler
-	err := i.bus.Subscribe(event.NewFoundBlockHandlerV2(i.injector.blockClient, i.injector.txClient))
-	if err != nil {
-		ctx.Error("subscribe found block handler", zap.Error(err))
-		return err
-	}
-	ctx.Info("subscribed to block events")
+	// err := i.bus.Subscribe(event.NewFoundBlockHandlerV2(i.injector.blockClient, i.injector.txClient))
+	// if err != nil {
+	// 	ctx.Error("subscribe found block handler", zap.Error(err))
+	// 	return err
+	// }
+	// ctx.Info("subscribed to block events")
 
 	return nil
 }
@@ -63,12 +51,6 @@ func (i *impl) Start(c context.Context) error {
 func (i *impl) Shutdown(c context.Context) error {
 	ctx := contextx.WithContext(c)
 	ctx.Info("server shutdown")
-
-	if i.grpcserver != nil {
-		if err := i.grpcserver.Stop(ctx); err != nil {
-			ctx.Error("stop grpc server", zap.Error(err))
-		}
-	}
 
 	// TODO: 2024/9/15|sean|unsubscribe found block handler
 
@@ -88,8 +70,8 @@ func (i *impl) listenForBlockEvents(ctx contextx.Contextx, blocks <-chan *model.
 				ctx.Info("block channel closed")
 				return
 			}
-			ctx.Info("received block", zap.String("block_id", newBlock.Id))
-			_ = i.bus.Publish(newBlock.Born())
+			ctx.Info("received block", zap.String("block_id", newBlock.ID))
+			// _ = i.bus.Publish(newBlock.Born())
 		}
 	}
 }
