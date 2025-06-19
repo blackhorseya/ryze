@@ -38,7 +38,7 @@ type Service interface {
 // serviceImpl 為 Service 介面的實作
 // TODO: 實作 serviceImpl struct 與方法
 type serviceImpl struct {
-	blockRepo repository.BlockRepository
+	blockRepo repository.BlockRepository 
 }
 
 // NewService 建立新的區塊服務
