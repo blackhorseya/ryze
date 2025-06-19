@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/blackhorseya/ryze/adapter/daemon"
-	"github.com/blackhorseya/ryze/adapter/platform"
+	"github.com/blackhorseya/ryze/cmd/daemon"
+	"github.com/blackhorseya/ryze/cmd/platform"
 	"github.com/blackhorseya/ryze/internal/shared/cmdx"
 	"github.com/spf13/cobra"
 )
