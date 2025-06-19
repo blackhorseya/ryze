@@ -7,6 +7,9 @@ package daemon
 import (
 	"fmt"
 
+	"github.com/blackhorseya/ryze/internal/domain/block/service"
+	"github.com/blackhorseya/ryze/internal/infra/datasource/ton"
+	"github.com/blackhorseya/ryze/internal/infra/stub"
 	blockSvcPkg "github.com/blackhorseya/ryze/internal/service/block"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
@@ -59,7 +62,14 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		// transports
 		InitTonClient,
 
+		// stub providers (TODO: replace with real implementation)
+		stub.NewInMemoryBlockRepository,
+		ton.NewBlockAdapterImpl,
+		wire.Bind(new(service.BlockScanner), new(*ton.BlockAdapterImpl)),
+
 		// domain layer
 		blockSvcPkg.NewService,
+
+		// repository
 	))
 }

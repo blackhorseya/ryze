@@ -13,7 +13,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	model "github.com/blackhorseya/ryze/internal/domain/block/model"
+	model "github.com/blackhorseya/ryze/entity/domain/block/model"
+	service "github.com/blackhorseya/ryze/internal/domain/block/service"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -72,7 +73,7 @@ func (mr *MockServiceMockRecorder) GetLatestBlocks(c, limit any) *gomock.Call {
 }
 
 // ScanBlock mocks base method.
-func (m *MockService) ScanBlock(c context.Context, blocks chan<- *model.Block, opts ...ScanBlockOption) error {
+func (m *MockService) ScanBlock(c context.Context, blocks chan<- *model.Block, opts ...service.ScanBlockOption) error {
 	m.ctrl.T.Helper()
 	varargs := []any{c, blocks}
 	for _, a := range opts {

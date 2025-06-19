@@ -8,6 +8,8 @@ package daemon
 
 import (
 	"fmt"
+	"github.com/blackhorseya/ryze/internal/infra/datasource/ton"
+	"github.com/blackhorseya/ryze/internal/infra/stub"
 	"github.com/blackhorseya/ryze/internal/service/block"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
@@ -32,12 +34,14 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	blockRepository := stub.NewInMemoryBlockRepository()
 	client, err := InitTonClient(configuration)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	service := block.NewService(client)
+	blockAdapterImpl := ton.NewBlockAdapterImpl(client)
+	service := block.NewService(blockRepository, blockAdapterImpl)
 	injector := &Injector{
 		C:        configuration,
 		A:        application,

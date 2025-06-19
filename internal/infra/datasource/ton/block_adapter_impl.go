@@ -4,13 +4,15 @@ import (
 	"context"
 	"sync"
 
-	"github.com/blackhorseya/ryze/entity/domain/block/biz"
-	"github.com/blackhorseya/ryze/internal/repo"
+	"github.com/blackhorseya/ryze/internal/domain/block/model"
+	"github.com/blackhorseya/ryze/internal/domain/block/service"
 	"github.com/blackhorseya/ryze/internal/shared/tonx"
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/xssnick/tonutils-go/ton"
 	"go.uber.org/zap"
 )
+
+var _ service.BlockScanner = (*BlockAdapterImpl)(nil)
 
 // BlockAdapterImpl is the implementation for block adapter.
 type BlockAdapterImpl struct {
@@ -19,24 +21,8 @@ type BlockAdapterImpl struct {
 	shardLastSeqno sync.Map
 }
 
-// NewBlockAdapterImpl is used to create a new block adapter implementation.
-func NewBlockAdapterImpl(client *tonx.Client) *BlockAdapterImpl {
-	return &BlockAdapterImpl{
-		client: client,
-	}
-}
-
-// NewBlockAdapter is used to create a new block adapter.
-func NewBlockAdapter(impl *BlockAdapterImpl) repo.BlockAdapter {
-	return impl
-}
-
-//nolint:gocognit // it's fine
-func (i *BlockAdapterImpl) ScanBlock(
-	c context.Context,
-	req repo.ScanBlockRequest,
-	blockCh chan<- *biz.Block,
-) error {
+// ScanBlocks implements service.BlockScanner.
+func (i *BlockAdapterImpl) ScanBlocks(c context.Context, blockCh chan<- *model.Block, opts ...service.ScanBlockOption) error {
 	ctx, span := contextx.StartSpan(c, "datasource.ton.BlockAdapterImpl.ScanBlock")
 	defer span.End()
 
@@ -91,7 +77,7 @@ func (i *BlockAdapterImpl) ScanBlock(
 				i.shardLastSeqno.Store(tonx.GetShardID(shard), shard.SeqNo)
 
 				// 傳送新區塊
-				block, err3 := biz.NewBlock(shard.Workchain, shard.Shard, shard.SeqNo)
+				block, err3 := model.NewBlock(shard.Workchain, shard.Shard, shard.SeqNo)
 				if err3 != nil {
 					ctx.Error("failed to create new block", zap.Error(err3))
 					return err3
@@ -112,5 +98,12 @@ func (i *BlockAdapterImpl) ScanBlock(
 				return err2
 			}
 		}
+	}
+}
+
+// NewBlockAdapterImpl is used to create a new block adapter implementation.
+func NewBlockAdapterImpl(client *tonx.Client) *BlockAdapterImpl {
+	return &BlockAdapterImpl{
+		client: client,
 	}
 }
