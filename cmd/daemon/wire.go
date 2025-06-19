@@ -12,6 +12,7 @@ import (
 	"github.com/blackhorseya/ryze/internal/infra/storage/mongodbx"
 	"github.com/blackhorseya/ryze/internal/infra/storage/pgx"
 	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
+	blockSvcPkg "github.com/blackhorseya/ryze/internal/service/block"
 	"github.com/blackhorseya/ryze/internal/shared/configx"
 	"github.com/blackhorseya/ryze/internal/shared/messaging"
 	"github.com/blackhorseya/ryze/internal/shared/otelx"
@@ -64,6 +65,7 @@ func New(v *viper.Viper) (adapterx.Server, func(), error) {
 		grpcx.NewServer,
 		grpcx.NewClient,
 		InitTonClient,
+		blockSvcPkg.NewService,
 
 		// app layer
 		NewInitServersFn,

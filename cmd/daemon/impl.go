@@ -2,10 +2,7 @@ package daemon
 
 import (
 	"context"
-	"errors"
-	"io"
 
-	blockB "github.com/blackhorseya/ryze/entity/domain/block/biz"
 	"github.com/blackhorseya/ryze/entity/domain/block/model"
 	"github.com/blackhorseya/ryze/internal/infra/transports/grpcx"
 	"github.com/blackhorseya/ryze/internal/usecase/event"
@@ -13,9 +10,6 @@ import (
 	"github.com/blackhorseya/ryze/pkg/contextx"
 	"github.com/blackhorseya/ryze/pkg/eventx"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type impl struct {
@@ -45,18 +39,18 @@ func (i *impl) Start(c context.Context) error {
 		}
 	}
 
-	// start scanning for blocks
-	blockScanner, err := i.injector.blockClient.ScanBlock(ctx, &blockB.ScanBlockRequest{})
-	if err != nil {
-		ctx.Error("failed to scan block", zap.Error(err))
-		return err
-	}
+	// start scanning for blocks using local service
+	blocks := make(chan *model.Block)
+	go func() {
+		_ = i.injector.BlockSvc.ScanBlock(ctx, blocks)
+		close(blocks)
+	}()
 
 	// listen for new block events and publish them via the EventBus
-	go i.listenForBlockEvents(ctx, blockScanner)
+	go i.listenForBlockEvents(ctx, blocks)
 
 	// subscribe found block handler
-	err = i.bus.Subscribe(event.NewFoundBlockHandlerV2(i.injector.blockClient, i.injector.txClient))
+	err := i.bus.Subscribe(event.NewFoundBlockHandlerV2(i.injector.blockClient, i.injector.txClient))
 	if err != nil {
 		ctx.Error("subscribe found block handler", zap.Error(err))
 		return err
@@ -81,31 +75,20 @@ func (i *impl) Shutdown(c context.Context) error {
 	return nil
 }
 
-func (i *impl) listenForBlockEvents(ctx contextx.Contextx, stream grpc.ServerStreamingClient[model.Block]) {
+func (i *impl) listenForBlockEvents(ctx contextx.Contextx, blocks <-chan *model.Block) {
 	ctx.Info("start to receive block")
 
 	for {
 		select {
 		case <-ctx.Done():
-			_ = stream.CloseSend()
 			ctx.Info("context done, stopping block event listener")
 			return
-		default:
-			newBlock, err := stream.Recv()
-			if errors.Is(err, io.EOF) {
+		case newBlock, ok := <-blocks:
+			if !ok {
+				ctx.Info("block channel closed")
 				return
 			}
-			st, ok := status.FromError(err)
-			if ok && st.Code() == codes.Canceled {
-				return
-			}
-			if err != nil {
-				ctx.Error("failed to receive block", zap.Error(err))
-				continue
-			}
-
 			ctx.Info("received block", zap.String("block_id", newBlock.Id))
-
 			_ = i.bus.Publish(newBlock.Born())
 		}
 	}
